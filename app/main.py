@@ -52,23 +52,6 @@ app = FastAPI(
 )
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Lifespan events - startup and shutdown.
-    
-    Best Practice: Use for:
-    - Database connection pooling
-    - Cache initialization
-    - Background tasks
-    """
-    # Startup
-    print(f"🚀 Starting {settings.PROJECT_NAME} v{settings.VERSION}")
-    print(f"📚 Documentation: http://localhost:8000/docs")
-    yield
-    # Shutdown
-    print("👋 Shutting down gracefully...")
-
 
 # Add CORS middleware
 app.add_middleware(
