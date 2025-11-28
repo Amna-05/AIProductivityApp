@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     
     # Security
-    ALLOWED_HOSTS: List[str] = ["*"]  # In production: ["yourdomain.com"]
+    ALLOWED_HOSTS: List[str] = ["*"]  
     
     # CORS - For frontend apps
     BACKEND_CORS_ORIGINS: List[str] = [
@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SYNC_DATABASE_URL: str  # For Alembic migrations
     
-    # Database Pool Settings (Production-ready!)
+    # Database Pool Settings 
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
     DB_POOL_TIMEOUT: int = 30

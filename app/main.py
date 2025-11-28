@@ -8,6 +8,8 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.exceptions import TaskAPIException
 from app.api.endpoints import tasks
+from app.db.database import Base, engine 
+from app.models.task import Task 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,7 +27,19 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown
     print("👋 Shutting down gracefully...")
+    print("📊 Creating database tables...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Database tables created successfully!")
     
+    yield
+    
+    # Shutdown
+    print("👋 Shutting down gracefully...")
+    await engine.dispose()
+
+
+
 # Create FastAPI instance
 app = FastAPI(
      title=settings.PROJECT_NAME,
