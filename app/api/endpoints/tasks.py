@@ -1,5 +1,6 @@
 """
 Task API endpoints using PostgreSQL database.
+All endpoints protected - require authentication.
 """
 
 from fastapi import APIRouter, status, Query, Depends
@@ -16,13 +17,15 @@ from app.schemas.task import (
 )
 from app.db.database import get_db
 from app.db.repositories.task_repository import TaskRepository
+from app.core.dependencies import get_current_active_user  # ← ADD THIS
+from app.models.user import User  # ← ADD THIS
 
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],
     responses={
+        401: {"description": "Not authenticated"},
         404: {"description": "Task not found"},
-        409: {"description": "Task already exists"},
     }
 )
 
@@ -35,9 +38,10 @@ router = APIRouter(
 )
 async def create_task(
     task: TaskCreate,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
 ) -> TaskResponse:
-    """Create a new task in the database."""
+    """Create a new task. Requires authentication."""
     repo = TaskRepository(db)
     db_task = await repo.create(task)
     return TaskResponse.model_validate(db_task)
@@ -53,9 +57,10 @@ async def get_tasks(
     priority: Optional[TaskPriority] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
 ) -> TaskListResponse:
-    """Get all tasks with filtering and pagination."""
+    """Get all tasks with filtering and pagination. Requires authentication."""
     repo = TaskRepository(db)
     tasks, total = await repo.get_all(
         skip=skip,
@@ -76,9 +81,10 @@ async def get_tasks(
 )
 async def get_task(
     task_id: int,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
 ) -> TaskResponse:
-    """Get task by ID."""
+    """Get task by ID. Requires authentication."""
     repo = TaskRepository(db)
     task = await repo.get_by_id(task_id)
     if not task:
@@ -95,9 +101,10 @@ async def get_task(
 async def update_task(
     task_id: int,
     task_update: TaskUpdate,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
 ) -> TaskResponse:
-    """Update a task."""
+    """Update a task. Requires authentication."""
     repo = TaskRepository(db)
     db_task = await repo.update(task_id, task_update)
     return TaskResponse.model_validate(db_task)
@@ -110,9 +117,10 @@ async def update_task(
 )
 async def delete_task(
     task_id: int,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
 ) -> None:
-    """Delete a task."""
+    """Delete a task. Requires authentication."""
     repo = TaskRepository(db)
     deleted = await repo.delete(task_id)
     if not deleted:
@@ -124,7 +132,10 @@ async def delete_task(
     "/stats/summary",
     summary="Get task statistics"
 )
-async def get_task_stats(db: AsyncSession = Depends(get_db)):
-    """Get task statistics."""
+async def get_task_stats(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)  # ← PROTECTED
+):
+    """Get task statistics. Requires authentication."""
     repo = TaskRepository(db)
     return await repo.get_stats()
