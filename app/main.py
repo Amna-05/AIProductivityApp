@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.exceptions import TaskAPIException
-from app.api.endpoints import tasks, auth
+from app.api.endpoints import tasks, auth ,categories, tags
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
 from app.models.task import Task
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
+from app.models.category import Category
+from app.models.tag import Tag
 
 
 @asynccontextmanager
@@ -19,20 +21,12 @@ async def lifespan(app: FastAPI):
     """
     Lifespan events - startup and shutdown.
     """
-    # Startup
-    print(f"🚀 Starting {settings.PROJECT_NAME} v{settings.VERSION}")
+    print(f"🚀 Starting {settings.PROJECT_NAME} v{settings.VERSION}") #stratup
     print(f"📚 Documentation: http://localhost:8000/docs")
-    
-    # Create all database tables
-    print("📊 Creating database tables...")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("✅ Database tables created successfully!")
-    
+    print("ℹ️  Database migrations managed by Alembic")
+    print("ℹ️  Run 'alembic upgrade head' to apply migrations")
     yield
-    
-    # Shutdown
-    print("👋 Shutting down gracefully...")
+    print("👋 Shutting down gracefully...") #shutdown
     await engine.dispose()
 
 
@@ -81,6 +75,9 @@ app.include_router(
     tasks.router,
     prefix=settings.API_V1_PREFIX,
 )
+
+app.include_router(categories.router)  
+app.include_router(tags.router)  
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Task Manager API"}

@@ -16,6 +16,8 @@ from app.core.security import create_access_token
 from app.core.config import settings
 from app.core.dependencies import get_current_active_user
 from app.models.user import User
+from app.models.category import Category
+from app.models.tag import Tag-
 
 router = APIRouter(
     prefix="/auth",
@@ -60,6 +62,32 @@ async def register(
     # Create user
     db_user = await user_repo.create(user)
     
+    # 🆕 CREATE DEFAULT CATEGORIES
+    default_categories = [
+        {"name": "Personal", "color": "#3B82F6", "icon": "👤"},
+        {"name": "Work", "color": "#10B981", "icon": "💼"},
+        {"name": "Health", "color": "#EF4444", "icon": "💪"},
+        {"name": "Finance", "color": "#F59E0B", "icon": "💰"},
+    ]
+    
+    for cat_data in default_categories:
+        db_category = Category(**cat_data, user_id=db_user.id)
+        db.add(db_category)
+    
+    # 🆕 CREATE SYSTEM TAGS
+    system_tags = [
+        {"name": "urgent", "color": "#EF4444"},      # Red
+        {"name": "important", "color": "#F59E0B"},   # Orange
+        {"name": "normal", "color": "#6B7280"},      # Gray
+    ]
+    
+    for tag_data in system_tags:
+        db_tag = Tag(**tag_data, user_id=db_user.id)
+        db.add(db_tag)
+    
+    await db.commit()
+    await db.refresh(db_user)
+    
     # Auto-login: Create tokens
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -68,6 +96,7 @@ async def register(
     )
     
     refresh_token = await token_repo.create(db_user.id)
+    
     
     # Set cookies
     response.set_cookie(

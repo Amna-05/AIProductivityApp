@@ -1,72 +1,92 @@
 """
-SQLAlchemy database models for Task.
-
-Best Practices:
-- Separate from Pydantic schemas
-- Database-specific fields (id, timestamps)
-- Indexes for performance
-- Constraints for data integrity
+Task model with Priority Matrix support.
+- Many-to-One: Task → Category
+- Many-to-Many: Task ↔ Tag
+- Tracks Eisenhower Matrix and timestamps
 """
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum as SQLEnum, Index
+from sqlalchemy import (
+    Column, Integer, String, Boolean, DateTime, 
+    Enum as SQLEnum, Index, ForeignKey, Table
+)
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 from app.db.database import Base
-from app.schemas.task import TaskPriority, TaskStatus
+from app.schemas.task import TaskStatus
 
+# ASSOCIATION TABLE for Many-to-Many (Task ↔ Tag)
+task_tags = Table(
+    'task_tags',
+    Base.metadata,
+    Column('task_id', Integer, ForeignKey('tasks.id', ondelete='CASCADE')),
+    Column('tag_id', Integer, ForeignKey('tags.id', ondelete='CASCADE'))
+)
 
 class Task(Base):
-    """
-    Task database model.
-    
-    Represents the 'tasks' table in PostgreSQL.
-    """
-    
     __tablename__ = "tasks"
-    
-    # Primary Key
+
+    # PRIMARY KEY
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    
-    # Task Fields
+
+    # BASIC FIELDS
     title = Column(String(200), nullable=False, index=True)
     description = Column(String(1000), nullable=True)
+
+    # PRIORITY MATRIX
+    is_urgent = Column(Boolean, nullable=False, default=False, index=True)
+    is_important = Column(Boolean, nullable=False, default=False, index=True)
     
-    # Enums stored as strings in database
-    priority = Column(
-        SQLEnum(TaskPriority),
-        nullable=False,
-        default=TaskPriority.MEDIUM,
-        index=True  # Index for filtering
-    )
-    
-    status = Column(
-        SQLEnum(TaskStatus ),
-        nullable=False,
-        default=TaskStatus.TODO,
-        index=True  # Index for filtering
-    )
-    
-    # Timestamps (auto-managed)
-    created_at = Column(
-        DateTime,
-        nullable=False,
-        server_default=func.now(),  # Database sets this
-    )
-    
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        server_default=func.now(),
-        onupdate=func.now(),  # Auto-update on changes
-    )
-    
-    # Composite indexes for common queries
+    # STATUS
+    status = Column(SQLEnum(TaskStatus), nullable=False, default=TaskStatus.TODO, index=True)
+
+    # DATES
+    due_date = Column(DateTime(timezone=True), nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+    # FOREIGN KEYS
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    # RELATIONSHIPS
+    user = relationship("User", back_populates="tasks")
+    category = relationship("Category", back_populates="tasks")  # STRING used safely
+    tags = relationship("Tag", secondary=task_tags, back_populates="tasks")
+
+    # INDEXES
     __table_args__ = (
-        Index('ix_task_status_priority', 'status', 'priority'),
-        Index('ix_task_created_at', 'created_at'),
+        Index('ix_task_priority_matrix', 'is_urgent', 'is_important'),
+        Index('ix_task_status_due', 'status', 'due_date'),
+        Index('ix_task_category_status', 'category_id', 'status'),
     )
-    
+
+    # COMPUTED PROPERTIES
+    @property
+    def quadrant(self) -> str:
+        if self.is_urgent and self.is_important:
+            return "DO_FIRST"
+        elif not self.is_urgent and self.is_important:
+            return "SCHEDULE"
+        elif self.is_urgent and not self.is_important:
+            return "DELEGATE"
+        else:
+            return "ELIMINATE"
+
+    @property
+    def is_overdue(self) -> bool:
+        if not self.due_date or self.status == TaskStatus.DONE:
+            return False
+        return datetime.now(self.due_date.tzinfo) > self.due_date
+
+    @property
+    def days_until_due(self) -> int | None:
+        if not self.due_date:
+            return None
+        delta = self.due_date - datetime.now(self.due_date.tzinfo)
+        return delta.days
+
     def __repr__(self) -> str:
-        """String representation for debugging."""
-        return f"<Task(id={self.id}, title='{self.title}', status={self.status})>"
+        return f"<Task(id={self.id}, title='{self.title}', quadrant={self.quadrant}, status={self.status})>"

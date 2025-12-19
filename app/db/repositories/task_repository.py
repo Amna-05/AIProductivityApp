@@ -1,176 +1,256 @@
 """
-Repository pattern for Task database operations.
-
-Best Practices:
-- Single Responsibility (only DB operations)
-- Dependency Injection ready
-- Async operations
-- Proper error handling
+Task repository for database operations.
 """
 
+from typing import List, Tuple, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
-from sqlalchemy.exc import IntegrityError
-from typing import List, Optional
+from sqlalchemy import select, func, and_, or_
+from sqlalchemy.orm import selectinload
 
 from app.models.task import Task
-from app.schemas.task import TaskCreate, TaskUpdate, TaskStatus, TaskPriority
-from app.core.exceptions import TaskNotFoundException, TaskAlreadyExistsException
+from app.models.tag import Tag
+from app.schemas.task import TaskCreate, TaskUpdate, TaskStatus
 
 
 class TaskRepository:
-    """
-    Repository for Task database operations.
-    
-    Usage:
-        repo = TaskRepository(db_session)
-        task = await repo.create(task_data)
-    """
-    
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def create(self, task_data: TaskCreate) -> Task:
+    async def create(self, task_data: TaskCreate, user_id: int) -> Task:
         """
         Create a new task.
-        
-        Raises:
-            TaskAlreadyExistsException: If title already exists
+        Handles tags separately from other fields.
         """
-        # Check for duplicate title
-        existing = await self.get_by_title(task_data.title)
-        if existing:
-            raise TaskAlreadyExistsException(task_data.title)
+        # Extract tag_ids from task_data
+        tag_ids = task_data.tag_ids or []
         
-        # Create new task
-        db_task = Task(**task_data.model_dump())
+        # Create task dict WITHOUT tag_ids (not a Task model field)
+        task_dict = task_data.model_dump(exclude={'tag_ids'})
+        task_dict['user_id'] = user_id
+        
+        # Create task instance
+        db_task = Task(**task_dict)
+        
+        # Attach tags if provided
+        if tag_ids:
+            # Fetch tag objects
+            result = await self.db.execute(
+                select(Tag).where(
+                    and_(
+                        Tag.id.in_(tag_ids),
+                        Tag.user_id == user_id  # Only user's own tags
+                    )
+                )
+            )
+            tags = result.scalars().all()
+            db_task.tags = list(tags)
         
         self.db.add(db_task)
-        await self.db.flush()  # Get the ID without committing
-        await self.db.refresh(db_task)  # Load generated fields
-        
+        await self.db.commit()
+        await self.db.refresh(db_task)
         return db_task
     
-    async def get_by_id(self, task_id: int) -> Optional[Task]:
-        """Get task by ID."""
+    async def get_by_id(self, task_id: int, user_id: int) -> Optional[Task]:
+        """Get task by ID (with relationships loaded)."""
         result = await self.db.execute(
-            select(Task).where(Task.id == task_id)
+            select(Task)
+            .options(selectinload(Task.category), selectinload(Task.tags))
+            .where(and_(Task.id == task_id, Task.user_id == user_id))
         )
-        return result.scalar_one_or_none()
-    
-    async def get_by_title(self, title: str) -> Optional[Task]:
-        """Get task by title (case-insensitive)."""
-        result = await self.db.execute(
-            select(Task).where(func.lower(Task.title) == title.lower())
-        )
-        return result.scalar_one_or_none()
+        return result.scalars().first()
     
     async def get_all(
         self,
+        user_id: int,
         skip: int = 0,
         limit: int = 100,
         status: Optional[TaskStatus] = None,
-        priority: Optional[TaskPriority] = None,
-    ) -> tuple[List[Task], int]:
+        is_urgent: Optional[bool] = None,
+        is_important: Optional[bool] = None,
+        category_id: Optional[int] = None,
+    ) -> Tuple[List[Task], int]:
         """
         Get all tasks with filtering and pagination.
-        
-        Returns:
-            tuple: (list of tasks, total count)
         """
-        # Build query with filters
-        query = select(Task)
+        # Build query
+        query = select(Task).where(Task.user_id == user_id)
         
-        filters = []
+        # Apply filters
         if status:
-            filters.append(Task.status == status)
-        if priority:
-            filters.append(Task.priority == priority)
+            query = query.where(Task.status == status)
+        if is_urgent is not None:
+            query = query.where(Task.is_urgent == is_urgent)
+        if is_important is not None:
+            query = query.where(Task.is_important == is_important)
+        if category_id:
+            query = query.where(Task.category_id == category_id)
         
-        if filters:
-            query = query.where(and_(*filters))
+        # Load relationships
+        query = query.options(
+            selectinload(Task.category),
+            selectinload(Task.tags)
+        )
         
         # Get total count
-        count_query = select(func.count()).select_from(query.subquery())
+        count_query = select(func.count()).select_from(Task).where(Task.user_id == user_id)
+        if status:
+            count_query = count_query.where(Task.status == status)
+        if is_urgent is not None:
+            count_query = count_query.where(Task.is_urgent == is_urgent)
+        if is_important is not None:
+            count_query = count_query.where(Task.is_important == is_important)
+        if category_id:
+            count_query = count_query.where(Task.category_id == category_id)
+        
         total_result = await self.db.execute(count_query)
         total = total_result.scalar()
         
-        # Get paginated results
-        query = query.offset(skip).limit(limit).order_by(Task.created_at.desc())
+        # Apply pagination
+        query = query.offset(skip).limit(limit)
+        
+        # Execute
         result = await self.db.execute(query)
         tasks = result.scalars().all()
         
         return list(tasks), total
     
-    async def update(self, task_id: int, task_data: TaskUpdate) -> Task:
-        """
-        Update a task.
-        
-        Raises:
-            TaskNotFoundException: If task doesn't exist
-            TaskAlreadyExistsException: If new title conflicts
-        """
+    async def update(self, task_id: int, user_id: int, task_update: TaskUpdate) -> Task:
+        """Update a task."""
         # Get existing task
-        task = await self.get_by_id(task_id)
-        if not task:
+        db_task = await self.get_by_id(task_id, user_id)
+        if not db_task:
+            from app.core.exceptions import TaskNotFoundException
             raise TaskNotFoundException(task_id)
         
-        # Check for title conflict (if title is being updated)
-        update_data = task_data.model_dump(exclude_unset=True)
-        if "title" in update_data:
-            existing = await self.get_by_title(update_data["title"])
-            if existing and existing.id != task_id:
-                raise TaskAlreadyExistsException(update_data["title"])
+        # Extract tag_ids
+        tag_ids = task_update.tag_ids
         
-        # Update fields
+        # Update task fields (exclude tag_ids and None values)
+        update_data = task_update.model_dump(exclude={'tag_ids'}, exclude_none=True)
+        
         for field, value in update_data.items():
-            setattr(task, field, value)
+            setattr(db_task, field, value)
         
-        await self.db.flush()
-        await self.db.refresh(task)
+        # Update tags if provided
+        if tag_ids is not None:  # Could be empty list []
+            result = await self.db.execute(
+                select(Tag).where(
+                    and_(
+                        Tag.id.in_(tag_ids) if tag_ids else False,
+                        Tag.user_id == user_id
+                    )
+                )
+            )
+            tags = result.scalars().all()
+            db_task.tags = list(tags)
         
-        return task
+        # Update completed_at if status changed to DONE
+        if task_update.status == TaskStatus.DONE and not db_task.completed_at:
+            from datetime import datetime, timezone
+            db_task.completed_at = datetime.now(timezone.utc)
+        
+        await self.db.commit()
+        await self.db.refresh(db_task)
+        return db_task
     
-    async def delete(self, task_id: int) -> bool:
-        """
-        Delete a task.
-        
-        Returns:
-            bool: True if deleted, False if not found
-        """
-        task = await self.get_by_id(task_id)
-        if not task:
+    async def delete(self, task_id: int, user_id: int) -> bool:
+        """Delete a task."""
+        db_task = await self.get_by_id(task_id, user_id)
+        if not db_task:
             return False
         
-        await self.db.delete(task)
-        await self.db.flush()
-        
+        await self.db.delete(db_task)
+        await self.db.commit()
         return True
     
-    async def get_stats(self) -> dict:
-        """Get task statistics."""
-        # Total count
-        total_result = await self.db.execute(select(func.count(Task.id)))
+    async def get_stats(self, user_id: int) -> dict:
+        """
+        Get task statistics using Priority Matrix.
+        """
+        # Total tasks
+        total_result = await self.db.execute(
+            select(func.count(Task.id)).where(Task.user_id == user_id)
+        )
         total = total_result.scalar()
         
-        # Count by status
+        # By status
         status_counts = {}
-        for status_val in TaskStatus:
+        for status in TaskStatus:
             result = await self.db.execute(
-                select(func.count(Task.id)).where(Task.status == status_val)
+                select(func.count(Task.id)).where(
+                    and_(Task.user_id == user_id, Task.status == status)
+                )
             )
-            status_counts[status_val.value] = result.scalar()
+            status_counts[status.value] = result.scalar()
         
-        # Count by priority
-        priority_counts = {}
-        for priority_val in TaskPriority:
-            result = await self.db.execute(
-                select(func.count(Task.id)).where(Task.priority == priority_val)
+        # By quadrant (Priority Matrix)
+        quadrant_counts = {
+            "DO_FIRST": 0,      # Urgent + Important
+            "SCHEDULE": 0,      # Not Urgent + Important
+            "DELEGATE": 0,      # Urgent + Not Important
+            "ELIMINATE": 0      # Not Urgent + Not Important
+        }
+        
+        # Do First (Urgent + Important)
+        result = await self.db.execute(
+            select(func.count(Task.id)).where(
+                and_(
+                    Task.user_id == user_id,
+                    Task.is_urgent == True,
+                    Task.is_important == True
+                )
             )
-            priority_counts[priority_val.value] = result.scalar()
+        )
+        quadrant_counts["DO_FIRST"] = result.scalar()
+        
+        # Schedule (Not Urgent + Important)
+        result = await self.db.execute(
+            select(func.count(Task.id)).where(
+                and_(
+                    Task.user_id == user_id,
+                    Task.is_urgent == False,
+                    Task.is_important == True
+                )
+            )
+        )
+        quadrant_counts["SCHEDULE"] = result.scalar()
+        
+        # Delegate (Urgent + Not Important)
+        result = await self.db.execute(
+            select(func.count(Task.id)).where(
+                and_(
+                    Task.user_id == user_id,
+                    Task.is_urgent == True,
+                    Task.is_important == False
+                )
+            )
+        )
+        quadrant_counts["DELEGATE"] = result.scalar()
+        
+        # Eliminate (Not Urgent + Not Important)
+        result = await self.db.execute(
+            select(func.count(Task.id)).where(
+                and_(
+                    Task.user_id == user_id,
+                    Task.is_urgent == False,
+                    Task.is_important == False
+                )
+            )
+        )
+        quadrant_counts["ELIMINATE"] = result.scalar()
+        
+        # Completed tasks
+        completed_result = await self.db.execute(
+            select(func.count(Task.id)).where(
+                and_(Task.user_id == user_id, Task.status == TaskStatus.DONE)
+            )
+        )
+        completed = completed_result.scalar()
         
         return {
             "total": total,
             "by_status": status_counts,
-            "by_priority": priority_counts
+            "by_quadrant": quadrant_counts,
+            "completed": completed,
+            "completion_rate": round((completed / total * 100), 2) if total > 0 else 0
         }

@@ -1,179 +1,117 @@
 """
-Pydantic schemas for Task resource.
-
-Best Practice:
-- Separate schemas for different operations (Create, Update, Response)
-- Custom validators for business logic
-- Clear field descriptions for API docs
-- Type safety throughout
+Pydantic schemas for Task with Priority Matrix support.
 """
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional, List
 from enum import Enum
 
 
+class TaskStatus(str, Enum):
+    """Task status options."""
+    TODO = "todo"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+
+
 class TaskPriority(str, Enum):
-    """Task priority levels."""
+    """Legacy - keeping for backwards compatibility."""
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
-    URGENT = "urgent"
 
 
-class TaskStatus(str, Enum):
-    """Task status."""
-    TODO = "todo"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
+# ============================================================
+# NESTED SCHEMAS (for relationships)
+# ============================================================
+
+class CategoryInTask(BaseModel):
+    """Category info when included in task response."""
+    id: int
+    name: str
+    color: Optional[str] = None
+    icon: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
 
 
-# Base schema with common fields
+class TagInTask(BaseModel):
+    """Tag info when included in task response."""
+    id: int
+    name: str
+    color: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# ============================================================
+# TASK SCHEMAS
+# ============================================================
+
 class TaskBase(BaseModel):
-    """
-    Base task schema with common fields.
+    """Base task fields shared across schemas."""
+    title: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = Field(None, max_length=1000)
     
-    Other schemas inherit from this to avoid repetition (DRY principle).
-    """
-    title: str = Field(
-        ...,  # Required
-        min_length=1,
-        max_length=200,
-        description="Task title",
-        examples=["Complete FastAPI tutorial"]
-    )
-    description: Optional[str] = Field(
-        None,
-        max_length=1000,
-        description="Detailed task description",
-        examples=["Learn FastAPI by building a production-ready API"]
-    )
-    priority: TaskPriority = Field(
-        default=TaskPriority.MEDIUM,
-        description="Task priority level"
-    )
-    status: TaskStatus = Field(
-        default=TaskStatus.TODO,
-        description="Current task status"
-    )
+    # Priority Matrix fields
+    is_urgent: bool = False
+    is_important: bool = False
     
-    @field_validator("title")
-    @classmethod
-    def title_must_not_be_empty(cls, v: str) -> str:
-        """Validate title is not just whitespace."""
-        if not v or not v.strip():
-            raise ValueError("Title cannot be empty or just whitespace")
-        return v.strip()
+    status: TaskStatus = TaskStatus.TODO
+    due_date: Optional[datetime] = None
     
-    @field_validator("description")
-    @classmethod
-    def description_validation(cls, v: Optional[str]) -> Optional[str]:
-        """Validate and clean description."""
-        if v is not None:
-            v = v.strip()
-            if not v:  # If empty after strip, return None
-                return None
-        return v
+    # Relationships
+    category_id: Optional[int] = None
 
 
 class TaskCreate(TaskBase):
-    """
-    Schema for creating a new task.
-    
-    Inherits all fields from TaskBase.
-    Can add extra fields specific to creation if needed.
-    """
-    pass
+    """Schema for creating a task."""
+    tag_ids: Optional[List[int]] = []  # List of tag IDs to attach
 
 
 class TaskUpdate(BaseModel):
-    """
-    Schema for updating a task.
+    """Schema for updating a task (all fields optional)."""
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = Field(None, max_length=1000)
     
-    All fields are optional - only send what you want to update.
-    This is a partial update (PATCH semantics).
-    """
-    title: Optional[str] = Field(
-        None,
-        min_length=1,
-        max_length=200,
-        description="Task title"
-    )
-    description: Optional[str] = Field(
-        None,
-        max_length=1000,
-        description="Task description"
-    )
-    priority: Optional[TaskPriority] = None
+    is_urgent: Optional[bool] = None
+    is_important: Optional[bool] = None
+    
     status: Optional[TaskStatus] = None
+    due_date: Optional[datetime] = None
     
-    @field_validator("title")
-    @classmethod
-    def title_must_not_be_empty(cls, v: Optional[str]) -> Optional[str]:
-        """Validate title if provided."""
-        if v is not None and (not v or not v.strip()):
-            raise ValueError("Title cannot be empty or just whitespace")
-        return v.strip() if v else None
-    
-    model_config = ConfigDict(
-        # Allow partial updates
-        extra="ignore"  # Ignore fields not in schema
-    )
+    category_id: Optional[int] = None
+    tag_ids: Optional[List[int]] = None
 
 
 class TaskResponse(TaskBase):
-    """
-    Schema for task responses.
+    """Schema for task response."""
+    id: int
+    user_id: int
     
-    Includes all fields plus computed/database fields.
-    This is what the API returns.
-    """
-    id: int = Field(..., description="Unique task identifier")
-    created_at: datetime = Field(..., description="Task creation timestamp")
-    updated_at: datetime = Field(..., description="Last update timestamp")
+    # Computed fields
+    quadrant: str  # "DO_FIRST", "SCHEDULE", etc.
+    is_overdue: bool
+    days_until_due: Optional[int]
     
-    model_config = ConfigDict(
-        from_attributes=True,  # Allow ORM model conversion
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "title": "Complete FastAPI tutorial",
-                "description": "Learn FastAPI by building a production-ready API",
-                "priority": "high",
-                "status": "in_progress",
-                "created_at": "2025-10-01T10:30:00",
-                "updated_at": "2025-10-01T15:45:00"
-            }
-        }
-    )
+    # Relationships
+    category: Optional[CategoryInTask] = None
+    tags: List[TagInTask] = []
+    
+    # Timestamps
+    completed_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
 
 
 class TaskListResponse(BaseModel):
-    """
-    Schema for paginated task list.
-    
-    Best Practice: Always paginate list endpoints.
-    """
-    total: int = Field(..., description="Total number of tasks")
-    tasks: list[TaskResponse] = Field(..., description="List of tasks")
-    
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "total": 2,
-                "tasks": [
-                    {
-                        "id": 1,
-                        "title": "Task 1",
-                        "description": "Description 1",
-                        "priority": "high",
-                        "status": "todo",
-                        "created_at": "2025-10-01T10:00:00",
-                        "updated_at": "2025-10-01T10:00:00"
-                    }
-                ]
-            }
-        }
-    )
+    """Schema for paginated task list."""
+    total: int
+    tasks: List[TaskResponse]
+
