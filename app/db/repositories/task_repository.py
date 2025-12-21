@@ -18,7 +18,7 @@ class TaskRepository:
     
     async def create(self, task_data: TaskCreate, user_id: int) -> Task:
         """
-        Create a new task.
+        Create a new task with relationships loaded.
         Handles tags separately from other fields.
         """
         # Extract tag_ids from task_data
@@ -47,14 +47,23 @@ class TaskRepository:
         
         self.db.add(db_task)
         await self.db.commit()
-        await self.db.refresh(db_task)
+        
+        # 🆕 FIX: Eager load relationships to avoid lazy loading errors
+        await self.db.refresh(
+            db_task,
+            attribute_names=["category", "tags"]
+        )
+        
         return db_task
     
     async def get_by_id(self, task_id: int, user_id: int) -> Optional[Task]:
         """Get task by ID (with relationships loaded)."""
         result = await self.db.execute(
             select(Task)
-            .options(selectinload(Task.category), selectinload(Task.tags))
+            .options(
+                selectinload(Task.category),
+                selectinload(Task.tags)
+            )
             .where(and_(Task.id == task_id, Task.user_id == user_id))
         )
         return result.scalars().first()
@@ -115,8 +124,8 @@ class TaskRepository:
         return list(tasks), total
     
     async def update(self, task_id: int, user_id: int, task_update: TaskUpdate) -> Task:
-        """Update a task."""
-        # Get existing task
+        """Update a task with relationships loaded."""
+        # Get existing task (already has relationships loaded from get_by_id)
         db_task = await self.get_by_id(task_id, user_id)
         if not db_task:
             from app.core.exceptions import TaskNotFoundException
@@ -133,16 +142,19 @@ class TaskRepository:
         
         # Update tags if provided
         if tag_ids is not None:  # Could be empty list []
-            result = await self.db.execute(
-                select(Tag).where(
-                    and_(
-                        Tag.id.in_(tag_ids) if tag_ids else False,
-                        Tag.user_id == user_id
+            if tag_ids:  # If not empty
+                result = await self.db.execute(
+                    select(Tag).where(
+                        and_(
+                            Tag.id.in_(tag_ids),
+                            Tag.user_id == user_id
+                        )
                     )
                 )
-            )
-            tags = result.scalars().all()
-            db_task.tags = list(tags)
+                tags = result.scalars().all()
+                db_task.tags = list(tags)
+            else:  # Empty list means remove all tags
+                db_task.tags = []
         
         # Update completed_at if status changed to DONE
         if task_update.status == TaskStatus.DONE and not db_task.completed_at:
@@ -150,7 +162,13 @@ class TaskRepository:
             db_task.completed_at = datetime.now(timezone.utc)
         
         await self.db.commit()
-        await self.db.refresh(db_task)
+        
+        # 🆕 FIX: Reload with relationships
+        await self.db.refresh(
+            db_task,
+            attribute_names=["category", "tags"]
+        )
+        
         return db_task
     
     async def delete(self, task_id: int, user_id: int) -> bool:

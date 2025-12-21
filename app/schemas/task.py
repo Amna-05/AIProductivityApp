@@ -1,8 +1,6 @@
-"""
-Pydantic schemas for Task with Priority Matrix support.
-"""
+# app/schemas/task.py
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
@@ -13,13 +11,6 @@ class TaskStatus(str, Enum):
     TODO = "todo"
     IN_PROGRESS = "in_progress"
     DONE = "done"
-
-
-class TaskPriority(str, Enum):
-    """Legacy - keeping for backwards compatibility."""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
 
 
 # ============================================================
@@ -64,12 +55,29 @@ class TaskBase(BaseModel):
     due_date: Optional[datetime] = None
     
     # Relationships
-    category_id: Optional[int] = None
+    category_id: Optional[int] = None  # Can be None
 
 
 class TaskCreate(TaskBase):
     """Schema for creating a task."""
     tag_ids: Optional[List[int]] = []  # List of tag IDs to attach
+    
+    # 🆕 ADD VALIDATOR TO CONVERT 0 TO None
+    @field_validator('category_id')
+    @classmethod
+    def validate_category_id(cls, v):
+        """Convert 0 or negative numbers to None."""
+        if v is not None and v <= 0:
+            return None
+        return v
+    
+    @field_validator('tag_ids')
+    @classmethod
+    def validate_tag_ids(cls, v):
+        """Remove 0 or negative IDs from tag list."""
+        if v is None:
+            return []
+        return [tag_id for tag_id in v if tag_id > 0]
 
 
 class TaskUpdate(BaseModel):
@@ -85,6 +93,25 @@ class TaskUpdate(BaseModel):
     
     category_id: Optional[int] = None
     tag_ids: Optional[List[int]] = None
+    
+    # 🆕 ADD SAME VALIDATORS
+    @field_validator('category_id')
+    @classmethod
+    def validate_category_id(cls, v):
+        """Convert 0 or negative numbers to None."""
+        if v is not None and v <= 0:
+            return None
+        return v
+    
+    @field_validator('tag_ids')
+    @classmethod
+    def validate_tag_ids(cls, v):
+        """Remove 0 or negative IDs from tag list."""
+        if v is None:
+            return None
+        if not v:  # Empty list
+            return []
+        return [tag_id for tag_id in v if tag_id > 0]
 
 
 class TaskResponse(TaskBase):
@@ -114,4 +141,3 @@ class TaskListResponse(BaseModel):
     """Schema for paginated task list."""
     total: int
     tasks: List[TaskResponse]
-

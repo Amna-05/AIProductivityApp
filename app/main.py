@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.exceptions import TaskAPIException
-from app.api.endpoints import tasks, auth ,categories, tags
+from app.api.endpoints import tasks, auth ,categories, tags, task_views
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
@@ -14,6 +14,7 @@ from app.models.user import User
 from app.models.refresh_token import RefreshToken
 from app.models.category import Category
 from app.models.tag import Tag
+
 
 
 @asynccontextmanager
@@ -32,9 +33,9 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI instance
 app = FastAPI(
-    title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="A production-ready Task Management API with JWT Authentication",
+     title="Productivity App API",
+    description="Task management with Eisenhower Priority Matrix",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
@@ -76,11 +77,12 @@ app.include_router(
     prefix=settings.API_V1_PREFIX,
 )
 
-app.include_router(categories.router)  
-app.include_router(tags.router)  
+app.include_router(categories.router, prefix=settings.API_V1_PREFIX)
+app.include_router(tags.router, prefix=settings.API_V1_PREFIX)
+app.include_router(task_views.router, prefix=settings.API_V1_PREFIX) 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Task Manager API"}
+    return {"message": "Welcome to the Productivity App API!"}
 
 # Health check endpoint
 @app.get("/health")

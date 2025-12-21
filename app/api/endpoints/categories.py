@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
+from app.schemas.categories import CategoryCreate, CategoryUpdate, CategoryResponse
 from app.db.database import get_db
 from app.core.dependencies import get_current_active_user
 from app.models.user import User
