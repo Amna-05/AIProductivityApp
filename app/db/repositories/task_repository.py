@@ -123,6 +123,7 @@ class TaskRepository:
         
         return list(tasks), total
     
+
     async def update(self, task_id: int, user_id: int, task_update: TaskUpdate) -> Task:
         """Update a task with relationships loaded."""
         # Get existing task (already has relationships loaded from get_by_id)
@@ -163,23 +164,30 @@ class TaskRepository:
         
         await self.db.commit()
         
-        # 🆕 FIX: Reload with relationships
-        await self.db.refresh(
-            db_task,
-            attribute_names=["category", "tags"]
+        # 🆕 FIX: Force refresh ALL attributes including updated_at
+        await self.db.refresh(db_task)
+        
+        # 🆕 FIX: Then reload relationships
+        result = await self.db.execute(
+            select(Task)
+            .options(
+                selectinload(Task.category),
+                selectinload(Task.tags)
+            )
+            .where(Task.id == task_id)
         )
         
-        return db_task
-    
-    async def delete(self, task_id: int, user_id: int) -> bool:
-        """Delete a task."""
-        db_task = await self.get_by_id(task_id, user_id)
-        if not db_task:
-            return False
+        return result.scalars().first()
         
-        await self.db.delete(db_task)
-        await self.db.commit()
-        return True
+    async def delete(self, task_id: int, user_id: int) -> bool:
+            """Delete a task."""
+            db_task = await self.get_by_id(task_id, user_id)
+            if not db_task:
+                return False
+            
+            await self.db.delete(db_task)
+            await self.db.commit()
+            return True   
     
     async def get_stats(self, user_id: int) -> dict:
         """

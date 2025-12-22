@@ -9,7 +9,7 @@ Best Practice:
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import List , Optional
 
 
 class Settings(BaseSettings):
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     """
     
     # API Settings
-    PROJECT_NAME: str = "Task Manager API"
+    PROJECT_NAME: str = "Productivity App API"
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = False
@@ -45,8 +45,10 @@ class Settings(BaseSettings):
     DB_POOL_TIMEOUT: int = 30
     DB_POOL_RECYCLE: int = 3600  
 
-    
-    SECRET_KEY: str =   "your-sectret-key-here"  
+    # External APIs and Keys
+    GROQ_API_KEY:Optional[str] =""  # Groq API Key
+
+    SECRET_KEY: str =  "" 
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15  
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7 

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.exceptions import TaskAPIException
-from app.api.endpoints import tasks, auth ,categories, tags, task_views
+from app.api.endpoints import tasks, auth ,categories, tags, task_views , ai_tasks
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
@@ -80,6 +80,8 @@ app.include_router(
 app.include_router(categories.router, prefix=settings.API_V1_PREFIX)
 app.include_router(tags.router, prefix=settings.API_V1_PREFIX)
 app.include_router(task_views.router, prefix=settings.API_V1_PREFIX) 
+app.include_router(ai_tasks.router, prefix=settings.API_V1_PREFIX) 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Productivity App API!"}

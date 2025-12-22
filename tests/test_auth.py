@@ -1,4 +1,4 @@
-# test_auth.py
+# tests/test_auth.py (ALTERNATIVE FIX)
 
 import httpx
 import asyncio
@@ -9,18 +9,27 @@ async def test_flow():
         register_response = await client.post(
             "/auth/register",
             json={
-                "email": "test5@example.com",
-                "username": "test5",
+                "email": "test12@example.com",
+                "username": "test12",
                 "password": "Test123!"
             }
         )
         
         print("Register Status:", register_response.status_code)
-        print("Cookies:", client.cookies)
         
-        # Create task (cookies automatically sent)
+        # 🆕 MANUALLY EXTRACT COOKIES
+        access_token = register_response.cookies.get("access_token")
+        refresh_token = register_response.cookies.get("refresh_token")
+        
+        print(f"Access Token: {access_token[:50]}...")
+        print(f"Refresh Token: {refresh_token[:50]}...")
+        
+        # 🆕 MANUALLY SET COOKIE HEADER
         task_response = await client.post(
             "/tasks",
+            headers={
+                "Cookie": f"access_token={access_token}; refresh_token={refresh_token}"
+            },
             json={
                 "title": "Test Task",
                 "is_urgent": True,
