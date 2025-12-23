@@ -1,0 +1,9 @@
+2025-12-22 21:07:41 | INFO     | app.core.logging_config:setup_logging:137 | Logging system initialized | {'environment': 'production', 'level': 'INFO'}
+2025-12-22 21:07:41 | WARNING  | app.core.logging_config:setup_sentry:158 | Sentry DSN not configured, error tracking disabled. Set SENTRY_DSN environment variable to enable. | {}
+2025-12-22 21:07:41 | INFO     | app.main:lifespan:55 | 🚀 Starting Productivity App API v1.0.0 | {}
+2025-12-22 21:07:41 | INFO     | app.main:lifespan:56 | Environment: development | {}
+2025-12-22 21:07:41 | INFO     | app.main:lifespan:57 | 📚 Documentation: http://localhost:8000/docs | {}
+2025-12-22 21:07:41 | INFO     | app.main:lifespan:58 | ℹ️  Database migrations managed by Alembic | {}
+2025-12-22 21:07:41 | INFO     | app.main:lifespan:59 | ℹ️  Run 'alembic upgrade head' to apply migrations | {}
+2025-12-22 21:07:41 | INFO     | logging:callHandlers:1706 | Application startup complete. | {}
+2025-12-22 21:07:41 | INFO     | logging:callHandlers:1706 | Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit) | {}

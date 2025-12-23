@@ -46,17 +46,34 @@ class Settings(BaseSettings):
     DB_POOL_RECYCLE: int = 3600  
 
     # External APIs and Keys
-    GROQ_API_KEY:Optional[str] =""  # Groq API Key
+    GROQ_API_KEY: Optional[str] = ""  # Groq API Key
 
-    SECRET_KEY: str =  "" 
+    # Authentication & Security
+    SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15  
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7 
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # Cookie Settings
     COOKIE_DOMAIN: str | None = None
     COOKIE_SECURE: bool = True
     COOKIE_SAMESITE: str = "lax"
+
+    # Environment
+    ENVIRONMENT: str = "development"  # development, staging, production
+
+    # Logging & Monitoring (Phase 1)
+    LOG_LEVEL: str = "INFO"
+    SENTRY_DSN: Optional[str] = None
+
+    # Rate Limiting (Phase 1)
+    RATE_LIMIT_ENABLED: bool = True
+    RATE_LIMIT_PER_MINUTE: int = 60
+
+    # Performance (Phase 1)
+    ENABLE_RESPONSE_COMPRESSION: bool = True
+    CACHE_ENABLED: bool = False
+    CACHE_TTL_SECONDS: int = 300  # 5 minutes
 
     model_config = SettingsConfigDict(
         env_file=".env",

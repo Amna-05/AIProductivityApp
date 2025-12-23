@@ -2,10 +2,22 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.exceptions import RequestValidationError
+from sqlalchemy.exc import SQLAlchemyError
+from loguru import logger
 
 from app.core.config import settings
 from app.core.exceptions import TaskAPIException
-from app.api.endpoints import tasks, auth ,categories, tags, task_views , ai_tasks
+from app.core.logging_config import setup_logging, setup_sentry
+from app.middleware.logging_middleware import LoggingMiddleware
+from app.middleware.error_handler import (
+    global_exception_handler,
+    validation_exception_handler,
+    database_exception_handler,
+    custom_api_exception_handler,
+)
+from app.api.endpoints import tasks, auth, categories, tags, task_views, ai_tasks
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
@@ -16,34 +28,96 @@ from app.models.category import Category
 from app.models.tag import Tag
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Lifespan events - startup and shutdown.
+
+    Handles:
+    - Logging initialization
+    - Sentry setup for error tracking
+    - Database connection management
     """
-    print(f"🚀 Starting {settings.PROJECT_NAME} v{settings.VERSION}") #stratup
-    print(f"📚 Documentation: http://localhost:8000/docs")
-    print("ℹ️  Database migrations managed by Alembic")
-    print("ℹ️  Run 'alembic upgrade head' to apply migrations")
+    # Setup logging FIRST (before any other operations)
+    setup_logging(
+        debug=settings.DEBUG,
+        log_level=settings.LOG_LEVEL
+    )
+
+    # Setup error tracking
+    setup_sentry(
+        sentry_dsn=settings.SENTRY_DSN,
+        environment=settings.ENVIRONMENT,
+        version=settings.VERSION
+    )
+
+    # Log startup (avoid emojis for Windows console compatibility)
+    logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION}")
+    logger.info(f"Environment: {settings.ENVIRONMENT}")
+    logger.info(f"Documentation: http://localhost:8000/docs")
+    logger.info("Database migrations managed by Alembic")
+    logger.info("Run 'alembic upgrade head' to apply migrations")
+
     yield
-    print("👋 Shutting down gracefully...") #shutdown
+
+    # Shutdown
+    logger.info("Shutting down gracefully...")
     await engine.dispose()
+    logger.info("Database connections closed successfully")
 
 
 # Create FastAPI instance
 app = FastAPI(
     version=settings.VERSION,
-     title="Productivity App API",
-    description="Task management with Eisenhower Priority Matrix",
+    title=settings.PROJECT_NAME,
+    description="""
+# Productivity App API with AI-Powered Features
+
+A production-ready task management system featuring:
+
+## Core Features
+- **Task Management**: Full CRUD operations with Eisenhower Priority Matrix
+- **Authentication**: Secure JWT-based auth with httpOnly cookies
+- **Categories & Tags**: Organize tasks with custom categories and tags
+
+## AI-Powered Features
+- **Natural Language Processing**: Create tasks from voice or text input
+- **Smart Suggestions**: AI-powered task parsing with Groq
+
+## Production Features
+- **Structured Logging**: Request tracing with correlation IDs
+- **Error Tracking**: Sentry integration for production monitoring
+- **Rate Limiting**: Protect against abuse
+- **Comprehensive Testing**: 80%+ test coverage
+
+## Quick Start
+1. Register: `POST /api/v1/auth/register`
+2. Login: `POST /api/v1/auth/login`
+3. Create task: `POST /api/v1/tasks`
+4. Use AI parsing: `POST /api/v1/ai/tasks/parse`
+    """,
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
+    contact={
+        "name": "API Support",
+        "url": "https://github.com/yourusername/task-manager",
+    },
+    license_info={
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT",
+    },
 )
 
+# =====================================================================
+# MIDDLEWARE REGISTRATION (ORDER MATTERS!)
+# =====================================================================
 
-# Add CORS middleware
+# 1. Logging Middleware (track all requests with correlation IDs)
+app.add_middleware(LoggingMiddleware)
+
+# 2. CORS Middleware (handle cross-origin requests)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
@@ -52,19 +126,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 3. GZip Compression (compress responses > 1KB)
+if settings.ENABLE_RESPONSE_COMPRESSION:
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Custom exception handler
-@app.exception_handler(TaskAPIException)
-async def task_exception_handler(request: Request, exc: TaskAPIException):
-    """Global handler for TaskAPIException."""
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "error": exc.__class__.__name__,
-            "detail": exc.detail,
-            "path": str(request.url)
-        }
-    )
+# =====================================================================
+# EXCEPTION HANDLERS
+# =====================================================================
+
+# Handle unhandled exceptions
+app.add_exception_handler(Exception, global_exception_handler)
+
+# Handle Pydantic validation errors
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+# Handle database errors
+app.add_exception_handler(SQLAlchemyError, database_exception_handler)
+
+# Handle custom API exceptions
+app.add_exception_handler(TaskAPIException, custom_api_exception_handler)
 
 # Include routers
 app.include_router(
