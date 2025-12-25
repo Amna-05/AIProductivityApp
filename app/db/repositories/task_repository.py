@@ -1,11 +1,14 @@
 """
 Task repository for database operations.
+
+Includes automatic embedding generation for AI-powered features (Phase 2).
 """
 
 from typing import List, Tuple, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import selectinload
+from loguru import logger
 
 from app.models.task import Task
 from app.models.tag import Tag
@@ -15,22 +18,63 @@ from app.schemas.task import TaskCreate, TaskUpdate, TaskStatus
 class TaskRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
-    
+
+    def _generate_embedding_safe(self, title: str, description: Optional[str] = None):
+        """
+        Generate embedding with graceful degradation.
+
+        Returns None if embedding service fails, allowing core functionality to work
+        even when AI features are unavailable.
+        """
+        try:
+            from app.services.embedding_service import get_embedding_service
+
+            embedding_service = get_embedding_service()
+            embedding = embedding_service.generate_task_embedding(title, description)
+
+            # Convert numpy array to Python list for pgvector compatibility
+            # pgvector's SQLAlchemy adapter works best with Python lists
+            return embedding.tolist()
+
+        except Exception as e:
+            logger.warning(
+                f"Failed to generate embedding: {str(e)}",
+                title=title,
+                exc_info=False  # Don't log full traceback for non-critical feature
+            )
+            return None
+
     async def create(self, task_data: TaskCreate, user_id: int) -> Task:
         """
         Create a new task with relationships loaded.
         Handles tags separately from other fields.
+
+        Phase 2: Automatically generates semantic embedding for AI features.
         """
         # Extract tag_ids from task_data
         tag_ids = task_data.tag_ids or []
-        
+
         # Create task dict WITHOUT tag_ids (not a Task model field)
         task_dict = task_data.model_dump(exclude={'tag_ids'})
         task_dict['user_id'] = user_id
-        
+
         # Create task instance
         db_task = Task(**task_dict)
-        
+
+        # 🆕 PHASE 2: Generate embedding for AI-powered features
+        # This happens BEFORE commit so embedding is immediately available
+        embedding = self._generate_embedding_safe(
+            title=db_task.title,
+            description=db_task.description
+        )
+        if embedding is not None:
+            db_task.embedding = embedding
+            logger.debug(
+                f"Generated embedding for new task",
+                task_title=db_task.title,
+                embedding_dimensions=len(embedding)
+            )
+
         # Attach tags if provided
         if tag_ids:
             # Fetch tag objects
@@ -44,29 +88,58 @@ class TaskRepository:
             )
             tags = result.scalars().all()
             db_task.tags = list(tags)
-        
+
         self.db.add(db_task)
         await self.db.commit()
-        
+
         # 🆕 FIX: Eager load relationships to avoid lazy loading errors
         await self.db.refresh(
             db_task,
             attribute_names=["category", "tags"]
         )
-        
+
         return db_task
     
-    async def get_by_id(self, task_id: int, user_id: int) -> Optional[Task]:
-        """Get task by ID (with relationships loaded)."""
+    async def get_by_id(self, task_id: int, user_id: Optional[int] = None) -> Optional[Task]:
+        """
+        Get task by ID (with relationships loaded).
+
+        Args:
+            task_id: Task ID to fetch
+            user_id: Optional user ID for access control. If None, returns task for any user.
+        """
+        query = select(Task).options(
+            selectinload(Task.category),
+            selectinload(Task.tags)
+        ).where(Task.id == task_id)
+
+        if user_id is not None:
+            query = query.where(Task.user_id == user_id)
+
+        result = await self.db.execute(query)
+        return result.scalars().first()
+
+    async def get_all_by_user(self, user_id: int) -> List[Task]:
+        """
+        Get all tasks for a user (without pagination).
+
+        Used for bulk operations like embedding generation.
+
+        Args:
+            user_id: User ID
+
+        Returns:
+            List of all user's tasks
+        """
         result = await self.db.execute(
             select(Task)
+            .where(Task.user_id == user_id)
             .options(
                 selectinload(Task.category),
                 selectinload(Task.tags)
             )
-            .where(and_(Task.id == task_id, Task.user_id == user_id))
         )
-        return result.scalars().first()
+        return list(result.scalars().all())
     
     async def get_all(
         self,
@@ -125,22 +198,46 @@ class TaskRepository:
     
 
     async def update(self, task_id: int, user_id: int, task_update: TaskUpdate) -> Task:
-        """Update a task with relationships loaded."""
+        """
+        Update a task with relationships loaded.
+
+        Phase 2: Regenerates embedding if title or description changed.
+        """
         # Get existing task (already has relationships loaded from get_by_id)
         db_task = await self.get_by_id(task_id, user_id)
         if not db_task:
             from app.core.exceptions import TaskNotFoundException
             raise TaskNotFoundException(task_id)
-        
+
         # Extract tag_ids
         tag_ids = task_update.tag_ids
-        
+
         # Update task fields (exclude tag_ids and None values)
         update_data = task_update.model_dump(exclude={'tag_ids'}, exclude_none=True)
-        
+
+        # 🆕 PHASE 2: Track if title/description changed for embedding regeneration
+        title_changed = 'title' in update_data and update_data['title'] != db_task.title
+        description_changed = 'description' in update_data and update_data['description'] != db_task.description
+        needs_reembedding = title_changed or description_changed
+
         for field, value in update_data.items():
             setattr(db_task, field, value)
-        
+
+        # 🆕 PHASE 2: Regenerate embedding if title or description changed
+        if needs_reembedding:
+            embedding = self._generate_embedding_safe(
+                title=db_task.title,
+                description=db_task.description
+            )
+            if embedding is not None:
+                db_task.embedding = embedding
+                logger.debug(
+                    f"Regenerated embedding for updated task",
+                    task_id=task_id,
+                    title_changed=title_changed,
+                    description_changed=description_changed
+                )
+
         # Update tags if provided
         if tag_ids is not None:  # Could be empty list []
             if tag_ids:  # If not empty
@@ -156,17 +253,17 @@ class TaskRepository:
                 db_task.tags = list(tags)
             else:  # Empty list means remove all tags
                 db_task.tags = []
-        
+
         # Update completed_at if status changed to DONE
         if task_update.status == TaskStatus.DONE and not db_task.completed_at:
             from datetime import datetime, timezone
             db_task.completed_at = datetime.now(timezone.utc)
-        
+
         await self.db.commit()
-        
+
         # 🆕 FIX: Force refresh ALL attributes including updated_at
         await self.db.refresh(db_task)
-        
+
         # 🆕 FIX: Then reload relationships
         result = await self.db.execute(
             select(Task)
@@ -176,7 +273,7 @@ class TaskRepository:
             )
             .where(Task.id == task_id)
         )
-        
+
         return result.scalars().first()
         
     async def delete(self, task_id: int, user_id: int) -> bool:

@@ -56,7 +56,7 @@ class Settings(BaseSettings):
 
     # Cookie Settings
     COOKIE_DOMAIN: str | None = None
-    COOKIE_SECURE: bool = True
+    COOKIE_SECURE: bool = False  # Set to True in production with HTTPS
     COOKIE_SAMESITE: str = "lax"
 
     # Environment

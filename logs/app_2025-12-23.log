@@ -1,0 +1,272 @@
+2025-12-23 18:55:23 | INFO     | app.core.logging_config:setup_logging:137 | Logging system initialized | {'environment': 'production', 'level': 'INFO'}
+2025-12-23 18:55:23 | WARNING  | app.core.logging_config:setup_sentry:158 | Sentry DSN not configured, error tracking disabled. Set SENTRY_DSN environment variable to enable. | {}
+2025-12-23 18:55:23 | INFO     | app.main:lifespan:55 | Starting Productivity App API v1.0.0 | {}
+2025-12-23 18:55:23 | INFO     | app.main:lifespan:56 | Environment: development | {}
+2025-12-23 18:55:23 | INFO     | app.main:lifespan:57 | Documentation: http://localhost:8000/docs | {}
+2025-12-23 18:55:23 | INFO     | app.main:lifespan:58 | Database migrations managed by Alembic | {}
+2025-12-23 18:55:23 | INFO     | app.main:lifespan:59 | Run 'alembic upgrade head' to apply migrations | {}
+2025-12-23 18:55:23 | INFO     | logging:callHandlers:1706 | Application startup complete. | {}
+2025-12-23 18:55:23 | INFO     | logging:callHandlers:1706 | Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit) | {}
+2025-12-23 18:55:44 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /docs | {'correlation_id': '3b887e51-9ee4-4bc7-b74d-a01879ecdb76', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 18:55:44 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /docs → 200 (146.34ms) | {'correlation_id': '3b887e51-9ee4-4bc7-b74d-a01879ecdb76', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 146.34}
+2025-12-23 18:55:44 | INFO     | logging:callHandlers:1706 | 127.0.0.1:55603 - "GET /docs HTTP/1.1" 200 | {}
+2025-12-23 18:55:45 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/openapi.json | {'correlation_id': 'be3c2df0-1200-488a-8546-13808b8ad161', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 18:55:45 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/openapi.json → 200 (200.61ms) | {'correlation_id': 'be3c2df0-1200-488a-8546-13808b8ad161', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 200.61}
+2025-12-23 18:55:45 | INFO     | logging:callHandlers:1706 | 127.0.0.1:55603 - "GET /api/v1/openapi.json HTTP/1.1" 200 | {}
+2025-12-23 18:56:14 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /health | {'correlation_id': 'ae3a76b6-491f-416c-b75a-eefef1cfe549', 'user_id': None, 'method': 'GET', 'path': '/health', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1'}
+2025-12-23 18:56:14 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /health → 200 (6.19ms) | {'correlation_id': 'ae3a76b6-491f-416c-b75a-eefef1cfe549', 'user_id': None, 'method': 'GET', 'path': '/health', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1', 'status_code': 200, 'duration_ms': 6.19}
+2025-12-23 18:56:14 | INFO     | logging:callHandlers:1706 | 127.0.0.1:50428 - "GET /health HTTP/1.1" 200 | {}
+2025-12-23 18:56:15 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/auth/register | {'correlation_id': 'ac61376f-ece0-45a6-8173-835647a27d4d', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1'}
+2025-12-23 18:56:16 | WARNING  | app.middleware.logging_middleware:dispatch:95 | ← POST /api/v1/auth/register → 201 (1092.89ms) | {'correlation_id': 'ac61376f-ece0-45a6-8173-835647a27d4d', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1', 'status_code': 201, 'duration_ms': 1092.89}
+2025-12-23 18:56:16 | WARNING  | app.middleware.logging_middleware:dispatch:110 | ⚠️  Slow request: POST /api/v1/auth/register took 1.09s - consider optimization | {'correlation_id': 'ac61376f-ece0-45a6-8173-835647a27d4d', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1', 'status_code': 201, 'duration_ms': 1092.89, 'duration_seconds': 1.0928869247436523, 'threshold': 'slow'}
+2025-12-23 18:56:16 | INFO     | logging:callHandlers:1706 | 127.0.0.1:60910 - "POST /api/v1/auth/register HTTP/1.1" 201 | {}
+2025-12-23 18:56:16 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/auth/login | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1'}
+2025-12-23 18:56:16 | WARNING  | app.middleware.error_handler:validation_exception_handler:106 | Validation error on POST /api/v1/auth/login: 1 field(s) failed validation | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'path': '/api/v1/auth/login', 'method': 'POST', 'errors': [{'field': '', 'message': 'Input should be a valid dictionary or object to extract fields from', 'type': 'model_attributes_type', 'input': b'username=phase2test%40example.com&password=SecurePass123%21'}], 'user_id': None}
+2025-12-23 18:56:16 | ERROR    | app.middleware.logging_middleware:dispatch:131 | ✗ POST /api/v1/auth/login → FAILED: TypeError: Object of type bytes is not JSON serializable (12.61ms) | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1', 'duration_ms': 12.61, 'error': 'Object of type bytes is not JSON serializable', 'error_type': 'TypeError', 'exc_info': TypeError('Object of type bytes is not JSON serializable')}
+2025-12-23 18:56:16 | ERROR    | app.middleware.error_handler:global_exception_handler:45 | Unhandled exception: TypeError: Object of type bytes is not JSON serializable | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'path': '/api/v1/auth/login', 'method': 'POST', 'error_type': 'TypeError', 'user_id': None, 'exc_info': TypeError('Object of type bytes is not JSON serializable')}
+2025-12-23 18:56:19 | INFO     | logging:callHandlers:1706 | 127.0.0.1:60910 - "POST /api/v1/auth/login HTTP/1.1" 500 | {}
+2025-12-23 18:56:19 | ERROR    | logging:callHandlers:1706 | Exception in ASGI application
+ | {}
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 79, in collapse_excgroups
+  |     yield
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 781, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(typ, value, traceback)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |   File "d:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    |     response = await call_next(request)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 59, in wrapped_app
+    |     response = await handler(conn, exc)
+    |   File "d:\Desktop\deployed-project\task-manager-app\app\middleware\error_handler.py", line 111, in validation_exception_handler
+    |     return JSONResponse(
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 190, in __init__
+    |     super().__init__(content, status_code, headers, media_type, background)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 47, in __init__
+    |     self.body = self.render(content)
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 193, in render
+    |     return json.dumps(
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\__init__.py", line 238, in dumps
+    |     **kw).encode(obj)
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    |     chunks = self.iterencode(o, _one_shot=True)
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    |     return _iterencode(o, 0)
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    |     raise TypeError(f'Object of type {o.__class__.__name__} '
+    | TypeError: Object of type bytes is not JSON serializable
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Scripts\uvicorn.exe\__main__.py", line 10, in <module>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1383, in main
+    rv = self.invoke(ctx)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\main.py", line 423, in main
+    run(
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\main.py", line 593, in run
+    server.run()
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\_compat.py", line 23, in asyncio_run
+    return runner.run(main)
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 641, in run_until_complete
+    self.run_forever()
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 321, in run_forever
+    super().run_forever()
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 608, in run_forever
+    self._run_once()
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1936, in _run_once
+    handle._run()
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+> File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "d:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    response = await call_next(request)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 59, in wrapped_app
+    response = await handler(conn, exc)
+  File "d:\Desktop\deployed-project\task-manager-app\app\middleware\error_handler.py", line 111, in validation_exception_handler
+    return JSONResponse(
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 190, in __init__
+    super().__init__(content, status_code, headers, media_type, background)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 47, in __init__
+    self.body = self.render(content)
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 193, in render
+    return json.dumps(
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bytes is not JSON serializable
+2025-12-23 18:57:20 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/auth/register | {'correlation_id': '2e2fed96-8313-44fb-a8f5-b92b4c0d7e5e', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 18:57:20 | WARNING  | app.middleware.error_handler:validation_exception_handler:106 | Validation error on POST /api/v1/auth/register: 1 field(s) failed validation | {'correlation_id': '2e2fed96-8313-44fb-a8f5-b92b4c0d7e5e', 'path': '/api/v1/auth/register', 'method': 'POST', 'errors': [{'field': 'password', 'message': 'String should have at least 8 characters', 'type': 'string_too_short', 'input': 'aman123'}], 'user_id': None}
+2025-12-23 18:57:20 | WARNING  | app.middleware.logging_middleware:dispatch:95 | ← POST /api/v1/auth/register → 422 (10.1ms) | {'correlation_id': '2e2fed96-8313-44fb-a8f5-b92b4c0d7e5e', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 422, 'duration_ms': 10.1}
+2025-12-23 18:57:20 | INFO     | logging:callHandlers:1706 | 127.0.0.1:54428 - "POST /api/v1/auth/register HTTP/1.1" 422 | {}
+2025-12-23 18:57:32 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/auth/register | {'correlation_id': '440a5c3a-d725-4810-b811-56acf75e4124', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 18:57:33 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← POST /api/v1/auth/register → 201 (683.85ms) | {'correlation_id': '440a5c3a-d725-4810-b811-56acf75e4124', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/register', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 201, 'duration_ms': 683.85}
+2025-12-23 18:57:33 | INFO     | logging:callHandlers:1706 | 127.0.0.1:55772 - "POST /api/v1/auth/register HTTP/1.1" 201 | {}
+2025-12-23 18:57:39 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/ai/tasks/parse | {'correlation_id': '931e3e3d-b848-4f4a-88a2-87f89d1bf916', 'user_id': None, 'method': 'POST', 'path': '/api/v1/ai/tasks/parse', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 18:57:41 | INFO     | logging:callHandlers:1706 | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK" | {}
+2025-12-23 18:57:41 | WARNING  | app.middleware.logging_middleware:dispatch:95 | ← POST /api/v1/ai/tasks/parse → 200 (2506.91ms) | {'correlation_id': '931e3e3d-b848-4f4a-88a2-87f89d1bf916', 'user_id': None, 'method': 'POST', 'path': '/api/v1/ai/tasks/parse', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 2506.91}
+2025-12-23 18:57:41 | WARNING  | app.middleware.logging_middleware:dispatch:110 | ⚠️  Slow request: POST /api/v1/ai/tasks/parse took 2.51s - consider optimization | {'correlation_id': '931e3e3d-b848-4f4a-88a2-87f89d1bf916', 'user_id': None, 'method': 'POST', 'path': '/api/v1/ai/tasks/parse', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 2506.91, 'duration_seconds': 2.5069143772125244, 'threshold': 'slow'}
+2025-12-23 18:57:41 | INFO     | logging:callHandlers:1706 | 127.0.0.1:51015 - "POST /api/v1/ai/tasks/parse HTTP/1.1" 200 | {}
+2025-12-23 19:07:06 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/tasks/views/priority-matrix | {'correlation_id': '00d39db1-d468-4f2e-a283-31c61583300e', 'user_id': None, 'method': 'GET', 'path': '/api/v1/tasks/views/priority-matrix', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:07:06 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/tasks/views/priority-matrix → 200 (225.32ms) | {'correlation_id': '00d39db1-d468-4f2e-a283-31c61583300e', 'user_id': None, 'method': 'GET', 'path': '/api/v1/tasks/views/priority-matrix', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 225.32}
+2025-12-23 19:07:06 | INFO     | logging:callHandlers:1706 | 127.0.0.1:55473 - "GET /api/v1/tasks/views/priority-matrix HTTP/1.1" 200 | {}
+2025-12-23 19:36:43 | INFO     | app.core.logging_config:setup_logging:137 | Logging system initialized | {'environment': 'production', 'level': 'INFO'}
+2025-12-23 19:36:43 | WARNING  | app.core.logging_config:setup_sentry:158 | Sentry DSN not configured, error tracking disabled. Set SENTRY_DSN environment variable to enable. | {}
+2025-12-23 19:36:43 | INFO     | app.main:lifespan:55 | Starting Productivity App API v1.0.0 | {}
+2025-12-23 19:36:43 | INFO     | app.main:lifespan:56 | Environment: development | {}
+2025-12-23 19:36:43 | INFO     | app.main:lifespan:57 | Documentation: http://localhost:8000/docs | {}
+2025-12-23 19:36:43 | INFO     | app.main:lifespan:58 | Database migrations managed by Alembic | {}
+2025-12-23 19:36:43 | INFO     | app.main:lifespan:59 | Run 'alembic upgrade head' to apply migrations | {}
+2025-12-23 19:36:43 | INFO     | logging:callHandlers:1706 | Application startup complete. | {}
+2025-12-23 19:36:43 | INFO     | logging:callHandlers:1706 | Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit) | {}
+2025-12-23 19:36:47 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /docs | {'correlation_id': '2d22f54e-5a75-4d02-8d0c-3ad919a06a8d', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:36:47 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /docs → 200 (2.38ms) | {'correlation_id': '2d22f54e-5a75-4d02-8d0c-3ad919a06a8d', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 2.38}
+2025-12-23 19:36:47 | INFO     | logging:callHandlers:1706 | 127.0.0.1:56040 - "GET /docs HTTP/1.1" 200 | {}
+2025-12-23 19:36:47 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/openapi.json | {'correlation_id': '29622761-d5a6-4358-842e-a7a50b518f2b', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:36:48 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/openapi.json → 200 (177.94ms) | {'correlation_id': '29622761-d5a6-4358-842e-a7a50b518f2b', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 177.94}
+2025-12-23 19:36:48 | INFO     | logging:callHandlers:1706 | 127.0.0.1:56040 - "GET /api/v1/openapi.json HTTP/1.1" 200 | {}
+2025-12-23 19:37:06 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /health | {'correlation_id': '46f93fe0-bf49-435f-85b1-c76bfb5160e7', 'user_id': None, 'method': 'GET', 'path': '/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:37:06 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /health → 200 (2.29ms) | {'correlation_id': '46f93fe0-bf49-435f-85b1-c76bfb5160e7', 'user_id': None, 'method': 'GET', 'path': '/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 2.29}
+2025-12-23 19:37:06 | INFO     | logging:callHandlers:1706 | 127.0.0.1:59412 - "GET /health HTTP/1.1" 200 | {}
+2025-12-23 19:37:40 | INFO     | app.middleware.logging_middleware:dispatch:59 | → POST /api/v1/auth/login | {'correlation_id': 'a67dd3ef-c9e2-4d8a-8418-c98827bbdcec', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:37:41 | WARNING  | app.middleware.logging_middleware:dispatch:95 | ← POST /api/v1/auth/login → 200 (1235.85ms) | {'correlation_id': 'a67dd3ef-c9e2-4d8a-8418-c98827bbdcec', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 1235.85}
+2025-12-23 19:37:41 | WARNING  | app.middleware.logging_middleware:dispatch:110 | ⚠️  Slow request: POST /api/v1/auth/login took 1.24s - consider optimization | {'correlation_id': 'a67dd3ef-c9e2-4d8a-8418-c98827bbdcec', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 1235.85, 'duration_seconds': 1.235846757888794, 'threshold': 'slow'}
+2025-12-23 19:37:41 | INFO     | logging:callHandlers:1706 | 127.0.0.1:61534 - "POST /api/v1/auth/login HTTP/1.1" 200 | {}
+2025-12-23 19:38:06 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/auth/me | {'correlation_id': '8eae37d5-6fa5-45a2-987a-bf98e25aadb5', 'user_id': None, 'method': 'GET', 'path': '/api/v1/auth/me', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:38:06 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/auth/me → 200 (11.92ms) | {'correlation_id': '8eae37d5-6fa5-45a2-987a-bf98e25aadb5', 'user_id': None, 'method': 'GET', 'path': '/api/v1/auth/me', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 11.92}
+2025-12-23 19:38:06 | INFO     | logging:callHandlers:1706 | 127.0.0.1:62419 - "GET /api/v1/auth/me HTTP/1.1" 200 | {}
+2025-12-23 19:38:33 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/ai/priority/health | {'correlation_id': '61d3890f-428d-4f5b-8cc1-6c5b5f7bff75', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:38:33 | INFO     | app.services.embedding_service:__init__:55 | Embedding service initialized (model: all-MiniLM-L6-v2, lazy loading enabled) | {}
+2025-12-23 19:38:33 | INFO     | app.services.embedding_service:model:71 | Loading sentence transformer model: all-MiniLM-L6-v2 | {}
+2025-12-23 19:38:33 | INFO     | app.services.embedding_service:model:72 | This is a one-time operation (~2-3 seconds, ~90MB download) | {}
+2025-12-23 19:40:39 | INFO     | logging:callHandlers:1706 | Use pytorch device_name: cpu | {}
+2025-12-23 19:40:39 | INFO     | logging:callHandlers:1706 | Load pretrained SentenceTransformer: all-MiniLM-L6-v2 | {}
+2025-12-23 19:40:46 | INFO     | app.services.embedding_service:model:80 | Model loaded successfully (dimensions: 384, model: all-MiniLM-L6-v2) | {}
+2025-12-23 19:40:47 | ERROR    | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/ai/priority/health → 200 (134040.37ms) | {'correlation_id': '61d3890f-428d-4f5b-8cc1-6c5b5f7bff75', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 134040.37}
+2025-12-23 19:40:47 | ERROR    | app.middleware.logging_middleware:dispatch:103 | ⚠️  VERY SLOW REQUEST: GET /api/v1/ai/priority/health took 134.04s - investigate immediately! | {'correlation_id': '61d3890f-428d-4f5b-8cc1-6c5b5f7bff75', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 134040.37, 'duration_seconds': 134.0403733253479, 'threshold': 'very_slow'}
+2025-12-23 19:40:47 | INFO     | logging:callHandlers:1706 | 127.0.0.1:52660 - "GET /api/v1/ai/priority/health HTTP/1.1" 200 | {}
+2025-12-23 19:41:02 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/ai/priority/health | {'correlation_id': '2f1966a7-d969-49b6-80a6-d6c9b621b5e4', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:41:02 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/ai/priority/health → 200 (43.66ms) | {'correlation_id': '2f1966a7-d969-49b6-80a6-d6c9b621b5e4', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 43.66}
+2025-12-23 19:41:02 | INFO     | logging:callHandlers:1706 | 127.0.0.1:55279 - "GET /api/v1/ai/priority/health HTTP/1.1" 200 | {}
+2025-12-23 19:41:10 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/ai/priority/health | {'correlation_id': 'da23f8f1-d739-4e1d-9346-0dc166209c7d', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:41:10 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/ai/priority/health → 200 (67.69ms) | {'correlation_id': 'da23f8f1-d739-4e1d-9346-0dc166209c7d', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 67.69}
+2025-12-23 19:41:10 | INFO     | logging:callHandlers:1706 | 127.0.0.1:60252 - "GET /api/v1/ai/priority/health HTTP/1.1" 200 | {}
+2025-12-23 19:41:21 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/ai/priority/health | {'correlation_id': '06dc466d-9e93-4071-839c-bf058c6e9864', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-23 19:41:21 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/ai/priority/health → 200 (121.82ms) | {'correlation_id': '06dc466d-9e93-4071-839c-bf058c6e9864', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 121.82}
+2025-12-23 19:41:21 | INFO     | logging:callHandlers:1706 | 127.0.0.1:64270 - "GET /api/v1/ai/priority/health HTTP/1.1" 200 | {}

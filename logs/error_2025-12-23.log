@@ -1,0 +1,488 @@
+2025-12-23 18:56:16 | ERROR    | app.middleware.logging_middleware:dispatch:131 | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/login', 'client_ip': '127.0.0.1', 'user_agent': 'python-httpx/0.28.1', 'duration_ms': 12.61, 'error': 'Object of type bytes is not JSON serializable', 'error_type': 'TypeError', 'exc_info': TypeError('Object of type bytes is not JSON serializable')} | ✗ POST /api/v1/auth/login → FAILED: TypeError: Object of type bytes is not JSON serializable (12.61ms)
+2025-12-23 18:56:16 | ERROR    | app.middleware.error_handler:global_exception_handler:45 | {'correlation_id': 'b45c6d61-50bb-42d6-8636-8f19528fffb3', 'path': '/api/v1/auth/login', 'method': 'POST', 'error_type': 'TypeError', 'user_id': None, 'exc_info': TypeError('Object of type bytes is not JSON serializable')} | Unhandled exception: TypeError: Object of type bytes is not JSON serializable
+2025-12-23 18:56:19 | ERROR    | logging:callHandlers:1706 | {} | Exception in ASGI application
+
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 79, in collapse_excgroups
+  |     yield
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x000001F97F02EFD0>
+  |                │     └ <function create_task_group at 0x000001F96C1C7C40>
+  |                └ <module 'anyio' from 'D:\\Desktop\\deployed-project\\task-manager-app\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 781, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |                    └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F96B456CD0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |                  │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+    |                  │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |                  │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |                  │    └ <fastapi.applications.FastAPI object at 0x000001F97EA8AE90>
+    |                  └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F96B456CD0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+    |                            │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+    |           │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F97EF7E190>
+    |           └ <fastapi.applications.FastAPI object at 0x000001F97EA8AE90>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000001F97EF7DF50>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F97EF7E190>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |           │         │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+    |           │         │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |           │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+    |                            │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |           │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x000001F96C551080>
+    |           │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000001F97EF7DF10>
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x000001F97EF7DF10>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x000001F96C3CE8E0>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(typ, value, traceback)
+    |     │    │   │     │    │      └ <traceback object at 0x000001F97F7C1980>
+    |     │    │   │     │    └ ExceptionGroup('unhandled errors in a TaskGroup', [TypeError('Object of type bytes is not JSON serializable')])
+    |     │    │   │     └ <class 'ExceptionGroup'>
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x000001F97EF826C0>
+    |     └ <contextlib._GeneratorContextManager object at 0x000001F97F076AD0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001F97EFF6E80>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001F97F454C90>
+    |                      │    └ <bound method LoggingMiddleware.dispatch of <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>>
+    |                      └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+    |
+    |   File "d:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    |     response = await call_next(request)
+    |                      │         └ <starlette.middleware.base._CachedRequest object at 0x000001F97F454C90>
+    |                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001F97EFF6E80>
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |           └ TypeError('Object of type bytes is not JSON serializable')
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |           │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001F97EFF6C00>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F96B4AEF50>
+    |           └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |           │                            │    │    │     │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001F97EFF6C00>
+    |           │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    │    └ <starlette.requests.Request object at 0x000001F97F0181D0>
+    |           │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+    |           │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F96B4AEF50>
+    |           └ <function wrap_app_handling_exceptions at 0x000001F96C47A700>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <fastapi.routing.APIRouter object at 0x000001F96B4C9190>
+    |           └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001F96B4C9190>>
+    |           └ <fastapi.routing.APIRouter object at 0x000001F96B4C9190>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |           │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │     └ <function Route.handle at 0x000001F96C47BD80>
+    |           └ APIRoute(path='/api/v1/auth/login', name='login', methods=['POST'])
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function request_response.<locals>.app at 0x000001F97EF0DC60>
+    |           └ APIRoute(path='/api/v1/auth/login', name='login', methods=['POST'])
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |           │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+    |           │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+    |           │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    └ <starlette.requests.Request object at 0x000001F97EFB7E10>
+    |           │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001F97EFF7060>
+    |           └ <function wrap_app_handling_exceptions at 0x000001F96C47A700>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 59, in wrapped_app
+    |     response = await handler(conn, exc)
+    |                      │       └ <starlette.requests.Request object at 0x000001F97EFB7E10>
+    |                      └ <function validation_exception_handler at 0x000001F96DD23100>
+    |
+    |   File "d:\Desktop\deployed-project\task-manager-app\app\middleware\error_handler.py", line 111, in validation_exception_handler
+    |     return JSONResponse(
+    |            └ <class 'starlette.responses.JSONResponse'>
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 190, in __init__
+    |     super().__init__(content, status_code, headers, media_type, background)
+    |                      │        │            │        │           └ None
+    |                      │        │            │        └ None
+    |                      │        │            └ None
+    |                      │        └ 422
+    |                      └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 47, in __init__
+    |     self.body = self.render(content)
+    |     │           │    │      └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    |     │           │    └ <function JSONResponse.render at 0x000001F96C45D760>
+    |     │           └ <starlette.responses.JSONResponse object at 0x000001F97F01BC10>
+    |     └ <starlette.responses.JSONResponse object at 0x000001F97F01BC10>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 193, in render
+    |     return json.dumps(
+    |            │    └ <function dumps at 0x000001F96AD4FE20>
+    |            └ <module 'json' from 'C:\\Users\\SiliCon\\AppData\\Roaming\\uv\\python\\cpython-3.11.11-windows-x86_64-none\\Lib\\json\\__init...
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\__init__.py", line 238, in dumps
+    |     **kw).encode(obj)
+    |       │          └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    |       └ {}
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    |     chunks = self.iterencode(o, _one_shot=True)
+    |              │    │          └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    |              │    └ <function JSONEncoder.iterencode at 0x000001F96AD702C0>
+    |              └ <json.encoder.JSONEncoder object at 0x000001F97F7C2B10>
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    |     return _iterencode(o, 0)
+    |            │           └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    |            └ <_json.Encoder object at 0x000001F97F400A00>
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    |     raise TypeError(f'Object of type {o.__class__.__name__} '
+    |
+    | TypeError: Object of type bytes is not JSON serializable
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Scripts\uvicorn.exe\__main__.py", line 10, in <module>
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function Command.main at 0x000001F96B347D80>
+           └ <Command main>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1383, in main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x000001F96B44E1D0>
+         │    └ <function Command.invoke at 0x000001F96B347A60>
+         └ <Command main>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'host': '0.0.0.0', 'port': 8000, 'app': 'app.main:app', 'uds': None, 'fd': None, 'reload': False, 'reload_dirs': (), 'reload...
+           │   │      │    │           └ <click.core.Context object at 0x000001F96B44E1D0>
+           │   │      │    └ <function main at 0x000001F96B4471A0>
+           │   │      └ <Command main>
+           │   └ <function Context.invoke at 0x000001F96B346CA0>
+           └ <click.core.Context object at 0x000001F96B44E1D0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\click\core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'host': '0.0.0.0', 'port': 8000, 'app': 'app.main:app', 'uds': None, 'fd': None, 'reload': False, 'reload_dirs': (), 'reload...
+           │         └ ()
+           └ <function main at 0x000001F96B4471A0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\main.py", line 423, in main
+    run(
+    └ <function run at 0x000001F96B376F20>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\main.py", line 593, in run
+    server.run()
+    │      └ <function Server.run at 0x000001F96B3F5760>
+    └ <uvicorn.server.Server object at 0x000001F96B383E50>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000001F96B376AC0>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000001F96B44DD10>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000001F96B383E50>
+           │           │    │             └ None
+           │           │    └ <function Server.serve at 0x000001F96B3F5800>
+           │           └ <uvicorn.server.Server object at 0x000001F96B383E50>
+           └ <function asyncio_run at 0x000001F96B3F56C0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\_compat.py", line 23, in asyncio_run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000001F96B3BFE20>
+           │      └ <function Runner.run at 0x000001F96AC97920>
+           └ <asyncio.runners.Runner object at 0x000001F96B44F2D0>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001F96AC95440>
+           │    └ <ProactorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000001F96B44F2D0>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function ProactorEventLoop.run_forever at 0x000001F96AD4DA80>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 321, in run_forever
+    super().run_forever()
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001F96AC971A0>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000001F96ABE8540>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+> File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F96B456CD0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001F97EA8AE90>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F96B456CD0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096610>>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F97EF7E190>
+          └ <fastapi.applications.FastAPI object at 0x000001F97EA8AE90>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000001F97EF7DF50>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F97EF7E190>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+          │         │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+          │         │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+          │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F97C77BD80>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+          │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x000001F96C551080>
+          │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000001F97EF7DF10>
+          └ <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001F97EA35A50>>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001F97F096...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x000001F97EF7DF10>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x000001F96C3CE8E0>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x000001F97F7C1980>
+    │    │   │     │    └ ExceptionGroup('unhandled errors in a TaskGroup', [TypeError('Object of type bytes is not JSON serializable')])
+    │    │   │     └ <class 'ExceptionGroup'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x000001F97EF826C0>
+    └ <contextlib._GeneratorContextManager object at 0x000001F97F076AD0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001F97EFF6E80>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001F97F454C90>
+                     │    └ <bound method LoggingMiddleware.dispatch of <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>>
+                     └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+
+  File "d:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    response = await call_next(request)
+                     │         └ <starlette.middleware.base._CachedRequest object at 0x000001F97F454C90>
+                     └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001F97EFF6E80>
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+          └ TypeError('Object of type bytes is not JSON serializable')
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+          │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001F97EFF6C00>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F96B4AEF50>
+          └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x000001F96B4AEFD0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001F97EFF6C00>
+          │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000001F97F0181D0>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F96B4AEF50>
+          └ <function wrap_app_handling_exceptions at 0x000001F96C47A700>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000001F96B4C9190>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F96B4AEF90>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001F96B4C9190>>
+          └ <fastapi.routing.APIRouter object at 0x000001F96B4C9190>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │     └ <function Route.handle at 0x000001F96C47BD80>
+          └ APIRoute(path='/api/v1/auth/login', name='login', methods=['POST'])
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000001F97EF0DC60>
+          └ APIRoute(path='/api/v1/auth/login', name='login', methods=['POST'])
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F97EFF71A0>
+          │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001F97ED7B560>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000001F97EFB7E10>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001F97EFF7060>
+          └ <function wrap_app_handling_exceptions at 0x000001F96C47A700>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 59, in wrapped_app
+    response = await handler(conn, exc)
+                     │       └ <starlette.requests.Request object at 0x000001F97EFB7E10>
+                     └ <function validation_exception_handler at 0x000001F96DD23100>
+
+  File "d:\Desktop\deployed-project\task-manager-app\app\middleware\error_handler.py", line 111, in validation_exception_handler
+    return JSONResponse(
+           └ <class 'starlette.responses.JSONResponse'>
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 190, in __init__
+    super().__init__(content, status_code, headers, media_type, background)
+                     │        │            │        │           └ None
+                     │        │            │        └ None
+                     │        │            └ None
+                     │        └ 422
+                     └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 47, in __init__
+    self.body = self.render(content)
+    │           │    │      └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+    │           │    └ <function JSONResponse.render at 0x000001F96C45D760>
+    │           └ <starlette.responses.JSONResponse object at 0x000001F97F01BC10>
+    └ <starlette.responses.JSONResponse object at 0x000001F97F01BC10>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\responses.py", line 193, in render
+    return json.dumps(
+           │    └ <function dumps at 0x000001F96AD4FE20>
+           └ <module 'json' from 'C:\\Users\\SiliCon\\AppData\\Roaming\\uv\\python\\cpython-3.11.11-windows-x86_64-none\\Lib\\json\\__init...
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+      │          └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+      └ {}
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             │    │          └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+             │    └ <function JSONEncoder.iterencode at 0x000001F96AD702C0>
+             └ <json.encoder.JSONEncoder object at 0x000001F97F7C2B10>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           │           └ {'error': 'ValidationError', 'detail': 'Request validation failed', 'errors': [{'field': '', 'message': 'Input should be a va...
+           └ <_json.Encoder object at 0x000001F97F400A00>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+
+TypeError: Object of type bytes is not JSON serializable
+2025-12-23 19:40:47 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '61d3890f-428d-4f5b-8cc1-6c5b5f7bff75', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 134040.37} | ← GET /api/v1/ai/priority/health → 200 (134040.37ms)
+2025-12-23 19:40:47 | ERROR    | app.middleware.logging_middleware:dispatch:103 | {'correlation_id': '61d3890f-428d-4f5b-8cc1-6c5b5f7bff75', 'user_id': None, 'method': 'GET', 'path': '/api/v1/ai/priority/health', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 134040.37, 'duration_seconds': 134.0403733253479, 'threshold': 'very_slow'} | ⚠️  VERY SLOW REQUEST: GET /api/v1/ai/priority/health took 134.04s - investigate immediately!

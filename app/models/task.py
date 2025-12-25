@@ -6,8 +6,8 @@ Task model with Priority Matrix support.
 """
 
 from sqlalchemy import (
-    Column, Integer, String, Boolean, DateTime, 
-    Enum as SQLEnum, Index, ForeignKey, Table
+    Column, Integer, String, Boolean, DateTime,
+    Enum as SQLEnum, Index, ForeignKey, Table, LargeBinary
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -15,6 +15,15 @@ from datetime import datetime
 
 from app.db.database import Base
 from app.schemas.task import TaskStatus
+
+# Import pgvector type for embeddings
+try:
+    from pgvector.sqlalchemy import Vector
+    PGVECTOR_AVAILABLE = True
+except ImportError:
+    # Graceful degradation if pgvector not installed yet
+    Vector = LargeBinary
+    PGVECTOR_AVAILABLE = False
 
 # ASSOCIATION TABLE for Many-to-Many (Task ↔ Tag)
 task_tags = Table(
@@ -50,6 +59,12 @@ class Task(Base):
     # FOREIGN KEYS
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    # AI/ML FEATURES (Phase 2)
+    # Semantic embedding for similarity search and priority suggestions
+    # 384 dimensions from sentence-transformers all-MiniLM-L6-v2 model
+    # Nullable: embeddings generated on-demand, not required for basic functionality
+    embedding = Column(Vector(384) if PGVECTOR_AVAILABLE else LargeBinary, nullable=True)
 
     # RELATIONSHIPS
     user = relationship("User", back_populates="tasks")
