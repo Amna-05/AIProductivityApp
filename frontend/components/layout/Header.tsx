@@ -82,22 +82,22 @@ export function Header({ onMenuClick, onAddTask, onAIParser }: HeaderProps) {
           <Button
             variant="default"
             size="default"
-            className="hidden md:flex gap-2"
+            className="hidden md:flex gap-2 h-10"
             onClick={onAddTask}
           >
             <Plus className="h-4 w-4" />
             Add Task
           </Button>
 
-          {/* AI Parser Button */}
+          {/* Voice Input Button */}
           <Button
             variant="outline"
             size="default"
-            className="hidden md:flex gap-2"
+            className="hidden md:flex gap-2 h-10"
             onClick={onAIParser}
           >
             <Sparkles className="h-4 w-4" />
-            AI Parser
+            Voice Input
           </Button>
 
           {/* Mobile: Combined Add Button */}

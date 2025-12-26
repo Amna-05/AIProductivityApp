@@ -88,36 +88,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="px-6 py-6 space-y-8">
-      {/* Quick Add Section */}
-      <div className="max-w-3xl mx-auto">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="What needs to be done? (e.g., 'Buy groceries tomorrow at 5pm, high priority')"
-            value={quickAddValue}
-            onChange={(e) => setQuickAddValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleQuickAdd();
-              }
-            }}
-            className="h-12 pr-12 text-base"
-          />
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10"
-            onClick={() => setAiDialogOpen(true)}
-            title="Open AI Parser"
-          >
-            <Sparkles className="h-5 w-5 text-primary" />
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground mt-2 text-center">
-          Press Enter to add, or click <Sparkles className="inline h-3 w-3" /> to use AI Parser
-        </p>
-      </div>
+    <div className="px-6 py-6 space-y-8 bg-background">{/* Ensure white background */}
 
       {/* Stats Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -150,8 +121,8 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Upcoming Deadlines Section */}
-      <div>
+      {/* Upcoming Deadlines Section - With Max Width */}
+      <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Upcoming Deadlines</h2>
           <Link href="/tasks">

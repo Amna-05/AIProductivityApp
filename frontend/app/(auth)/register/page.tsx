@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, Loader2 } from "lucide-react";
+import { ArrowUp, Loader2 } from "lucide-react";
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -55,22 +55,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader className="space-y-1 pb-8">
-        <div className="flex items-center justify-center mb-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 shadow-lg">
-            <Sparkles className="h-8 w-8 text-primary-foreground" />
+    <Card className="w-full shadow-lg border">
+      <CardHeader className="p-10 pb-8">
+        {/* ELEVATE Logo */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary shadow-sm">
+              <ArrowUp className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">ELEVATE</h1>
+              <p className="text-xs text-muted-foreground">Lift Your Productivity</p>
+            </div>
           </div>
         </div>
-        <CardTitle className="text-3xl font-bold text-center">Create an account</CardTitle>
-        <CardDescription className="text-center text-base">
+        <CardTitle className="text-2xl font-bold mb-2">Create an account</CardTitle>
+        <CardDescription className="text-muted-foreground">
           Enter your information to get started
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-6">
+        <CardContent className="px-10 pb-6 space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">
+            <Label htmlFor="email" className="text-sm font-semibold">
               Email Address
             </Label>
             <Input
@@ -79,14 +86,14 @@ export default function RegisterPage() {
               placeholder="john@example.com"
               {...register("email")}
               disabled={isLoading}
-              className="h-11 text-base"
+              className="h-12 border-2 focus:ring-2"
             />
             {errors.email && (
-              <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+              <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">
+            <Label htmlFor="username" className="text-sm font-semibold">
               Username
             </Label>
             <Input
@@ -94,14 +101,14 @@ export default function RegisterPage() {
               placeholder="johndoe"
               {...register("username")}
               disabled={isLoading}
-              className="h-11 text-base"
+              className="h-12 border-2 focus:ring-2"
             />
             {errors.username && (
-              <p className="text-sm text-destructive mt-1">{errors.username.message}</p>
+              <p className="text-sm text-destructive">{errors.username.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">
+            <Label htmlFor="password" className="text-sm font-semibold">
               Password
             </Label>
             <Input
@@ -110,18 +117,18 @@ export default function RegisterPage() {
               placeholder="Create a strong password (min 8 characters)"
               {...register("password")}
               disabled={isLoading}
-              className="h-11 text-base"
+              className="h-12 border-2 focus:ring-2"
             />
             {errors.password && (
-              <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
+              <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground">
               Must be at least 8 characters long
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-6 pt-2">
-          <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isLoading}>
+        <CardFooter className="px-10 pb-10 flex flex-col gap-4 pt-2">
+          <Button type="submit" className="w-full h-12 font-semibold" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -131,18 +138,18 @@ export default function RegisterPage() {
               "Create account"
             )}
           </Button>
-          <div className="relative">
+          <div className="relative my-2">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
+              <span className="bg-card px-3 text-muted-foreground">
                 Already have an account?
               </span>
             </div>
           </div>
           <Link href="/login" className="w-full">
-            <Button variant="outline" className="w-full h-11 text-base font-medium" type="button">
+            <Button variant="outline" className="w-full h-12 font-semibold" type="button">
               Sign in instead
             </Button>
           </Link>

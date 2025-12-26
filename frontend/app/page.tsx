@@ -3,23 +3,31 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { authApi } from "@/lib/api/auth";
 import { Loader2 } from "lucide-react";
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, isLoading } = useAuthStore();
+  const { user, setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (user) {
-        // Authenticated users → Dashboard
+    const checkAuthAndRedirect = async () => {
+      try {
+        // Try to get current user from backend
+        const userData = await authApi.getCurrentUser();
+        setUser(userData);
+        // Authenticated → Dashboard
         router.replace("/dashboard");
-      } else {
-        // Non-authenticated users → Landing Page
+      } catch (error) {
+        // Not authenticated → Landing Page
+        setUser(null);
         router.replace("/landing");
       }
-    }
-  }, [user, isLoading, router]);
+    };
+
+    checkAuthAndRedirect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   return (
     <div className="flex h-screen items-center justify-center bg-background">

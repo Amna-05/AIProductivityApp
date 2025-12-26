@@ -59,7 +59,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
 
     checkAuth();
-  }, [user, router, setUser, setLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const dialogHandlers = {
     openTaskDialog: () => setTaskDialogTrigger((prev) => prev + 1),

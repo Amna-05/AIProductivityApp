@@ -164,12 +164,29 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
+  // Calculate current quadrant for display
+  const currentQuadrant = form.watch("is_urgent") && form.watch("is_important")
+    ? "DO FIRST (Urgent & Important)"
+    : !form.watch("is_urgent") && form.watch("is_important")
+    ? "SCHEDULE (Not Urgent & Important)"
+    : form.watch("is_urgent") && !form.watch("is_important")
+    ? "DELEGATE (Urgent & Not Important)"
+    : "ELIMINATE (Not Urgent & Not Important)";
+
+  const quadrantColor = form.watch("is_urgent") && form.watch("is_important")
+    ? "text-destructive"
+    : !form.watch("is_urgent") && form.watch("is_important")
+    ? "text-warning"
+    : form.watch("is_urgent") && !form.watch("is_important")
+    ? "text-info"
+    : "text-muted-foreground";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Task" : "Create New Task"}</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-2xl font-bold text-foreground">{isEditing ? "Edit Task" : "Create New Task"}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             {isEditing
               ? "Update the task details below."
               : "Fill in the details to create a new task."}
@@ -178,77 +195,36 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter task title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Section 1: Basic Info */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-foreground">Basic Information</h3>
 
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter task description (optional)"
-                      className="min-h-[100px]"
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Status and Due Date Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Status */}
+              {/* Title */}
               <FormField
                 control={form.control}
-                name="status"
+                name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="todo">To Do</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel className="font-semibold">Title *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter task title" {...field} className="h-11" />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Due Date */}
+              {/* Description */}
               <FormField
                 control={form.control}
-                name="due_date"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel className="font-semibold">Description</FormLabel>
                     <FormControl>
-                      <Input
-                        type="datetime-local"
+                      <Textarea
+                        placeholder="Enter task description (optional)"
+                        className="min-h-[100px]"
                         {...field}
                         value={field.value || ""}
                       />
@@ -259,18 +235,75 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
               />
             </div>
 
-            {/* Priority Matrix Switches */}
-            <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
-              <div className="font-medium text-sm">Priority Matrix (Eisenhower)</div>
+            {/* Section 2: Scheduling */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-foreground">Scheduling</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Due Date */}
+                <FormField
+                  control={form.control}
+                  name="due_date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">Due Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          {...field}
+                          value={field.value || ""}
+                          className="h-11"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Status */}
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">Status</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="todo">To Do</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="done">Done</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Section 3: Priority (Eisenhower Matrix) */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm text-foreground">Priority (Eisenhower Matrix)</h3>
+                <span className={`text-xs font-semibold ${quadrantColor}`}>
+                  {currentQuadrant}
+                </span>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Is Urgent */}
                 <FormField
                   control={form.control}
                   name="is_urgent"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm hover:border-primary/50 transition-colors">
                       <div className="space-y-0.5">
-                        <FormLabel>Urgent</FormLabel>
+                        <FormLabel className="font-semibold">Urgent</FormLabel>
                         <FormDescription className="text-xs">
                           Requires immediate attention
                         </FormDescription>
@@ -290,9 +323,9 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
                   control={form.control}
                   name="is_important"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm hover:border-primary/50 transition-colors">
                       <div className="space-y-0.5">
-                        <FormLabel>Important</FormLabel>
+                        <FormLabel className="font-semibold">Important</FormLabel>
                         <FormDescription className="text-xs">
                           Contributes to long-term goals
                         </FormDescription>
@@ -309,70 +342,75 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
               </div>
             </div>
 
-            {/* Category and Tags */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Category */}
-              <FormField
-                control={form.control}
-                name="category_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select
-                      onValueChange={(value) =>
-                        field.onChange(value === "none" ? null : parseInt(value))
-                      }
-                      value={field.value?.toString() || "none"}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">No Category</SelectItem>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
-                            <div className="flex items-center gap-2">
-                              {category.color && (
-                                <span
-                                  className="h-3 w-3 rounded-full"
-                                  style={{ backgroundColor: category.color }}
-                                />
-                              )}
-                              {category.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Section 4: Organization */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-foreground">Organization</h3>
 
-              {/* Tags - Simple multi-select placeholder */}
-              <FormItem>
-                <FormLabel>Tags</FormLabel>
-                <FormDescription className="text-xs">
-                  {tags.length > 0
-                    ? `${tags.length} tags available (multi-select coming soon)`
-                    : "No tags created yet"}
-                </FormDescription>
-              </FormItem>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Category */}
+                <FormField
+                  control={form.control}
+                  name="category_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">Category</FormLabel>
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(value === "none" ? null : parseInt(value))
+                        }
+                        value={field.value?.toString() || "none"}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">No Category</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              <div className="flex items-center gap-2">
+                                {category.color && (
+                                  <span
+                                    className="h-3 w-3 rounded-full"
+                                    style={{ backgroundColor: category.color }}
+                                  />
+                                )}
+                                {category.name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Tags - Placeholder */}
+                <FormItem>
+                  <FormLabel className="font-semibold">Tags</FormLabel>
+                  <div className="h-11 flex items-center px-3 rounded-md border bg-muted/30 text-sm text-muted-foreground">
+                    {tags.length > 0
+                      ? `${tags.length} tags available (coming soon)`
+                      : "No tags created yet"}
+                  </div>
+                </FormItem>
+              </div>
             </div>
 
             {/* Footer */}
-            <DialogFooter>
+            <DialogFooter className="pt-6 border-t">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
+                className="h-11 text-foreground font-medium"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} className="h-11 font-medium">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? "Update Task" : "Create Task"}
               </Button>

@@ -147,13 +147,16 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            AI Task Parser
-          </DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4">
+          {/* ELEVATE AI Parser Header */}
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-lg">
+              <Sparkles className="h-7 w-7 text-white" />
+            </div>
+          </div>
+          <DialogTitle className="text-2xl text-center font-bold text-foreground">AI Task Parser</DialogTitle>
+          <DialogDescription className="text-center text-muted-foreground">
             Describe your task in natural language and let AI extract the details
           </DialogDescription>
         </DialogHeader>
@@ -162,162 +165,168 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
           {/* Input Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Describe your task</label>
+              <label className="text-sm font-semibold text-foreground">Your Task</label>
               <Button
                 type="button"
                 size="sm"
                 variant={isListening ? "destructive" : "outline"}
                 onClick={toggleVoiceInput}
                 disabled={isLoading}
+                className="font-medium"
               >
                 {isListening ? (
                   <>
                     <MicOff className="mr-2 h-4 w-4" />
-                    Stop Listening
+                    Stop
                   </>
                 ) : (
                   <>
                     <Mic className="mr-2 h-4 w-4" />
-                    Voice Input
+                    Voice
                   </>
                 )}
               </Button>
             </div>
             <Textarea
-              placeholder="Example: 'Call dentist tomorrow at 3pm - very urgent'"
+              placeholder="Example: 'Buy groceries tomorrow at 5pm, high priority'"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="min-h-25"
+              className="min-h-[200px] p-4 rounded-lg text-base"
               disabled={isLoading || isListening}
             />
-            <div className="text-xs text-muted-foreground">
-              Examples:
-              <ul className="mt-1 list-disc list-inside space-y-1">
-                <li>"Meeting with Sarah about Q4 planning next Tuesday morning"</li>
-                <li>"Fix authentication bug - high priority, work category"</li>
-                <li>"Buy groceries tonight before 8pm"</li>
+            <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
+              <strong>Try these examples:</strong>
+              <ul className="mt-2 space-y-1">
+                <li>• "Meeting with Sarah about Q4 planning next Tuesday morning"</li>
+                <li>• "Fix authentication bug - high priority, work category"</li>
+                <li>• "Buy groceries tonight before 8pm"</li>
               </ul>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button
-              onClick={handleParse}
-              disabled={isLoading || !inputText.trim()}
-              variant="outline"
-              className="flex-1"
-            >
-              {parseMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Preview Parse
-            </Button>
-            <Button
-              onClick={handleCreateDirectly}
-              disabled={isLoading || !inputText.trim()}
-              className="flex-1"
-            >
-              {createMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Create Directly
-            </Button>
-          </div>
+          {!parsedTask && (
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleParse}
+                disabled={isLoading || !inputText.trim()}
+                variant="outline"
+                className="flex-1 h-11 font-medium"
+              >
+                {parseMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Preview Parse
+              </Button>
+              <Button
+                onClick={handleCreateDirectly}
+                disabled={isLoading || !inputText.trim()}
+                className="flex-1 h-11 font-medium"
+              >
+                {createMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                <Sparkles className="mr-2 h-4 w-4" />
+                Create Task
+              </Button>
+            </div>
+          )}
 
-          {/* Parsed Result */}
+          {/* Parsed Result Preview */}
           {parsedTask && (
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-600" />
-                    Parsed Task Details
-                  </h3>
-                  <span className="text-xs px-2 py-1 bg-primary/10 rounded-full">
-                    {Math.round(parsedTask.confidence * 100)}% confidence
-                  </span>
-                </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <Check className="h-5 w-5 text-success" />
+                  Parsed Task Preview
+                </h3>
+                <span className="text-xs px-3 py-1 bg-success/10 text-success rounded-full font-semibold">
+                  {Math.round(parsedTask.confidence * 100)}% confident
+                </span>
+              </div>
 
+              <div className="space-y-3">
                 {/* Title */}
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                     Title
                   </label>
-                  <p className="text-sm font-medium">{parsedTask.title}</p>
+                  <p className="text-base font-semibold text-foreground mt-1">{parsedTask.title}</p>
                 </div>
 
                 {/* Description */}
                 {parsedTask.description && (
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Description
                     </label>
-                    <p className="text-sm">{parsedTask.description}</p>
+                    <p className="text-sm text-foreground mt-1">{parsedTask.description}</p>
                   </div>
                 )}
 
-                {/* Due Date */}
-                {parsedTask.due_date && (
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">
-                      Due Date
+                {/* Due Date & Priority Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Due Date */}
+                  {parsedTask.due_date && (
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Due Date
+                      </label>
+                      <p className="text-sm font-medium text-foreground mt-1">
+                        {new Date(parsedTask.due_date).toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Priority Badges */}
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 block">
+                      Priority
                     </label>
-                    <p className="text-sm">
-                      {new Date(parsedTask.due_date).toLocaleString()}
-                    </p>
-                  </div>
-                )}
-
-                {/* Priority */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`h-3 w-3 rounded-full ${
-                        parsedTask.is_urgent
-                          ? "bg-red-500"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                    <span className="text-sm">
-                      {parsedTask.is_urgent ? "Urgent" : "Not Urgent"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`h-3 w-3 rounded-full ${
-                        parsedTask.is_important
-                          ? "bg-yellow-500"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                    <span className="text-sm">
-                      {parsedTask.is_important ? "Important" : "Not Important"}
-                    </span>
+                    <div className="flex gap-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          parsedTask.is_urgent
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {parsedTask.is_urgent ? "Urgent" : "Not Urgent"}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          parsedTask.is_important
+                            ? "bg-warning/10 text-warning"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {parsedTask.is_important ? "Important" : "Not Important"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Category */}
                 {parsedTask.suggested_category && (
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Suggested Category
                     </label>
-                    <p className="text-sm">{parsedTask.suggested_category}</p>
+                    <p className="text-sm font-medium text-foreground mt-1">{parsedTask.suggested_category}</p>
                   </div>
                 )}
 
                 {/* Tags */}
                 {parsedTask.suggested_tags.length > 0 && (
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Suggested Tags
                     </label>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {parsedTask.suggested_tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-xs"
+                          className="px-3 py-1 bg-primary/10 text-primary rounded-md text-xs font-medium"
                         >
                           {tag}
                         </span>
@@ -325,21 +334,31 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
                     </div>
                   </div>
                 )}
+              </div>
 
-                {/* Create Button */}
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  onClick={() => setParsedTask(null)}
+                  variant="outline"
+                  className="flex-1 h-11 font-medium text-foreground"
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Edit Input
+                </Button>
                 <Button
                   onClick={handleCreateFromParsed}
                   disabled={createMutation.isPending}
-                  className="w-full mt-2"
+                  className="flex-1 h-11 font-medium"
                 >
                   {createMutation.isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   <Check className="mr-2 h-4 w-4" />
-                  Confirm & Create Task
+                  Confirm & Create
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>
