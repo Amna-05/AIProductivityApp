@@ -19,6 +19,7 @@ from app.core.dependencies import get_current_active_user
 from app.models.user import User
 from app.models.category import Category
 from app.models.tag import Tag
+from app.services.email_service import email_service
 
 router = APIRouter(
     prefix="/auth",
@@ -318,20 +319,17 @@ async def forgot_password(
         token_repo = RefreshTokenRepository(db)
         reset_token = await token_repo.create(user.id)
 
-        # Log instead of email (portfolio version)
-        print("\n" + "=" * 60)
-        print("🔐 PASSWORD RESET REQUEST")
-        print("=" * 60)
-        print(f"📧 Email: {request.email}")
-        print(f"👤 User: {user.username}")
-        print(f"🔑 Token: {reset_token.token}")
-        print(f"🔗 Reset Link: http://localhost:3000/reset-password?token={reset_token.token}")
-        print("⏰ Expires: 7 days")
-        print("=" * 60 + "\n")
+        # Send password reset email
+        # Falls back to console logging if RESEND_API_KEY not configured
+        await email_service.send_password_reset_email(
+            to_email=user.email,
+            reset_token=reset_token.token,
+            username=user.username
+        )
 
     # Always return success (prevent user enumeration)
     return {
-        "message": "If an account exists with this email, check the console for the reset link."
+        "message": "If an account exists with this email, you will receive a password reset link via email."
     }
 
 

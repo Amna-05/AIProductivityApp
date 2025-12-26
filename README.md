@@ -14,7 +14,8 @@ A production-ready RESTful API for intelligent task management with AI-powered n
 ### Core Functionality
 - **Task Management** - Full CRUD with advanced filtering (15+ query parameters)
 - **Priority Matrix** - Eisenhower Matrix quadrants (Urgent/Important classification)
-- **User Authentication** - JWT-based auth with secure refresh tokens
+- **User Authentication** - JWT-based auth with secure refresh tokens + password reset
+- **Role-Based Authorization** - Admin dashboard with user management capabilities
 - **Analytics Dashboard** - Comprehensive insights (trends, distributions, productivity metrics)
 - **AI Task Parser** - Natural language task creation using Groq LLaMA 3.3 70B
 - **Category & Tag System** - Flexible organization with many-to-many relationships
@@ -82,6 +83,25 @@ uvicorn app.main:app --reload
 Server runs at: http://localhost:8000
 API Documentation: http://localhost:8000/docs (Swagger UI)
 
+### Creating an Admin User
+
+After registration, promote a user to admin using the provided script:
+
+```bash
+# Edit make_admin.py to set your email
+# Then run:
+uv run python make_admin.py
+
+# Or manually via SQL:
+# UPDATE users SET is_superuser = true WHERE email = 'your-email@example.com';
+```
+
+Admin users can access:
+
+- Admin dashboard at `/admin` (frontend) or `/api/v1/admin/*` (API)
+- User management (toggle admin/active status)
+- System statistics
+
 ## 📊 API Overview
 
 ### Authentication
@@ -90,6 +110,18 @@ POST   /api/v1/auth/register          # Create new user
 POST   /api/v1/auth/login             # Login with credentials
 POST   /api/v1/auth/refresh           # Refresh access token
 POST   /api/v1/auth/logout            # Logout (revoke refresh token)
+POST   /api/v1/auth/forgot-password   # Request password reset (logs token to console)
+POST   /api/v1/auth/reset-password    # Reset password with token
+GET    /api/v1/auth/me                # Get current user info
+```
+
+### Admin (Requires Admin Role)
+
+```http
+GET    /api/v1/admin/stats                      # System statistics
+GET    /api/v1/admin/users                      # List all users with task counts
+PATCH  /api/v1/admin/users/{id}/toggle-admin    # Toggle admin status
+PATCH  /api/v1/admin/users/{id}/toggle-active   # Toggle active status
 ```
 
 ### Tasks
@@ -180,7 +212,8 @@ open htmlcov/index.html   # Mac/Linux
 ### API Endpoints
 - [app/api/endpoints/tasks.py](app/api/endpoints/tasks.py) - Task management endpoints (291 lines)
 - [app/api/endpoints/analytics.py](app/api/endpoints/analytics.py) - Analytics endpoints
-- [app/api/endpoints/auth.py](app/api/endpoints/auth.py) - Authentication endpoints
+- [app/api/endpoints/auth.py](app/api/endpoints/auth.py) - Authentication + password reset
+- [app/api/endpoints/admin.py](app/api/endpoints/admin.py) - Admin user management
 
 ### Middleware
 - [app/middleware/logging_middleware.py](app/middleware/logging_middleware.py) - Request logging with correlation IDs
@@ -195,6 +228,7 @@ users
 ├── username (unique)
 ├── hashed_password
 ├── is_active
+├── is_superuser (admin role)
 └── timestamps
 
 tasks
@@ -208,18 +242,21 @@ tasks
 └── timestamps
 
 categories, tags (many-to-many with tasks via task_tags)
-refresh_tokens (for JWT token management)
+refresh_tokens (for JWT token management & password reset)
 ```
 
 ## 🔒 Security Features
 
 - **Password Hashing**: bcrypt with salt
 - **JWT Authentication**: Access tokens (15 min) + Refresh tokens (7 days)
+- **Password Reset**: Token-based reset with one-time use tokens
 - **HttpOnly Cookies**: CSRF protection
 - **Token Revocation**: Refresh tokens stored in database
+- **Role-Based Access Control**: Admin-only routes with `require_admin()` dependency
 - **User Isolation**: All queries filtered by `user_id`
 - **Input Validation**: Pydantic schemas with type checking
 - **CORS Configuration**: Restricted origins
+- **Admin Protection**: Prevents self-demotion and self-deactivation
 
 ## 📊 Logging & Monitoring
 
@@ -298,6 +335,9 @@ SENTRY_DSN=<your-sentry-dsn>
 **Completed** ✅
 - [x] Task CRUD with advanced filtering
 - [x] User authentication with JWT
+- [x] Password reset functionality
+- [x] Role-based authorization (Admin)
+- [x] Admin dashboard & user management
 - [x] Analytics dashboard
 - [x] AI-powered task parsing
 - [x] Comprehensive unit tests
@@ -307,6 +347,47 @@ SENTRY_DSN=<your-sentry-dsn>
 - [ ] CI/CD pipeline (GitHub Actions)
 - [ ] Docker containerization
 
+## 🔑 Password Reset Flow
+
+The password reset feature supports **two modes**:
+
+### Development Mode (Default)
+Without email configuration, tokens are logged to the backend console:
+
+1. User requests password reset via `/auth/forgot-password`
+2. Reset token is **logged to backend console** (development mode)
+3. User clicks reset link: `http://localhost:3000/reset-password?token=<TOKEN>`
+4. User enters new password
+5. All refresh tokens are revoked (forces re-login)
+
+### Production Mode (Email-Based)
+With **Resend API configured**, users receive professional HTML emails:
+
+1. User requests password reset
+2. System sends **HTML email** with reset link via Resend
+3. User clicks link in email to reset password
+4. Password is updated and all sessions are invalidated
+
+**Setting Up Email (Recommended for Production):**
+
+```bash
+# 1. Get free Resend API key (100 emails/day free tier)
+# Visit: https://resend.com
+
+# 2. Add to your .env file
+RESEND_API_KEY=re_your_actual_api_key_here
+EMAIL_FROM=ELEVATE <onboarding@resend.dev>  # Use this for testing
+FRONTEND_URL=http://localhost:3000  # Update for production
+
+# 3. Restart backend server
+# Emails will now be sent automatically!
+```
+
+**Email Features:**
+- Professional HTML templates with branding
+- Secure reset links with 1-hour expiration
+- Automatic fallback to console logging if email fails
+- Graceful degradation (works without email configured)
 
 ## 📄 License
 

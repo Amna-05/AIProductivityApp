@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     # External APIs and Keys
     GROQ_API_KEY: Optional[str] = ""  # Groq API Key
 
+    # Email Service (Resend)
+    RESEND_API_KEY: Optional[str] = "your-resend-api-key-here"  # Get from resend.com
+    EMAIL_FROM: str = "ELEVATE <onboarding@resend.dev>"  # Sender email (update in production)
+    FRONTEND_URL: str = "http://localhost:3000"  # Frontend URL for reset links
+
     # Authentication & Security
     SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
