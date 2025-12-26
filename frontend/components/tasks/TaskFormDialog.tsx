@@ -12,6 +12,7 @@ import { tasksApi } from "@/lib/api/tasks";
 import { categoriesApi } from "@/lib/api/categories";
 import { tagsApi } from "@/lib/api/tags";
 import { Task, TaskStatus } from "@/lib/types";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 import {
   Dialog,
@@ -387,15 +388,29 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
                   )}
                 />
 
-                {/* Tags - Placeholder */}
-                <FormItem>
-                  <FormLabel className="font-semibold">Tags</FormLabel>
-                  <div className="h-11 flex items-center px-3 rounded-md border bg-muted/30 text-sm text-muted-foreground">
-                    {tags.length > 0
-                      ? `${tags.length} tags available (coming soon)`
-                      : "No tags created yet"}
-                  </div>
-                </FormItem>
+                {/* Tags */}
+                <FormField
+                  control={form.control}
+                  name="tag_ids"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">Tags</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={tags.map((tag) => ({
+                            label: tag.name,
+                            value: tag.id,
+                            color: tag.color,
+                          }))}
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          placeholder={tags.length > 0 ? "Select tags..." : "No tags created yet"}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
