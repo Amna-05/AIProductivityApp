@@ -2,13 +2,14 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from app.schemas.categories import CategoryCreate, CategoryUpdate, CategoryResponse
 from app.db.database import get_db
 from app.core.dependencies import get_current_active_user
 from app.models.user import User
 from app.models.category import Category
+from app.models.task import Task
 
 router = APIRouter(
     prefix="/categories",
@@ -22,14 +23,36 @@ async def list_categories(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get all categories for current user."""
+    """Get all categories for current user with task counts."""
     result = await db.execute(
         select(Category)
         .where(Category.user_id == current_user.id)
         .order_by(Category.name)
     )
     categories = result.scalars().all()
-    return [CategoryResponse.model_validate(cat) for cat in categories]
+
+    # Add task_count to each category
+    response_list = []
+    for cat in categories:
+        # Count tasks for this category
+        count_result = await db.execute(
+            select(func.count(Task.id)).where(Task.category_id == cat.id)
+        )
+        task_count = count_result.scalar() or 0
+
+        # Create response with task_count
+        cat_dict = {
+            "id": cat.id,
+            "name": cat.name,
+            "color": cat.color,
+            "icon": cat.icon,
+            "user_id": cat.user_id,
+            "created_at": cat.created_at,
+            "task_count": task_count
+        }
+        response_list.append(CategoryResponse(**cat_dict))
+
+    return response_list
 
 
 @router.post("", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)

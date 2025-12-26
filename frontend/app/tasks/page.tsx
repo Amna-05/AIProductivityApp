@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Filter, Loader2, Edit } from "lucide-react";
+import { Plus, Search, Filter, Loader2, Edit, Trash2, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { tasksApi, TaskFilters } from "@/lib/api/tasks";
@@ -190,26 +190,28 @@ export default function TasksPage() {
           {data?.tasks.map((task) => (
             <div
               key={task.id}
-              className="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
+              className="rounded-lg border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium">{task.title}</h3>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStatusBadgeColor(
-                        task.status
-                      )}`}
-                    >
-                      {task.status.replace("_", " ")}
-                    </span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${getQuadrantBadgeColor(
-                        task.quadrant
-                      )}`}
-                    >
-                      {task.quadrant.replace("_", " ")}
-                    </span>
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-start gap-2 flex-wrap">
+                    <h3 className="font-semibold text-base text-card-foreground flex-shrink-0">{task.title}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusBadgeColor(
+                          task.status
+                        )}`}
+                      >
+                        {task.status.replace("_", " ").toUpperCase()}
+                      </span>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getQuadrantBadgeColor(
+                          task.quadrant
+                        )}`}
+                      >
+                        {task.quadrant.replace("_", " ")}
+                      </span>
+                    </div>
                   </div>
 
                   {task.description && (
@@ -258,31 +260,37 @@ export default function TasksPage() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => handleOpenDialog(task)}
+                    className="h-9 w-9 p-0"
+                    title="Edit task"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   {task.status !== "done" && (
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
                       onClick={() =>
                         updateStatusMutation.mutate({
                           id: task.id,
                           status: "done",
                         })
                       }
+                      className="h-9 w-9 p-0 text-success hover:text-success hover:bg-success/10"
+                      title="Mark as done"
                     >
-                      Mark Done
+                      <CheckCircle className="h-4 w-4" />
                     </Button>
                   )}
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => handleDelete(task.id)}
+                    className="h-9 w-9 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    title="Delete task"
                   >
-                    Delete
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

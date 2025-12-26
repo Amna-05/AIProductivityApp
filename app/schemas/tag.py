@@ -23,6 +23,7 @@ class TagResponse(TagBase):
     id: int
     user_id: int
     created_at: datetime
-    
+    task_count: int = 0
+
     class Config:
         from_attributes = True

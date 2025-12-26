@@ -17,7 +17,7 @@ from app.middleware.error_handler import (
     database_exception_handler,
     custom_api_exception_handler,
 )
-from app.api.endpoints import tasks, auth, categories, tags, task_views, ai_tasks, ai_priority, analytics
+from app.api.endpoints import tasks, auth, categories, tags, task_views, ai_tasks, analytics
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
@@ -80,15 +80,10 @@ A production-ready task management system featuring:
 - **Authentication**: Secure JWT-based auth with httpOnly cookies
 - **Categories & Tags**: Organize tasks with custom categories and tags
 
-## AI-Powered Features (Phase 1)
+## AI-Powered Features
 - **Natural Language Processing**: Create tasks from voice or text input
-- **Smart Suggestions**: AI-powered task parsing with Groq
-
-## AI-Powered Features (Phase 2)
-- **Semantic Embeddings**: 384-dimensional vectors for semantic understanding
-- **Priority Suggestions**: AI recommends urgency/importance based on historical patterns
-- **Similar Task Search**: Find similar past tasks using vector similarity
-- **Smart Prioritization**: Learn from your task completion history
+- **Smart Task Parsing**: AI-powered task creation with Groq
+- **Voice Input**: Speech-to-text task creation
 
 ## Production Features
 - **Structured Logging**: Request tracing with correlation IDs
@@ -168,8 +163,7 @@ app.include_router(categories.router, prefix=settings.API_V1_PREFIX)
 app.include_router(tags.router, prefix=settings.API_V1_PREFIX)
 app.include_router(task_views.router, prefix=settings.API_V1_PREFIX)
 app.include_router(ai_tasks.router, prefix=settings.API_V1_PREFIX)
-app.include_router(ai_priority.router, prefix=settings.API_V1_PREFIX)  # Phase 2: AI Priority Suggestions
-app.include_router(analytics.router, prefix=settings.API_V1_PREFIX)  # Phase 3: Analytics Dashboard 
+app.include_router(analytics.router, prefix=settings.API_V1_PREFIX) 
 
 @app.get("/")
 async def root():

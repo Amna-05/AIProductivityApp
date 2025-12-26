@@ -18,8 +18,8 @@ export default function PriorityMatrixPage() {
 
   // Fetch all tasks
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", { limit: 200 }],
-    queryFn: () => tasksApi.getAll({ limit: 200 }),
+    queryKey: ["tasks", { limit: 100 }],
+    queryFn: () => tasksApi.getAll({ limit: 100 }),
   });
 
   // Update task status mutation

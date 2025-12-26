@@ -1,0 +1,533 @@
+2025-12-26 10:28:41 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '2b5aa6e1-1c40-4b62-8bfe-f43855b5af69', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:28:43 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '2b5aa6e1-1c40-4b62-8bfe-f43855b5af69', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 1422.86} | ← POST /api/v1/auth/refresh → 503 (1422.86ms)
+2025-12-26 10:31:45 | ERROR    | app.middleware.logging_middleware:dispatch:131 | {'correlation_id': '173e28b3-04da-404b-ba9c-69c098d70c73', 'user_id': None, 'method': 'POST', 'path': '/api/v1/ai/tasks/parse', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'duration_ms': 4546.55, 'error': '1 validation error for ParsedTaskResponse\ntitle\n  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.11/v/string_type', 'error_type': 'ValidationError', 'exc_info': 1 validation error for ParsedTaskResponse
+title
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type} | ✗ POST /api/v1/ai/tasks/parse → FAILED: ValidationError: 1 validation error for ParsedTaskResponse
+title
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type (4546.55ms)
+2025-12-26 10:31:45 | ERROR    | app.middleware.error_handler:global_exception_handler:45 | {'correlation_id': '173e28b3-04da-404b-ba9c-69c098d70c73', 'path': '/api/v1/ai/tasks/parse', 'method': 'POST', 'error_type': 'ValidationError', 'user_id': None, 'exc_info': 1 validation error for ParsedTaskResponse
+title
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type} | Unhandled exception: ValidationError: 1 validation error for ParsedTaskResponse
+title
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+2025-12-26 10:31:47 | ERROR    | logging:callHandlers:1706 | {} | Exception in ASGI application
+
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 79, in collapse_excgroups
+  |     yield
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x00000145B9CC29D0>
+  |                │     └ <function create_task_group at 0x00000145B695F100>
+  |                └ <module 'anyio' from 'D:\\Desktop\\deployed-project\\task-manager-app\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 781, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |                    └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000145B5BE1A90>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |                  │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+    |                  │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |                  │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |                  │    └ <fastapi.applications.FastAPI object at 0x00000145B5C59BD0>
+    |                  └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000145B5BE1A90>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+    |                            │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+    |           │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000145B9291490>
+    |           └ <fastapi.applications.FastAPI object at 0x00000145B5C59BD0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x00000145B9241410>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000145B9291490>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |           │         │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+    |           │         │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+    |                            │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |           │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x00000145B6CC3920>
+    |           │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    |     await self.simple_response(scope, receive, send, request_headers=headers)
+    |           │    │               │      │        │                     └ Headers({'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '22', 'sec-ch-ua-platform': '"Windows"', 'us...
+    |           │    │               │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>>
+    |           │    │               │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │    │               └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function CORSMiddleware.simple_response at 0x00000145B6CC14E0>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ functools.partial(<bound method CORSMiddleware.send of <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50...
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x00000145B6B91C60>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(typ, value, traceback)
+    |     │    │   │     │    │      └ <traceback object at 0x00000145B9D8EF40>
+    |     │    │   │     │    └ ExceptionGroup('unhandled errors in a TaskGroup', [1 validation error for ParsedTaskResponse
+    |     │    │   │     │      title
+    |     │    │   │     │        Input should be a valid ...
+    |     │    │   │     └ <class 'ExceptionGroup'>
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x00000145B9B9B920>
+    |     └ <contextlib._GeneratorContextManager object at 0x00000145B9CC2810>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x00000145B8B898A0>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x00000145B9CC3D90>
+    |                      │    └ <bound method LoggingMiddleware.dispatch of <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>>
+    |                      └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    |     response = await call_next(request)
+    |                      │         └ <starlette.middleware.base._CachedRequest object at 0x00000145B9CC3D90>
+    |                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x00000145B8B898A0>
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |           └ 1 validation error for ParsedTaskResponse
+    |             title
+    |               Input should be a valid string [type=string_type, input_value=None, input_t...
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |           │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000145B9C0F600>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000145B8E5F3D0>
+    |           └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |           │                            │    │    │     │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000145B9C0F600>
+    |           │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    │    └ <starlette.requests.Request object at 0x00000145B9BA9F90>
+    |           │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+    |           │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000145B8E5F3D0>
+    |           └ <function wrap_app_handling_exceptions at 0x00000145B6C1CFE0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <fastapi.routing.APIRouter object at 0x00000145B91C8650>
+    |           └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x00000145B91C8650>>
+    |           └ <fastapi.routing.APIRouter object at 0x00000145B91C8650>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |           │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │     └ <function Route.handle at 0x00000145B6C1E660>
+    |           └ APIRoute(path='/api/v1/ai/tasks/parse', name='parse_voice_input', methods=['POST'])
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function request_response.<locals>.app at 0x00000145B922F380>
+    |           └ APIRoute(path='/api/v1/ai/tasks/parse', name='parse_voice_input', methods=['POST'])
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |           │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+    |           │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    └ <starlette.requests.Request object at 0x00000145B9BAA590>
+    |           │                            └ <function request_response.<locals>.app.<locals>.app at 0x00000145B9C0EAC0>
+    |           └ <function wrap_app_handling_exceptions at 0x00000145B6C1CFE0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9C0EC00>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <function request_response.<locals>.app.<locals>.app at 0x00000145B9C0EAC0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 109, in app
+    |     response = await f(request)
+    |                      │ └ <starlette.requests.Request object at 0x00000145B9BAA590>
+    |                      └ <function get_request_handler.<locals>.app at 0x00000145B922F2E0>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 387, in app
+    |     raw_response = await run_endpoint_function(
+    |                          └ <function run_endpoint_function at 0x00000145B6C40540>
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 288, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |                  │         │      └ <unprintable dict object>
+    |                  │         └ <function parse_voice_input at 0x00000145B8EEC9A0>
+    |                  └ Dependant(path_params=[], query_params=[], header_params=[], cookie_params=[], body_params=[ModelField(field_info=Body(Pydant...
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\app\api\endpoints\ai_tasks.py", line 64, in parse_voice_input
+    |     return ParsedTaskResponse(
+    |            └ <class 'app.schemas.ai_task.ParsedTaskResponse'>
+    |
+    |   File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    |     validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+    |                      │    │                      │               │                   └ ParsedTaskResponse()
+    |                      │    │                      │               └ {'title': None, 'description': None, 'due_date': None, 'is_urgent': False, 'is_important': False, 'suggested_category': None,...
+    |                      │    │                      └ <method 'validate_python' of 'pydantic_core._pydantic_core.SchemaValidator' objects>
+    |                      │    └ SchemaValidator(title="ParsedTaskResponse", validator=Model(
+    |                      │          ModelValidator {
+    |                      │              revalidate: Never,
+    |                      │              validato...
+    |                      └ ParsedTaskResponse()
+    |
+    | pydantic_core._pydantic_core.ValidationError: 1 validation error for ParsedTaskResponse
+    | title
+    |   Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    |     For further information visit https://errors.pydantic.dev/2.11/v/string_type
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 320
+               │     └ 3
+               └ <function _main at 0x00000145B376B4C0>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 320
+           │    └ <function BaseProcess._bootstrap at 0x00000145B356D440>
+           └ <SpawnProcess name='SpawnProcess-1' parent=6768 started>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x00000145B356C9A0>
+    └ <SpawnProcess name='SpawnProcess-1' parent=6768 started>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x00000145B3735450>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-1' parent=6768 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-1' parent=6768 started>
+    │    └ <function subprocess_started at 0x00000145B5B7B9C0>
+    └ <SpawnProcess name='SpawnProcess-1' parent=6768 started>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=340, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x00000145B5BB9A50>>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x00000145B5AEF7E0>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x00000145B3735450>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x00000145B5BB9A50>
+           │           │    │             └ [<socket.socket fd=340, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │           │    └ <function Server.serve at 0x00000145B5B7A700>
+           │           └ <uvicorn.server.Server object at 0x00000145B5BB9A50>
+           └ <function asyncio_run at 0x00000145B5B7A5C0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\_compat.py", line 23, in asyncio_run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x00000145B5B88D60>
+           │      └ <function Runner.run at 0x00000145B53E3E20>
+           └ <asyncio.runners.Runner object at 0x00000145B5BB9390>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x00000145B53E1940>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x00000145B5BB9390>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 641, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x00000145B53E18A0>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 608, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x00000145B53E36A0>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1936, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x00000145B5324AE0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\asyncio\events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+> File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000145B5BE1A90>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x00000145B5C59BD0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000145B5BE1A90>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\applications.py", line 1133, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0310>>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000145B9291490>
+          └ <fastapi.applications.FastAPI object at 0x00000145B5C59BD0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x00000145B9241410>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000145B9291490>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+          │         │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+          │         │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000145B9B000E0>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+          │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x00000145B6CC3920>
+          │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+          └ <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+          │    │               │      │        │                     └ Headers({'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '22', 'sec-ch-ua-platform': '"Windows"', 'us...
+          │    │               │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000145B9CC3E10>>
+          │    │               │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │    │               └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function CORSMiddleware.simple_response at 0x00000145B6CC14E0>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+          │    │   │      │        └ functools.partial(<bound method CORSMiddleware.send of <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50...
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x00000145B9CC0...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x00000145B8EF4E50>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x00000145B6B91C60>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\SiliCon\AppData\Roaming\uv\python\cpython-3.11.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x00000145B9D8EF40>
+    │    │   │     │    └ ExceptionGroup('unhandled errors in a TaskGroup', [1 validation error for ParsedTaskResponse
+    │    │   │     │      title
+    │    │   │     │        Input should be a valid ...
+    │    │   │     └ <class 'ExceptionGroup'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x00000145B9B9B920>
+    └ <contextlib._GeneratorContextManager object at 0x00000145B9CC2810>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_utils.py", line 85, in collapse_excgroups
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x00000145B8B898A0>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x00000145B9CC3D90>
+                     │    └ <bound method LoggingMiddleware.dispatch of <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>>
+                     └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+
+  File "D:\Desktop\deployed-project\task-manager-app\app\middleware\logging_middleware.py", line 65, in dispatch
+    response = await call_next(request)
+                     │         └ <starlette.middleware.base._CachedRequest object at 0x00000145B9CC3D90>
+                     └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x00000145B8B898A0>
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+          └ 1 validation error for ParsedTaskResponse
+            title
+              Input should be a valid string [type=string_type, input_value=None, input_t...
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+          │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000145B9C0F600>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000145B8E5F3D0>
+          └ <app.middleware.logging_middleware.LoggingMiddleware object at 0x00000145B8E5ED10>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000145B9C0F600>
+          │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x00000145B9BA9F90>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000145B8E5F3D0>
+          └ <function wrap_app_handling_exceptions at 0x00000145B6C1CFE0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x00000145B91C8650>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000145B8E8F690>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x00000145B91C8650>>
+          └ <fastapi.routing.APIRouter object at 0x00000145B91C8650>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │     └ <function Route.handle at 0x00000145B6C1E660>
+          └ APIRoute(path='/api/v1/ai/tasks/parse', name='parse_voice_input', methods=['POST'])
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function request_response.<locals>.app at 0x00000145B922F380>
+          └ APIRoute(path='/api/v1/ai/tasks/parse', name='parse_voice_input', methods=['POST'])
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 123, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9B96520>
+          │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x00000145B9BAA590>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x00000145B9C0EAC0>
+          └ <function wrap_app_handling_exceptions at 0x00000145B6C1CFE0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000145B9C0EC00>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000145B9C0FF60>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x00000145B9C0EAC0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 109, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x00000145B9BAA590>
+                     └ <function get_request_handler.<locals>.app at 0x00000145B922F2E0>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 387, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x00000145B6C40540>
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\fastapi\routing.py", line 288, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ <unprintable dict object>
+                 │         └ <function parse_voice_input at 0x00000145B8EEC9A0>
+                 └ Dependant(path_params=[], query_params=[], header_params=[], cookie_params=[], body_params=[ModelField(field_info=Body(Pydant...
+
+  File "D:\Desktop\deployed-project\task-manager-app\app\api\endpoints\ai_tasks.py", line 64, in parse_voice_input
+    return ParsedTaskResponse(
+           └ <class 'app.schemas.ai_task.ParsedTaskResponse'>
+
+  File "D:\Desktop\deployed-project\task-manager-app\.venv\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     │    │                      │               │                   └ ParsedTaskResponse()
+                     │    │                      │               └ {'title': None, 'description': None, 'due_date': None, 'is_urgent': False, 'is_important': False, 'suggested_category': None,...
+                     │    │                      └ <method 'validate_python' of 'pydantic_core._pydantic_core.SchemaValidator' objects>
+                     │    └ SchemaValidator(title="ParsedTaskResponse", validator=Model(
+                     │          ModelValidator {
+                     │              revalidate: Never,
+                     │              validato...
+                     └ ParsedTaskResponse()
+
+pydantic_core._pydantic_core.ValidationError: 1 validation error for ParsedTaskResponse
+title
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+2025-12-26 10:46:22 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'bbb49118-db83-444c-97a9-d427ae6db98b', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:46:22 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'bbb49118-db83-444c-97a9-d427ae6db98b', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 160.53} | ← POST /api/v1/auth/refresh → 503 (160.53ms)
+2025-12-26 10:46:22 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '2cd81291-1b12-4621-877d-477f177d704f', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:46:22 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '2cd81291-1b12-4621-877d-477f177d704f', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 143.69} | ← POST /api/v1/auth/refresh → 503 (143.69ms)
+2025-12-26 10:46:22 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '99bd2123-4fd0-4b52-a21e-dee74b3f16be', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:46:23 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '99bd2123-4fd0-4b52-a21e-dee74b3f16be', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 395.32} | ← POST /api/v1/auth/refresh → 503 (395.32ms)
+2025-12-26 10:46:23 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'd5b01d64-f2a9-49bf-bda0-c7884e7dc5c6', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:46:23 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'd5b01d64-f2a9-49bf-bda0-c7884e7dc5c6', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 345.32} | ← POST /api/v1/auth/refresh → 503 (345.32ms)
+2025-12-26 10:46:23 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'cae483c1-e22e-40a0-a33b-f97be733ef9a', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 10:46:23 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'cae483c1-e22e-40a0-a33b-f97be733ef9a', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'status_code': 503, 'duration_ms': 491.41} | ← POST /api/v1/auth/refresh → 503 (491.41ms)
+2025-12-26 11:50:12 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '9a6a3005-0f9a-48c3-a579-6d85f73e695a', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:13 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '448e2f84-2529-45e0-938a-e27ce0600337', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:13 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '9a6a3005-0f9a-48c3-a579-6d85f73e695a', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 1365.9} | ← POST /api/v1/auth/refresh → 503 (1365.9ms)
+2025-12-26 11:50:13 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'ef675e70-faf4-4f90-97ff-a8c59cd4037e', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:13 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '448e2f84-2529-45e0-938a-e27ce0600337', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 1478.32} | ← POST /api/v1/auth/refresh → 503 (1478.32ms)
+2025-12-26 11:50:13 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'ef675e70-faf4-4f90-97ff-a8c59cd4037e', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 1460.15} | ← POST /api/v1/auth/refresh → 503 (1460.15ms)
+2025-12-26 11:50:13 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'd5b11324-fd6a-496d-9b76-47cd6656c5f4', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:13 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'd5b11324-fd6a-496d-9b76-47cd6656c5f4', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 1508.49} | ← POST /api/v1/auth/refresh → 503 (1508.49ms)
+2025-12-26 11:50:14 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '17d0d469-6aa6-4eda-8373-d41cf1e7a779', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:14 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '17d0d469-6aa6-4eda-8373-d41cf1e7a779', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 122.08} | ← POST /api/v1/auth/refresh → 503 (122.08ms)
+2025-12-26 11:50:14 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '9cea4264-3d86-4988-b915-79e8e68422e9', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:14 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '9cea4264-3d86-4988-b915-79e8e68422e9', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 192.4} | ← POST /api/v1/auth/refresh → 503 (192.4ms)
+2025-12-26 11:50:14 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': '3e18457e-b1cb-45f0-abeb-3c97f26c3461', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:14 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': '3e18457e-b1cb-45f0-abeb-3c97f26c3461', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 253.25} | ← POST /api/v1/auth/refresh → 503 (253.25ms)
+2025-12-26 11:50:14 | ERROR    | app.middleware.error_handler:database_exception_handler:147 | {'correlation_id': 'dcb2cada-2b82-48e3-80d7-37cb1e7bd488', 'path': '/api/v1/auth/refresh', 'method': 'POST', 'error_type': 'MissingGreenlet', 'user_id': None, 'exc_info': MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")} | Database error: MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2025-12-26 11:50:14 | ERROR    | app.middleware.logging_middleware:dispatch:95 | {'correlation_id': 'dcb2cada-2b82-48e3-80d7-37cb1e7bd488', 'user_id': None, 'method': 'POST', 'path': '/api/v1/auth/refresh', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 503, 'duration_ms': 154.92} | ← POST /api/v1/auth/refresh → 503 (154.92ms)

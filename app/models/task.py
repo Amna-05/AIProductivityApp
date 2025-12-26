@@ -7,7 +7,7 @@ Task model with Priority Matrix support.
 
 from sqlalchemy import (
     Column, Integer, String, Boolean, DateTime,
-    Enum as SQLEnum, Index, ForeignKey, Table, LargeBinary
+    Enum as SQLEnum, Index, ForeignKey, Table
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -15,15 +15,6 @@ from datetime import datetime
 
 from app.db.database import Base
 from app.schemas.task import TaskStatus
-
-# Import pgvector type for embeddings
-try:
-    from pgvector.sqlalchemy import Vector
-    PGVECTOR_AVAILABLE = True
-except ImportError:
-    # Graceful degradation if pgvector not installed yet
-    Vector = LargeBinary
-    PGVECTOR_AVAILABLE = False
 
 # ASSOCIATION TABLE for Many-to-Many (Task ↔ Tag)
 task_tags = Table(
@@ -60,15 +51,9 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
 
-    # AI/ML FEATURES (Phase 2)
-    # Semantic embedding for similarity search and priority suggestions
-    # 384 dimensions from sentence-transformers all-MiniLM-L6-v2 model
-    # Nullable: embeddings generated on-demand, not required for basic functionality
-    embedding = Column(Vector(384) if PGVECTOR_AVAILABLE else LargeBinary, nullable=True)
-
     # RELATIONSHIPS
     user = relationship("User", back_populates="tasks")
-    category = relationship("Category", back_populates="tasks")  # STRING used safely
+    category = relationship("Category", back_populates="tasks")
     tags = relationship("Tag", secondary=task_tags, back_populates="tasks")
 
     # INDEXES
@@ -81,6 +66,7 @@ class Task(Base):
     # COMPUTED PROPERTIES
     @property
     def quadrant(self) -> str:
+        """Determine Eisenhower Matrix quadrant based on urgency and importance."""
         if self.is_urgent and self.is_important:
             return "DO_FIRST"
         elif not self.is_urgent and self.is_important:
@@ -92,12 +78,14 @@ class Task(Base):
 
     @property
     def is_overdue(self) -> bool:
+        """Check if task is overdue."""
         if not self.due_date or self.status == TaskStatus.DONE:
             return False
         return datetime.now(self.due_date.tzinfo) > self.due_date
 
     @property
     def days_until_due(self) -> int | None:
+        """Calculate days remaining until due date."""
         if not self.due_date:
             return None
         delta = self.due_date - datetime.now(self.due_date.tzinfo)

@@ -1,22 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState, createContext, useContext } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { cn } from "@/lib/utils/cn";
+import { Loader2 } from "lucide-react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+// Create context for dialog handlers
+interface DialogContextType {
+  openTaskDialog: () => void;
+  openAIDialog: () => void;
+}
+
+const DialogContext = createContext<DialogContextType | null>(null);
+
+export const useDialogs = () => {
+  const context = useContext(DialogContext);
+  if (!context) {
+    return { openTaskDialog: () => {}, openAIDialog: () => {} };
+  }
+  return context;
+};
+
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { user, setUser, setLoading, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [taskDialogTrigger, setTaskDialogTrigger] = useState(0);
+  const [aiDialogTrigger, setAIDialogTrigger] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,50 +61,61 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     checkAuth();
   }, [user, router, setUser, setLoading]);
 
+  const dialogHandlers = {
+    openTaskDialog: () => setTaskDialogTrigger((prev) => prev + 1),
+    openAIDialog: () => setAIDialogTrigger((prev) => prev + 1),
+  };
+
   // Show loading state
   if (isLoading || !user) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading ELEVATE...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block">
-        <Sidebar />
-      </aside>
+    <DialogContext.Provider value={dialogHandlers}>
+      <div className="flex h-screen overflow-hidden">
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:block">
+          <Sidebar />
+        </aside>
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        >
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
           <div
-            className={cn(
-              "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform",
-              sidebarOpen ? "translate-x-0" : "-translate-x-full"
-            )}
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+            onClick={() => setSidebarOpen(false)}
           >
-            <Sidebar />
+            <div
+              className={cn(
+                "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform",
+                sidebarOpen ? "translate-x-0" : "-translate-x-full"
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Sidebar />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
-          {children}
-        </main>
+        {/* Main Content */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <Header
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+            onAddTask={() => setTaskDialogTrigger((prev) => prev + 1)}
+            onAIParser={() => setAIDialogTrigger((prev) => prev + 1)}
+          />
+          <main className="flex-1 overflow-y-auto bg-background">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </DialogContext.Provider>
   );
 }

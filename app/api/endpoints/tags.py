@@ -2,13 +2,14 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from app.schemas.tag import TagCreate, TagUpdate, TagResponse
 from app.db.database import get_db
 from app.core.dependencies import get_current_active_user
 from app.models.user import User
 from app.models.tag import Tag
+from app.models.task import Task, task_tags
 
 router = APIRouter(
     prefix="/tags",
@@ -22,14 +23,35 @@ async def list_tags(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get all tags for current user."""
+    """Get all tags for current user with task counts."""
     result = await db.execute(
         select(Tag)
         .where(Tag.user_id == current_user.id)
         .order_by(Tag.name)
     )
     tags = result.scalars().all()
-    return [TagResponse.model_validate(tag) for tag in tags]
+
+    # Add task_count to each tag
+    response_list = []
+    for tag in tags:
+        # Count tasks with this tag (through association table)
+        count_result = await db.execute(
+            select(func.count(task_tags.c.task_id)).where(task_tags.c.tag_id == tag.id)
+        )
+        task_count = count_result.scalar() or 0
+
+        # Create response with task_count
+        tag_dict = {
+            "id": tag.id,
+            "name": tag.name,
+            "color": tag.color,
+            "user_id": tag.user_id,
+            "created_at": tag.created_at,
+            "task_count": task_count
+        }
+        response_list.append(TagResponse(**tag_dict))
+
+    return response_list
 
 
 @router.post("", response_model=TagResponse, status_code=status.HTTP_201_CREATED)

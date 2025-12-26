@@ -1,7 +1,5 @@
 """
 Task repository for database operations.
-
-Includes automatic embedding generation for AI-powered features (Phase 2).
 """
 
 from typing import List, Tuple, Optional
@@ -19,37 +17,10 @@ class TaskRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    def _generate_embedding_safe(self, title: str, description: Optional[str] = None):
-        """
-        Generate embedding with graceful degradation.
-
-        Returns None if embedding service fails, allowing core functionality to work
-        even when AI features are unavailable.
-        """
-        try:
-            from app.services.embedding_service import get_embedding_service
-
-            embedding_service = get_embedding_service()
-            embedding = embedding_service.generate_task_embedding(title, description)
-
-            # Convert numpy array to Python list for pgvector compatibility
-            # pgvector's SQLAlchemy adapter works best with Python lists
-            return embedding.tolist()
-
-        except Exception as e:
-            logger.warning(
-                f"Failed to generate embedding: {str(e)}",
-                title=title,
-                exc_info=False  # Don't log full traceback for non-critical feature
-            )
-            return None
-
     async def create(self, task_data: TaskCreate, user_id: int) -> Task:
         """
         Create a new task with relationships loaded.
         Handles tags separately from other fields.
-
-        Phase 2: Automatically generates semantic embedding for AI features.
         """
         # Extract tag_ids from task_data
         tag_ids = task_data.tag_ids or []
@@ -60,20 +31,6 @@ class TaskRepository:
 
         # Create task instance
         db_task = Task(**task_dict)
-
-        # 🆕 PHASE 2: Generate embedding for AI-powered features
-        # This happens BEFORE commit so embedding is immediately available
-        embedding = self._generate_embedding_safe(
-            title=db_task.title,
-            description=db_task.description
-        )
-        if embedding is not None:
-            db_task.embedding = embedding
-            logger.debug(
-                f"Generated embedding for new task",
-                task_title=db_task.title,
-                embedding_dimensions=len(embedding)
-            )
 
         # Attach tags if provided
         if tag_ids:
@@ -200,8 +157,6 @@ class TaskRepository:
     async def update(self, task_id: int, user_id: int, task_update: TaskUpdate) -> Task:
         """
         Update a task with relationships loaded.
-
-        Phase 2: Regenerates embedding if title or description changed.
         """
         # Get existing task (already has relationships loaded from get_by_id)
         db_task = await self.get_by_id(task_id, user_id)
@@ -215,28 +170,8 @@ class TaskRepository:
         # Update task fields (exclude tag_ids and None values)
         update_data = task_update.model_dump(exclude={'tag_ids'}, exclude_none=True)
 
-        # 🆕 PHASE 2: Track if title/description changed for embedding regeneration
-        title_changed = 'title' in update_data and update_data['title'] != db_task.title
-        description_changed = 'description' in update_data and update_data['description'] != db_task.description
-        needs_reembedding = title_changed or description_changed
-
         for field, value in update_data.items():
             setattr(db_task, field, value)
-
-        # 🆕 PHASE 2: Regenerate embedding if title or description changed
-        if needs_reembedding:
-            embedding = self._generate_embedding_safe(
-                title=db_task.title,
-                description=db_task.description
-            )
-            if embedding is not None:
-                db_task.embedding = embedding
-                logger.debug(
-                    f"Regenerated embedding for updated task",
-                    task_id=task_id,
-                    title_changed=title_changed,
-                    description_changed=description_changed
-                )
 
         # Update tags if provided
         if tag_ids is not None:  # Could be empty list []

@@ -103,7 +103,7 @@ class QuadrantStats(BaseModel):
     count: int = Field(..., description="Number of tasks in this quadrant")
     completed: int = Field(..., description="Completed tasks in this quadrant")
     completion_rate: float = Field(..., description="Percentage completed (0-100)")
-    average_completion_time_days: float = Field(None, description="Average days to complete")
+    average_completion_time_days: float | None = Field(default=None, description="Average days to complete")
 
 
 class PriorityDistributionAnalytics(BaseModel):
@@ -152,14 +152,14 @@ class CategoryStats(BaseModel):
     """Performance statistics for a single category."""
     id: int = Field(..., description="Category ID")
     name: str = Field(..., description="Category name")
-    color: str = Field(None, description="Category color")
+    color: str | None = Field(default=None, description="Category color")
     total_tasks: int = Field(..., description="Total tasks in this category")
     completed_tasks: int = Field(..., description="Completed tasks")
     in_progress_tasks: int = Field(..., description="Tasks in progress")
     pending_tasks: int = Field(..., description="Pending tasks")
     completion_rate: float = Field(..., description="Percentage completed (0-100)")
-    average_completion_time_days: float = Field(None, description="Average days to complete")
-    most_common_quadrant: str = Field(None, description="Most frequently used quadrant")
+    average_completion_time_days: float | None = Field(default=None, description="Average days to complete")
+    most_common_quadrant: str | None = Field(default=None, description="Most frequently used quadrant")
 
 
 class CategoryPerformanceAnalytics(BaseModel):
@@ -170,8 +170,8 @@ class CategoryPerformanceAnalytics(BaseModel):
     """
     categories: List[CategoryStats] = Field(..., description="Stats for each category")
     total_categories: int = Field(..., description="Number of categories analyzed")
-    most_productive_category: str = Field(None, description="Category with highest completion rate")
-    least_productive_category: str = Field(None, description="Category with lowest completion rate")
+    most_productive_category: str | None = Field(default=None, description="Category with highest completion rate")
+    least_productive_category: str | None = Field(default=None, description="Category with lowest completion rate")
 
     class Config:
         json_schema_extra = {
@@ -205,11 +205,11 @@ class TagStats(BaseModel):
     """Usage and performance statistics for a single tag."""
     id: int = Field(..., description="Tag ID")
     name: str = Field(..., description="Tag name")
-    color: str = Field(None, description="Tag color")
+    color: str | None = Field(default=None, description="Tag color")
     usage_count: int = Field(..., description="Number of tasks with this tag")
     completed_count: int = Field(..., description="Completed tasks with this tag")
     completion_rate: float = Field(..., description="Percentage completed (0-100)")
-    average_completion_time_days: float = Field(None, description="Average days to complete")
+    average_completion_time_days: float | None = Field(default=None, description="Average days to complete")
 
 
 class TagAnalytics(BaseModel):
@@ -276,8 +276,8 @@ class TimeAnalytics(BaseModel):
         description="Days of week with least completions"
     )
     average_tasks_per_day: float = Field(..., description="Average tasks completed per day")
-    longest_running_task_days: int = Field(None, description="Longest time to complete a task")
-    fastest_completion_hours: float = Field(None, description="Fastest task completion time")
+    longest_running_task_days: int | None = Field(default=None, description="Longest time to complete a task")
+    fastest_completion_hours: float | None = Field(default=None, description="Fastest task completion time")
 
     class Config:
         json_schema_extra = {
