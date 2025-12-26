@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut,
   ArrowUp,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -58,7 +59,7 @@ export function Sidebar() {
   const [isHovered, setIsHovered] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, isAdmin, logout } = useAuthStore();
 
   const handleLogout = async () => {
     try {
@@ -145,6 +146,52 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Admin Link - Only for admins */}
+        {isAdmin && (
+          <>
+            <Separator className="my-2" />
+            <Link href="/admin">
+              <div
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200 relative group",
+                  pathname === "/admin"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground hover:shadow-sm",
+                  !isHovered && "justify-center"
+                )}
+              >
+                {/* Active indicator bar */}
+                {pathname === "/admin" && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                )}
+
+                <Shield
+                  className={cn(
+                    "h-5 w-5 shrink-0",
+                    pathname === "/admin" && "drop-shadow-sm"
+                  )}
+                />
+
+                <span
+                  className={cn(
+                    "overflow-hidden transition-all duration-200 whitespace-nowrap",
+                    isHovered ? "w-auto opacity-100" : "w-0 opacity-0"
+                  )}
+                >
+                  Admin
+                </span>
+
+                {/* Tooltip for collapsed state */}
+                {!isHovered && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-foreground text-background text-xs rounded-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+                    Admin
+                  </div>
+                )}
+              </div>
+            </Link>
+          </>
+        )}
       </nav>
 
       <Separator />

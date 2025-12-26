@@ -17,7 +17,7 @@ from app.middleware.error_handler import (
     database_exception_handler,
     custom_api_exception_handler,
 )
-from app.api.endpoints import tasks, auth, categories, tags, task_views, ai_tasks, analytics
+from app.api.endpoints import tasks, auth, categories, tags, task_views, ai_tasks, analytics, admin
 from app.db.database import Base, engine
 
 # Import ALL models so they register with Base
@@ -163,7 +163,8 @@ app.include_router(categories.router, prefix=settings.API_V1_PREFIX)
 app.include_router(tags.router, prefix=settings.API_V1_PREFIX)
 app.include_router(task_views.router, prefix=settings.API_V1_PREFIX)
 app.include_router(ai_tasks.router, prefix=settings.API_V1_PREFIX)
-app.include_router(analytics.router, prefix=settings.API_V1_PREFIX) 
+app.include_router(analytics.router, prefix=settings.API_V1_PREFIX)
+app.include_router(admin.router, prefix=settings.API_V1_PREFIX) 
 
 @app.get("/")
 async def root():

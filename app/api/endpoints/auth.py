@@ -7,12 +7,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import timedelta
 from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
 
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.db.database import get_db
 from app.db.repositories.user_repository import UserRepository
 from app.db.repositories.refresh_token_repository import RefreshTokenRepository
-from app.core.security import create_access_token
+from app.core.security import create_access_token, get_password_hash
 from app.core.config import settings
 from app.core.dependencies import get_current_active_user
 from app.models.user import User
@@ -277,3 +278,106 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
     Requires authentication.
     """
     return UserResponse.model_validate(current_user)
+
+
+# ============================================================
+# PASSWORD RESET ENDPOINTS (Minimal Implementation)
+# ============================================================
+
+class ForgotPasswordRequest(BaseModel):
+    """Request password reset."""
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    """Reset password with token."""
+    token: str = Field(..., min_length=40)
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Request password reset.
+
+    Minimal implementation:
+    - Reuses refresh_tokens table (no new table needed)
+    - Logs reset link to console (portfolio-friendly)
+    - Always returns success (prevents user enumeration)
+
+    Production upgrade: Replace print() with SendGrid/AWS SES email.
+    """
+    user_repo = UserRepository(db)
+    user = await user_repo.get_by_email(request.email)
+
+    if user and user.is_active:
+        # Reuse refresh token mechanism
+        token_repo = RefreshTokenRepository(db)
+        reset_token = await token_repo.create(user.id)
+
+        # Log instead of email (portfolio version)
+        print("\n" + "=" * 60)
+        print("🔐 PASSWORD RESET REQUEST")
+        print("=" * 60)
+        print(f"📧 Email: {request.email}")
+        print(f"👤 User: {user.username}")
+        print(f"🔑 Token: {reset_token.token}")
+        print(f"🔗 Reset Link: http://localhost:3000/reset-password?token={reset_token.token}")
+        print("⏰ Expires: 7 days")
+        print("=" * 60 + "\n")
+
+    # Always return success (prevent user enumeration)
+    return {
+        "message": "If an account exists with this email, check the console for the reset link."
+    }
+
+
+@router.post("/reset-password")
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Reset password using token.
+
+    Security:
+    - Validates token exists
+    - Enforces password length (8+ chars)
+    - Revokes token after use (one-time use)
+    - Invalidates all sessions (user must re-login)
+    """
+    token_repo = RefreshTokenRepository(db)
+    user_repo = UserRepository(db)
+
+    # Validate token
+    db_token = await token_repo.get_by_token(request.token)
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    # Get user
+    user = await user_repo.get_by_id(db_token.user_id)
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User not found or inactive"
+        )
+
+    # Update password
+    user.hashed_password = get_password_hash(request.new_password)
+    await db.commit()
+
+    # Revoke token (one-time use)
+    await token_repo.revoke_token(request.token)
+
+    # Revoke all other sessions (force re-login)
+    await token_repo.revoke_all_user_tokens(user.id)
+
+    return {
+        "message": "Password reset successful. Please login with your new password."
+    }

@@ -57,3 +57,20 @@ async def get_current_active_user(
 ) -> User:
     """Ensure user is active."""
     return current_user
+
+
+async def require_admin(
+    current_user: User = Depends(get_current_active_user)
+) -> User:
+    """
+    Require admin role (is_superuser = True).
+
+    Use this dependency on admin-only routes.
+    Raises 403 Forbidden if user is not admin.
+    """
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user
