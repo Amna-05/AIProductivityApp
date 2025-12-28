@@ -87,7 +87,7 @@ export default function TasksPage() {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Task deleted");
     },
-    onError: (error: any) => {
+    onError: (error: string | any ) => {
       toast.error(error.response?.data?.detail || "Failed to delete task");
     },
   });
@@ -102,7 +102,7 @@ export default function TasksPage() {
         icon: <PartyPopper className="h-4 w-4" />,
       });
     },
-    onError: (error: any) => {
+    onError: (error:string |any) => {
       toast.error(error.response?.data?.detail || "Failed to update task");
     },
   });

@@ -95,7 +95,7 @@ export function TagFormDialog({ open, onOpenChange, tag }: TagFormDialogProps) {
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to create tag");
     },
   });
@@ -109,7 +109,7 @@ export function TagFormDialog({ open, onOpenChange, tag }: TagFormDialogProps) {
       toast.success("Tag updated successfully");
       onOpenChange(false);
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to update tag");
     },
   });

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, Zap, CheckCircle2, ArrowRight, Star, Users, Clock, Target } from "lucide-react";
+import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, Zap, CheckCircle2, ArrowRight, Star, Users,  Target } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
@@ -378,7 +378,7 @@ export default function HomePage() {
             Ready to ELEVATE?
           </h2>
           <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            Join thousands of productive people who've transformed their workflow. Start your journey today.
+            Join thousands of productive people who&apos;ve transformed their workflow. Start your journey today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register">

@@ -251,7 +251,7 @@ export interface DashboardAnalytics {
   recent_trends: CompletionTrends;
   priority_distribution: PriorityDistribution;
   top_categories: CategoryStats[];
-  top_tags: any[];
+  top_tags: string[];
 }
 
 // API Response types

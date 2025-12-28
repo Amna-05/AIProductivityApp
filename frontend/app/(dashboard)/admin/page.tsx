@@ -40,7 +40,7 @@ export default function AdminPage() {
       ]);
       setStats(statsData);
       setUsers(usersData);
-    } catch (error: any) {
+    } catch (error:string ) {
       console.error("Failed to fetch admin data:", error);
       toast.error(error.response?.data?.detail || "Failed to load admin data");
     } finally {
@@ -58,7 +58,7 @@ export default function AdminPage() {
       setUsers(users.map(user =>
         user.id === userId ? { ...user, is_superuser: !currentStatus } : user
       ));
-    } catch (error: any) {
+    } catch (error: string ) {
       console.error("Failed to toggle admin:", error);
       toast.error(error.response?.data?.detail || "Failed to update admin status");
     } finally {
@@ -76,7 +76,7 @@ export default function AdminPage() {
       setUsers(users.map(user =>
         user.id === userId ? { ...user, is_active: !currentStatus } : user
       ));
-    } catch (error: any) {
+    } catch (error: string) {
       console.error("Failed to toggle active:", error);
       toast.error(error.response?.data?.detail || "Failed to update active status");
     } finally {

@@ -64,7 +64,7 @@ export default function SettingsPage() {
       toast.success("Password changed successfully");
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to change password");
     },
   });

@@ -83,7 +83,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           setLoading(true);
           const userData = await authApi.getCurrentUser();
           setUser(userData);
-        } catch (error: any) {
+        } catch (error: string | any) {
           console.error("Auth check failed:", error);
           const status = error?.response?.status;
 
@@ -219,11 +219,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-violet-100">
                     <Mic className="h-4 w-4 text-violet-500" />
-                    <span className="text-gray-700">"Meeting with team tomorrow at 3pm"</span>
+                    <span className="text-gray-700">&apos;Meeting with team tomorrow at 3pm&apos;</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-violet-100">
                     <Mic className="h-4 w-4 text-violet-500" />
-                    <span className="text-gray-700">"Urgent: Submit report by Friday"</span>
+                    <span className="text-gray-700">&apos;Urgent: Submit report by Friday&apos;</span>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500">

@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
 
       toast.success(response.message || "Password reset instructions sent!");
       setEmailSent(true);
-    } catch (error: any) {
+    } catch (error: string) {
       console.error("Forgot password error:", error);
       toast.error(error.response?.data?.detail || "Failed to send reset instructions");
     } finally {
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
         </div>
         <CardTitle className="text-2xl font-bold mb-2">Forgot password?</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and we will send you instructions to reset your password.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>

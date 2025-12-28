@@ -102,7 +102,7 @@ export default function PriorityMatrixPage() {
         icon: <PartyPopper className="h-4 w-4" />,
       });
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to update task");
     },
   });
@@ -128,7 +128,7 @@ export default function PriorityMatrixPage() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Task moved!");
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to move task");
     },
   });

@@ -101,7 +101,7 @@ export function CategoryFormDialog({
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to create category");
     },
   });
@@ -115,7 +115,7 @@ export function CategoryFormDialog({
       toast.success("Category updated successfully");
       onOpenChange(false);
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to update category");
     },
   });

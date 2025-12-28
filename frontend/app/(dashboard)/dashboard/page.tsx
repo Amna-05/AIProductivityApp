@@ -334,7 +334,7 @@ export default function DashboardPage() {
         {/* Left Column - Today's Focus */}
         <div className="space-y-4">
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Today's Focus</h1>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Today&apos;s Focus</h1>
             <p className="text-sm text-gray-500 font-medium">
               {filteredTodayTasks.length} task{filteredTodayTasks.length !== 1 ? "s" : ""} for today
             </p>
@@ -352,7 +352,7 @@ export default function DashboardPage() {
                 <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="h-8 w-8 text-emerald-600" />
                 </div>
-                <p className="text-lg font-bold text-gray-900">You're all caught up!</p>
+                <p className="text-lg font-bold text-gray-900">You&apos;re all caught up!</p>
                 <p className="text-sm text-gray-500 mt-1">
                   No tasks due today. Enjoy your day!
                 </p>

@@ -263,7 +263,7 @@ export function TaskDetailModal({
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete Task</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                  Are you sure you want to delete &apos;{task.title}&apos;? This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

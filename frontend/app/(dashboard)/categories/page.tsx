@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoriesApi, CreateCategoryData, UpdateCategoryData } from "@/lib/api/categories";
 import { Category } from "@/lib/types";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, FolderKanban, Loader2, Eye, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderKanban, Loader2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils/cn";
+#import { cn } from "@/lib/utils/cn";
 
 // Emerald palette colors
 const CATEGORY_COLORS = [
@@ -88,7 +88,7 @@ export default function CategoriesPage() {
       resetForm();
       setDialogOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to create category");
     },
   });
@@ -103,7 +103,7 @@ export default function CategoriesPage() {
       resetForm();
       setDialogOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to update category");
     },
   });
@@ -118,7 +118,7 @@ export default function CategoriesPage() {
       setDeleteDialogOpen(false);
       setDeletingCategory(null);
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to delete category");
     },
   });
@@ -219,8 +219,8 @@ export default function CategoriesPage() {
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((category, idx) => {
-          const taskCount = (category as any).task_count || 0;
-          const completedCount = (category as any).completed_count || 0;
+          const taskCount = (category as string | any).task_count || 0;
+          const completedCount = (category as string | any).completed_count || 0;
           const progress = taskCount > 0 ? (completedCount / taskCount) * 100 : 0;
 
           // Get a lighter version of the category color for background
@@ -421,8 +421,8 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>Delete Category</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{deletingCategory?.name}"? Tasks with this category
-              will be set to "No Category".
+              Are you sure you want to delete {deletingCategory?.name}? Tasks with this category
+              will be set to No Category.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

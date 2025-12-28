@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, Check, X, Mic, MicOff } from "lucide-react";
 
 import { aiApi, ParsedTaskResponse } from "@/lib/api/ai";
-import { tasksApi } from "@/lib/api/tasks";
+//import { tasksApi } from "@/lib/api/tasks";
 
 import {
   Dialog,
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+//import { Card, CardContent } from "@/components/ui/card";
 
 interface AITaskParserDialogProps {
   open: boolean;
@@ -29,13 +29,13 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
   const [inputText, setInputText] = useState("");
   const [parsedTask, setParsedTask] = useState<ParsedTaskResponse | null>(null);
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<string>(null);
 
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        (window as string|any ).SpeechRecognition || (window as string | any).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -43,13 +43,13 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
         recognition.interimResults = false;
         recognition.lang = "en-US";
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: string | any) => {
           const transcript = event.results[0][0].transcript;
           setInputText((prev) => (prev ? prev + " " + transcript : transcript));
           setIsListening(false);
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: string | any) => {
           console.error("Speech recognition error:", event.error);
           toast.error("Voice input failed: " + event.error);
           setIsListening(false);
@@ -98,7 +98,7 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
       setParsedTask(data);
       toast.success("Task parsed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to parse task");
     },
   });
@@ -111,7 +111,7 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
       toast.success("Task created successfully!");
       handleClose();
     },
-    onError: (error: any) => {
+    onError: (error: string | any) => {
       toast.error(error.response?.data?.detail || "Failed to create task");
     },
   });
@@ -197,9 +197,9 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
             <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
               <strong>Try these examples:</strong>
               <ul className="mt-2 space-y-1">
-                <li>• "Meeting with Sarah about Q4 planning next Tuesday morning"</li>
-                <li>• "Fix authentication bug - high priority, work category"</li>
-                <li>• "Buy groceries tonight before 8pm"</li>
+                <li>• &apos;Meeting with Sarah about Q4 planning next Tuesday morning&apos;</li>
+                <li>• &apos;Fix authentication bug - high priority, work category&apos;</li>
+                <li>• &apos;Buy groceries tonight before 8pm&apos;</li>
               </ul>
             </div>
           </div>
