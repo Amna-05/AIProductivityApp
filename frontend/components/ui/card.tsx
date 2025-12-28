@@ -7,11 +7,11 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "border bg-card shadow-sm hover:shadow-md",
-        elevated: "bg-card shadow-md hover:shadow-lg",
-        flat: "bg-card/50 border-0",
-        outline: "border-2 bg-transparent",
-        ghost: "bg-transparent border-0",
+        default: "border border-gray-200 bg-white shadow-sm hover:shadow-md",
+        elevated: "bg-white shadow-md hover:shadow-lg hover:-translate-y-0.5",
+        flat: "bg-gray-50/50 border-0",
+        outline: "border-2 border-gray-200 bg-transparent hover:bg-gray-50/50",
+        ghost: "bg-transparent border-0 hover:bg-gray-50",
       },
     },
     defaultVariants: {

@@ -2,25 +2,98 @@
 
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, AlertTriangle, Calendar as CalendarIcon, Loader2, PartyPopper } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+  PartyPopper,
+  ListTodo,
+  Clock,
+  TrendingUp
+} from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays, startOfDay } from "date-fns";
 
 import { analyticsApi } from "@/lib/api/analytics";
 import { tasksApi } from "@/lib/api/tasks";
 import { useSearch } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
+import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { cn } from "@/lib/utils/cn";
 import { Task } from "@/lib/types";
 import { toast } from "sonner";
+
+// Stat card component
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: number | undefined;
+  icon: React.ComponentType<{ className?: string }>;
+  color: "blue" | "emerald" | "amber" | "rose";
+}) {
+  const colors = {
+    blue: {
+      bg: "bg-blue-50",
+      border: "border-blue-100",
+      icon: "text-blue-600",
+      text: "text-blue-700",
+    },
+    emerald: {
+      bg: "bg-emerald-50",
+      border: "border-emerald-100",
+      icon: "text-emerald-600",
+      text: "text-emerald-700",
+    },
+    amber: {
+      bg: "bg-amber-50",
+      border: "border-amber-100",
+      icon: "text-amber-600",
+      text: "text-amber-700",
+    },
+    rose: {
+      bg: "bg-rose-50",
+      border: "border-rose-100",
+      icon: "text-rose-600",
+      text: "text-rose-700",
+    },
+  };
+
+  const c = colors[color];
+
+  return (
+    <div
+      className={cn(
+        "p-4 rounded-xl border",
+        c.bg,
+        c.border,
+        "hover:shadow-md hover:-translate-y-0.5 transition-all duration-150"
+      )}
+    >
+      <div className="flex items-center gap-3">
+        <div className={cn("p-2 rounded-lg bg-white/80 shadow-sm", c.icon)}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <div>
+          <p className={cn("text-2xl font-bold", c.text)}>{value ?? 0}</p>
+          <p className="text-xs text-gray-500 font-medium">{title}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { searchQuery } = useSearch();
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [completedTaskId, setCompletedTaskId] = useState<number | null>(null);
 
   // Fetch analytics overview
@@ -71,6 +144,16 @@ export default function DashboardPage() {
     },
     onSettled: () => {
       setTimeout(() => setCompletedTaskId(null), 300);
+    },
+  });
+
+  // Delete task mutation
+  const deleteMutation = useMutation({
+    mutationFn: (taskId: number) => tasksApi.delete(taskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      toast.success("Task deleted");
     },
   });
 
@@ -136,33 +219,31 @@ export default function DashboardPage() {
   const filteredTodayTasks = filterBySearch(todayTasks);
   const filteredOverdueTasks = filterBySearch(overdueTasks);
 
-  // Calendar date modifiers
-  const dateModifiers = useMemo(() => {
-    const allTasks = [...(todayData?.tasks || []), ...(upcomingData?.tasks || [])];
-    const taskDates: Date[] = [];
-    const overdueDates: Date[] = [];
-    const now = new Date();
-
-    allTasks.forEach((task) => {
-      if (!task.due_date) return;
-      const dueDate = parseISO(task.due_date);
-      if (dueDate < now && !isToday(dueDate)) {
-        overdueDates.push(dueDate);
-      } else {
-        taskDates.push(dueDate);
-      }
-    });
-
-    return { taskDates, overdueDates };
-  }, [todayData, upcomingData]);
-
+  // Click card -> open detail modal
   const handleTaskClick = (task: Task) => {
+    setDetailTask(task);
+    setDetailModalOpen(true);
+  };
+
+  // Edit from detail modal
+  const handleEditFromDetail = (task: Task) => {
+    setDetailModalOpen(false);
+    setSelectedTask(task);
+    setEditDialogOpen(true);
+  };
+
+  // Direct edit click
+  const handleEdit = (task: Task) => {
     setSelectedTask(task);
     setEditDialogOpen(true);
   };
 
   const handleComplete = (taskId: number) => {
     completeMutation.mutate(taskId);
+  };
+
+  const handleDelete = (taskId: number) => {
+    deleteMutation.mutate(taskId);
   };
 
   const completionRate = analytics?.total_tasks
@@ -173,17 +254,17 @@ export default function DashboardPage() {
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up">
       {/* Overdue Banner */}
       {filteredOverdueTasks.length > 0 && (
-        <Card className="border-destructive/30 bg-gradient-to-r from-destructive/10 to-destructive/5 animate-scale-in">
+        <Card className="border-red-200 bg-gradient-to-r from-red-50 to-rose-50 animate-scale-in">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
+              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-destructive">
+                <p className="text-sm font-bold text-red-700">
                   {filteredOverdueTasks.length} Overdue Task{filteredOverdueTasks.length > 1 ? "s" : ""}
                 </p>
-                <p className="text-xs text-muted-foreground">Needs your attention</p>
+                <p className="text-xs text-red-600/70">Needs your attention</p>
               </div>
             </div>
             {/* Show overdue tasks inline */}
@@ -195,6 +276,8 @@ export default function DashboardPage() {
                   variant="minimal"
                   onComplete={handleComplete}
                   onClick={handleTaskClick}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                   animationDelay={idx * 50}
                   className={cn(
                     completedTaskId === task.id && "opacity-50 scale-95 transition-all"
@@ -206,13 +289,13 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* Main Grid: Today's Focus + Upcoming */}
-      <div className="grid lg:grid-cols-[1fr,320px] gap-6">
-        {/* Today's Focus */}
+      {/* Main Grid: Today's Focus + Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6">
+        {/* Left Column - Today's Focus */}
         <div className="space-y-4">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Today's Focus</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Today's Focus</h1>
+            <p className="text-sm text-gray-500 font-medium">
               {filteredTodayTasks.length} task{filteredTodayTasks.length !== 1 ? "s" : ""} for today
             </p>
           </div>
@@ -224,133 +307,160 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : filteredTodayTasks.length === 0 ? (
-            <Card variant="flat" className="bg-gradient-to-br from-primary/5 to-transparent">
+            <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white">
               <CardContent className="py-12 text-center">
-                <CheckCircle2 className="h-12 w-12 text-primary/60 mx-auto mb-3" />
-                <p className="text-lg font-semibold text-foreground">You're all caught up!</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                </div>
+                <p className="text-lg font-bold text-gray-900">You're all caught up!</p>
+                <p className="text-sm text-gray-500 mt-1">
                   No tasks due today. Enjoy your day!
                 </p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-2">
-              {filteredTodayTasks.slice(0, 5).map((task, idx) => (
+              {filteredTodayTasks.slice(0, 6).map((task, idx) => (
                 <TaskCard
                   key={task.id}
                   task={task}
                   variant="minimal"
                   onComplete={handleComplete}
                   onClick={handleTaskClick}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                   animationDelay={idx * 50}
                   className={cn(
                     completedTaskId === task.id && "opacity-50 scale-95 transition-all"
                   )}
                 />
               ))}
-              {filteredTodayTasks.length > 5 && (
-                <p className="text-xs text-muted-foreground text-center py-2">
-                  +{filteredTodayTasks.length - 5} more tasks
+              {filteredTodayTasks.length > 6 && (
+                <p className="text-xs text-gray-400 text-center py-2 font-medium">
+                  +{filteredTodayTasks.length - 6} more tasks
                 </p>
               )}
             </div>
           )}
         </div>
 
-        {/* Right Column: Upcoming + Calendar */}
+        {/* Right Column - Stats + Upcoming */}
         <div className="space-y-6">
-          {/* Upcoming Section */}
-          <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-foreground">Upcoming</h2>
-
-            {loadingUpcoming ? (
-              <div className="space-y-2">
-                <TaskCardSkeleton variant="minimal" />
-                <TaskCardSkeleton variant="minimal" />
-              </div>
-            ) : Object.keys(upcomingGrouped).length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4">No upcoming tasks this week</p>
-            ) : (
-              <div className="space-y-4">
-                {Object.entries(upcomingGrouped).slice(0, 3).map(([dateLabel, tasks]) => (
-                  <div key={dateLabel}>
-                    <p className="text-xs font-medium text-muted-foreground mb-2">{dateLabel}</p>
-                    <div className="space-y-1.5">
-                      {tasks.slice(0, 3).map((task) => (
-                        <div
-                          key={task.id}
-                          onClick={() => handleTaskClick(task)}
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                        >
-                          <div className={cn(
-                            "w-1.5 h-1.5 rounded-full",
-                            task.quadrant === "DO_FIRST" && "bg-red-500",
-                            task.quadrant === "SCHEDULE" && "bg-amber-500",
-                            task.quadrant === "DELEGATE" && "bg-blue-500",
-                            task.quadrant === "ELIMINATE" && "bg-gray-400"
-                          )} />
-                          <span className="text-sm truncate flex-1 text-foreground">{task.title}</span>
-                          {task.due_date && (
-                            <span className="text-xs text-muted-foreground">
-                              {format(parseISO(task.due_date), "h:mm a")}
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Calendar Widget - Hidden on mobile per user decision */}
-          <div className="hidden lg:block">
-            <Card variant="flat" className="bg-card/50">
-              <CardHeader className="pb-2 pt-4 px-4">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4 text-primary" />
-                  Calendar
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 pt-0">
-                <Calendar
-                  mode="single"
-                  className="rounded-lg"
-                  modifiers={{
-                    hasTask: dateModifiers.taskDates,
-                    overdue: dateModifiers.overdueDates,
-                  }}
-                  modifiersClassNames={{
-                    hasTask: "font-semibold bg-primary/10 text-primary",
-                    overdue: "font-bold bg-destructive/10 text-destructive",
-                  }}
-                />
-              </CardContent>
-            </Card>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <StatCard
+              title="Total Tasks"
+              value={analytics?.total_tasks}
+              icon={ListTodo}
+              color="blue"
+            />
+            <StatCard
+              title="Completed"
+              value={analytics?.completed_tasks}
+              icon={CheckCircle2}
+              color="emerald"
+            />
+            <StatCard
+              title="In Progress"
+              value={analytics?.in_progress_tasks}
+              icon={Clock}
+              color="amber"
+            />
+            <StatCard
+              title="Overdue"
+              value={analytics?.overdue_tasks}
+              icon={AlertTriangle}
+              color="rose"
+            />
           </div>
 
           {/* Progress Summary */}
-          <Card variant="flat" className="bg-card/50">
+          <Card className="border-gray-200 bg-white shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">Today's Progress</span>
-                <span className="text-sm font-bold text-primary">{completionRate}%</span>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-gray-900">Progress</span>
+                </div>
+                <span className="text-sm font-bold text-emerald-600">{completionRate}%</span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between mt-3 text-xs text-gray-500 font-medium">
                 <span>{analytics?.completed_tasks || 0} completed</span>
                 <span>{analytics?.pending_tasks || 0} remaining</span>
               </div>
             </CardContent>
           </Card>
+
+          {/* Upcoming Section */}
+          <Card className="border-gray-200 bg-white shadow-sm">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-sm font-bold text-gray-900">
+                Upcoming This Week
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              {loadingUpcoming ? (
+                <div className="space-y-2">
+                  <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                </div>
+              ) : Object.keys(upcomingGrouped).length === 0 ? (
+                <p className="text-sm text-gray-400 py-4 text-center">No upcoming tasks</p>
+              ) : (
+                <div className="space-y-4">
+                  {Object.entries(upcomingGrouped).slice(0, 3).map(([dateLabel, tasks]) => (
+                    <div key={dateLabel}>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
+                        {dateLabel}
+                      </p>
+                      <div className="space-y-1.5">
+                        {tasks.slice(0, 2).map((task) => (
+                          <div
+                            key={task.id}
+                            onClick={() => handleTaskClick(task)}
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
+                          >
+                            <div className={cn(
+                              "w-2 h-2 rounded-full shrink-0",
+                              task.quadrant === "DO_FIRST" && "bg-red-500",
+                              task.quadrant === "SCHEDULE" && "bg-blue-500",
+                              task.quadrant === "DELEGATE" && "bg-purple-500",
+                              task.quadrant === "ELIMINATE" && "bg-gray-400"
+                            )} />
+                            <span className="text-sm truncate flex-1 text-gray-700 font-medium group-hover:text-gray-900">
+                              {task.title}
+                            </span>
+                            {task.due_date && (
+                              <span className="text-xs text-gray-400">
+                                {format(parseISO(task.due_date), "h:mm a")}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      {/* Task Detail Modal - Read only view */}
+      <TaskDetailModal
+        task={detailTask}
+        open={detailModalOpen}
+        onOpenChange={setDetailModalOpen}
+        onEdit={handleEditFromDetail}
+        onDelete={handleDelete}
+      />
 
       {/* Edit Task Dialog */}
       <TaskFormDialog

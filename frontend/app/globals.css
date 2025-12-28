@@ -1,99 +1,65 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ELEVATE Brand Theme - Calm, Minimal, Productive */
+  /* ELEVATE Brand Theme - Bright, Modern, Professional SaaS */
 
-  /* Light Mode - Clean white background */
+  /* Core - Clean white backgrounds with high contrast text */
   --color-background: #FFFFFF;
-  --color-foreground: #111827;
-  --color-card: #F9FAFB;
-  --color-card-foreground: #111827;
+  --color-foreground: #1F2937;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1F2937;
   --color-popover: #FFFFFF;
-  --color-popover-foreground: #111827;
+  --color-popover-foreground: #1F2937;
 
-  /* Primary - Emerald (Productivity & Growth) */
+  /* Primary - Vibrant Emerald (Productivity & Growth) */
   --color-primary: #10B981;
   --color-primary-foreground: #FFFFFF;
 
-  /* Secondary & Muted */
+  /* Secondary & Muted - Crisp grays */
   --color-secondary: #F3F4F6;
-  --color-secondary-foreground: #111827;
-  --color-muted: #E5E7EB;
+  --color-secondary-foreground: #1F2937;
+  --color-muted: #F3F4F6;
   --color-muted-foreground: #6B7280;
 
-  /* Accent - Subtle emerald tint */
+  /* Accent - Emerald tint for highlights */
   --color-accent: #ECFDF5;
   --color-accent-foreground: #065F46;
 
-  /* Calendar */
-  --color-calendar: #10B981;
-  --color-calendar-light: #D1FAE5;
-
-  /* Semantic Colors */
+  /* Semantic Colors - Vibrant & Clear */
   --color-success: #10B981;
   --color-success-foreground: #FFFFFF;
-  --color-warning: #F59E0B;
-  --color-warning-foreground: #FFFFFF;
+  --color-warning: #FBBF24;
+  --color-warning-foreground: #1F2937;
   --color-info: #3B82F6;
   --color-info-foreground: #FFFFFF;
   --color-destructive: #EF4444;
   --color-destructive-foreground: #FFFFFF;
 
-  /* Quadrant Colors - Eisenhower Matrix */
+  /* Quadrant Colors - Eisenhower Matrix (Vibrant) */
   --color-quadrant-do-first: #EF4444;
   --color-quadrant-do-first-bg: #FEF2F2;
-  --color-quadrant-schedule: #F59E0B;
-  --color-quadrant-schedule-bg: #FFFBEB;
-  --color-quadrant-delegate: #3B82F6;
-  --color-quadrant-delegate-bg: #EFF6FF;
+  --color-quadrant-do-first-text: #DC2626;
+  --color-quadrant-do-first-border: #FECACA;
+
+  --color-quadrant-schedule: #3B82F6;
+  --color-quadrant-schedule-bg: #EFF6FF;
+  --color-quadrant-schedule-text: #2563EB;
+  --color-quadrant-schedule-border: #BFDBFE;
+
+  --color-quadrant-delegate: #A78BFA;
+  --color-quadrant-delegate-bg: #F5F3FF;
+  --color-quadrant-delegate-text: #7C3AED;
+  --color-quadrant-delegate-border: #DDD6FE;
+
   --color-quadrant-eliminate: #9CA3AF;
   --color-quadrant-eliminate-bg: #F9FAFB;
+  --color-quadrant-eliminate-text: #6B7280;
+  --color-quadrant-eliminate-border: #E5E7EB;
 
   /* Borders & Inputs */
   --color-border: #E5E7EB;
   --color-input: #E5E7EB;
   --color-ring: #10B981;
-}
-
-.dark {
-  /* Dark Mode - Deep charcoal with subtle accents */
-  --color-background: #111827;
-  --color-foreground: #F3F4F6;
-  --color-card: #1F2937;
-  --color-card-foreground: #F3F4F6;
-  --color-popover: #1F2937;
-  --color-popover-foreground: #F3F4F6;
-
-  /* Primary - Lighter emerald for dark */
-  --color-primary: #34D399;
-  --color-primary-foreground: #111827;
-
-  --color-secondary: #374151;
-  --color-secondary-foreground: #F3F4F6;
-  --color-muted: #374151;
-  --color-muted-foreground: #9CA3AF;
-  --color-accent: #064E3B;
-  --color-accent-foreground: #A7F3D0;
-  --color-destructive: #EF4444;
-  --color-destructive-foreground: #FFFFFF;
-  --color-border: #374151;
-  --color-input: #374151;
-  --color-ring: #34D399;
-
-  /* Semantic - same for consistency */
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-info: #3B82F6;
-
-  /* Quadrant Colors - Dark mode */
-  --color-quadrant-do-first: #EF4444;
-  --color-quadrant-do-first-bg: rgba(239, 68, 68, 0.1);
-  --color-quadrant-schedule: #F59E0B;
-  --color-quadrant-schedule-bg: rgba(245, 158, 11, 0.1);
-  --color-quadrant-delegate: #3B82F6;
-  --color-quadrant-delegate-bg: rgba(59, 130, 246, 0.1);
-  --color-quadrant-eliminate: #9CA3AF;
-  --color-quadrant-eliminate-bg: rgba(156, 163, 175, 0.1);
 }
 
 * {
@@ -126,14 +92,7 @@ select {
 
 .card:hover {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.dark .card {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-}
-
-.dark .card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 /* Custom scrollbar - thinner */

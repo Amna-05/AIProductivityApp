@@ -2,26 +2,59 @@
 
 import * as React from "react";
 import { format, isToday, isTomorrow, isPast } from "date-fns";
-import { Check, Clock, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Check, Clock, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Task, TaskQuadrant } from "@/lib/types";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-// Quadrant styling
-const quadrantConfig: Record<TaskQuadrant, { color: string; bg: string; label: string }> = {
-  DO_FIRST: { color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30", label: "Do First" },
-  SCHEDULE: { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30", label: "Schedule" },
-  DELEGATE: { color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30", label: "Delegate" },
-  ELIMINATE: { color: "text-gray-500 dark:text-gray-400", bg: "bg-gray-50 dark:bg-gray-800/30", label: "Eliminate" },
+// Quadrant styling - vibrant colors for light theme
+const quadrantConfig: Record<TaskQuadrant, {
+  color: string;
+  bg: string;
+  border: string;
+  dot: string;
+  label: string;
+}> = {
+  DO_FIRST: {
+    color: "text-red-700",
+    bg: "bg-red-50",
+    border: "border-l-red-500",
+    dot: "bg-red-500",
+    label: "Do First"
+  },
+  SCHEDULE: {
+    color: "text-blue-700",
+    bg: "bg-blue-50",
+    border: "border-l-blue-500",
+    dot: "bg-blue-500",
+    label: "Schedule"
+  },
+  DELEGATE: {
+    color: "text-purple-700",
+    bg: "bg-purple-50",
+    border: "border-l-purple-500",
+    dot: "bg-purple-500",
+    label: "Delegate"
+  },
+  ELIMINATE: {
+    color: "text-gray-600",
+    bg: "bg-gray-50",
+    border: "border-l-gray-400",
+    dot: "bg-gray-400",
+    label: "Later"
+  },
 };
 
 // Format due date relative to now
@@ -104,7 +137,10 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          "bg-card hover:bg-accent/50 border border-transparent hover:border-border",
+          "bg-white hover:bg-gray-50 border border-gray-200",
+          "border-l-4",
+          quadrant.border,
+          "shadow-sm hover:shadow-md hover:-translate-y-0.5",
           "transition-all duration-150 ease-out animate-fade-in",
           isCompleted && "opacity-50",
           isCompleting && "scale-95 opacity-60",
@@ -118,33 +154,95 @@ export function TaskCard({
             "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center",
             "transition-all duration-150",
             isCompleted
-              ? "bg-primary border-primary"
-              : "border-muted-foreground/40 hover:border-primary group-hover:border-primary/60"
+              ? "bg-emerald-500 border-emerald-500"
+              : "border-gray-300 hover:border-emerald-500 group-hover:border-emerald-400"
           )}
         >
-          {isCompleted && <Check className="w-3 h-3 text-primary-foreground animate-checkmark" />}
+          {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
         </button>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className={cn(
-            "text-sm font-medium truncate text-foreground",
-            isCompleted && "line-through text-muted-foreground"
+            "text-sm font-semibold truncate text-gray-900",
+            isCompleted && "line-through text-gray-400"
           )}>
             {task.title}
           </p>
-          {dueInfo.text && (
-            <p className={cn(
-              "text-xs mt-0.5",
-              dueInfo.isOverdue ? "text-destructive font-medium" : "text-muted-foreground"
-            )}>
-              {dueInfo.text}
-            </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            {dueInfo.text && (
+              <span className={cn(
+                "text-xs",
+                dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
+              )}>
+                {dueInfo.text}
+              </span>
+            )}
+            {task.category && (
+              <span className="text-xs text-gray-500">
+                {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
+                {task.category.name}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Hover actions */}
+        <div className={cn(
+          "flex items-center gap-1 opacity-0 group-hover:opacity-100",
+          "transition-opacity duration-150"
+        )}>
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(task);
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          {onDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDelete(task.id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
 
-        {/* Priority dot */}
-        <div className={cn("w-2 h-2 rounded-full flex-shrink-0", quadrant.bg, quadrant.color.replace("text-", "bg-"))} />
+        {/* Priority dot - only show when no hover actions */}
+        <div className={cn(
+          "w-2 h-2 rounded-full shrink-0 group-hover:hidden",
+          quadrant.dot
+        )} />
       </div>
     );
   }
@@ -157,7 +255,10 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          "bg-card hover:bg-accent/30 border",
+          "bg-white hover:bg-gray-50 border border-gray-200",
+          "border-l-4",
+          quadrant.border,
+          "shadow-sm hover:shadow-md hover:-translate-y-0.5",
           "transition-all duration-150 ease-out animate-fade-in",
           isCompleted && "opacity-50",
           isCompleting && "scale-95 opacity-60",
@@ -168,21 +269,21 @@ export function TaskCard({
         <button
           onClick={handleComplete}
           className={cn(
-            "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center",
+            "shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center",
             "transition-all duration-150",
             isCompleted
-              ? "bg-primary border-primary"
-              : "border-muted-foreground/40 hover:border-primary"
+              ? "bg-emerald-500 border-emerald-500"
+              : "border-gray-300 hover:border-emerald-500"
           )}
         >
-          {isCompleted && <Check className="w-3 h-3 text-primary-foreground animate-checkmark" />}
+          {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
         </button>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className={cn(
-            "text-sm font-medium truncate text-foreground",
-            isCompleted && "line-through text-muted-foreground"
+            "text-sm font-semibold truncate text-gray-900",
+            isCompleted && "line-through text-gray-400"
           )}>
             {task.title}
           </p>
@@ -190,17 +291,82 @@ export function TaskCard({
             {dueInfo.text && (
               <span className={cn(
                 "text-xs flex items-center gap-1",
-                dueInfo.isOverdue ? "text-destructive" : "text-muted-foreground"
+                dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
               )}>
                 <Clock className="w-3 h-3" />
                 {dueInfo.text}
               </span>
             )}
+            {task.category && (
+              <span className="text-xs text-gray-500">
+                {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
+                {task.category.name}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Quadrant badge */}
-        <Badge variant="outline" className={cn("text-xs", quadrant.color, quadrant.bg, "border-0")}>
+        {/* Hover actions */}
+        <div className={cn(
+          "flex items-center gap-1 opacity-0 group-hover:opacity-100",
+          "transition-opacity duration-150"
+        )}>
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(task);
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          {onDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDelete(task.id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+
+        {/* Quadrant badge - only show when no hover */}
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-xs font-medium shrink-0 group-hover:hidden",
+            quadrant.color,
+            quadrant.bg,
+            "border-0"
+          )}
+        >
           {quadrant.label}
         </Badge>
       </div>
@@ -214,7 +380,10 @@ export function TaskCard({
       style={{ animationDelay: `${animationDelay}ms` }}
       className={cn(
         "group flex items-start gap-4 p-4 rounded-xl cursor-pointer",
-        "bg-card hover:shadow-md border",
+        "bg-white hover:shadow-lg border border-gray-200",
+        "border-l-4",
+        quadrant.border,
+        "shadow-sm hover:-translate-y-0.5",
         "transition-all duration-150 ease-out animate-fade-in",
         isCompleted && "opacity-60",
         isCompleting && "scale-[0.98] opacity-60",
@@ -225,32 +394,30 @@ export function TaskCard({
       <button
         onClick={handleComplete}
         className={cn(
-          "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5",
+          "shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5",
           "transition-all duration-150",
           isCompleted
-            ? "bg-primary border-primary"
-            : "border-muted-foreground/40 hover:border-primary"
+            ? "bg-emerald-500 border-emerald-500"
+            : "border-gray-300 hover:border-emerald-500"
         )}
       >
-        {isCompleted && <Check className="w-3 h-3 text-primary-foreground animate-checkmark" />}
+        {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
       </button>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className={cn(
-            "text-sm font-medium text-foreground",
-            isCompleted && "line-through text-muted-foreground"
+            "text-sm font-semibold text-gray-900",
+            isCompleted && "line-through text-gray-400"
           )}>
             {task.title}
           </p>
 
-          {/* Priority indicator */}
-          <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1",
-            task.quadrant === "DO_FIRST" && "bg-red-500",
-            task.quadrant === "SCHEDULE" && "bg-amber-500",
-            task.quadrant === "DELEGATE" && "bg-blue-500",
-            task.quadrant === "ELIMINATE" && "bg-gray-400"
+          {/* Priority indicator - hide on hover */}
+          <div className={cn(
+            "w-2.5 h-2.5 rounded-full shrink-0 mt-1 group-hover:hidden",
+            quadrant.dot
           )} />
         </div>
 
@@ -259,7 +426,7 @@ export function TaskCard({
           {dueInfo.text && (
             <span className={cn(
               "text-xs flex items-center gap-1",
-              dueInfo.isOverdue ? "text-destructive font-medium" : "text-muted-foreground"
+              dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
             )}>
               <Clock className="w-3 h-3" />
               {dueInfo.text}
@@ -267,8 +434,9 @@ export function TaskCard({
           )}
 
           {task.category && (
-            <span className="text-xs text-muted-foreground">
-              {task.category.icon} {task.category.name}
+            <span className="text-xs text-gray-500">
+              {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
+              {task.category.name}
             </span>
           )}
 
@@ -278,14 +446,18 @@ export function TaskCard({
                 <Badge
                   key={tag.id}
                   variant="outline"
-                  className="text-xs px-1.5 py-0"
-                  style={{ borderColor: tag.color || undefined }}
+                  className="text-xs px-1.5 py-0 font-medium"
+                  style={{
+                    borderColor: tag.color || "#E5E7EB",
+                    backgroundColor: tag.color ? `${tag.color}15` : undefined,
+                    color: tag.color || "#6B7280"
+                  }}
                 >
                   {tag.name}
                 </Badge>
               ))}
               {task.tags.length > 2 && (
-                <span className="text-xs text-muted-foreground">+{task.tags.length - 2}</span>
+                <span className="text-xs text-gray-400">+{task.tags.length - 2}</span>
               )}
             </div>
           )}
@@ -301,7 +473,7 @@ export function TaskCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(task);
@@ -312,25 +484,35 @@ export function TaskCard({
         )}
 
         {onDelete && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(task.id);
-                }}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                onClick={(e) => e.stopPropagation()}
               >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(task.id)}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, X, Loader2, PartyPopper } from "lucide-react";
+import { Plus, X, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 
 import { tasksApi, TaskFilters } from "@/lib/api/tasks";
@@ -12,18 +12,9 @@ import { Task, TaskStatus, TaskQuadrant } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
+import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils/cn";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 // Filter pill configuration
 const statusFilters: { value: TaskStatus | "all"; label: string }[] = [
@@ -36,9 +27,9 @@ const statusFilters: { value: TaskStatus | "all"; label: string }[] = [
 const quadrantFilters: { value: TaskQuadrant | "all"; label: string; color: string }[] = [
   { value: "all", label: "All Priority", color: "bg-gray-400" },
   { value: "DO_FIRST", label: "Do First", color: "bg-red-500" },
-  { value: "SCHEDULE", label: "Schedule", color: "bg-amber-500" },
-  { value: "DELEGATE", label: "Delegate", color: "bg-blue-500" },
-  { value: "ELIMINATE", label: "Later", color: "bg-gray-500" },
+  { value: "SCHEDULE", label: "Schedule", color: "bg-blue-500" },
+  { value: "DELEGATE", label: "Delegate", color: "bg-purple-500" },
+  { value: "ELIMINATE", label: "Later", color: "bg-gray-400" },
 ];
 
 export default function TasksPage() {
@@ -54,7 +45,8 @@ export default function TasksPage() {
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [deleteTaskId, setDeleteTaskId] = useState<number | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
 
   // Apply category filter from URL params
   useEffect(() => {
@@ -94,7 +86,6 @@ export default function TasksPage() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Task deleted");
-      setDeleteTaskId(null);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || "Failed to delete task");
@@ -115,6 +106,29 @@ export default function TasksPage() {
       toast.error(error.response?.data?.detail || "Failed to update task");
     },
   });
+
+  // Click card -> open detail modal
+  const handleTaskClick = (task: Task) => {
+    setDetailTask(task);
+    setDetailModalOpen(true);
+  };
+
+  // Edit from detail modal
+  const handleEditFromDetail = (task: Task) => {
+    setDetailModalOpen(false);
+    setEditingTask(task);
+    setDialogOpen(true);
+  };
+
+  // Direct edit
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (taskId: number) => {
+    deleteMutation.mutate(taskId);
+  };
 
   const handleOpenDialog = (task?: Task) => {
     setEditingTask(task || null);
@@ -178,12 +192,16 @@ export default function TasksPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">All Tasks</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">All Tasks</h1>
+          <p className="text-sm text-gray-500 font-medium mt-0.5">
             {data?.total || 0} total tasks
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} size="sm" className="gap-1.5">
+        <Button
+          onClick={() => handleOpenDialog()}
+          size="sm"
+          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+        >
           <Plus className="h-4 w-4" />
           Add Task
         </Button>
@@ -195,7 +213,7 @@ export default function TasksPage() {
           placeholder="Search tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-10 bg-muted/50 border-transparent focus:bg-background focus:border-input"
+          className="h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-300 focus:ring-emerald-200"
         />
       </div>
 
@@ -328,7 +346,7 @@ export default function TasksPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-gray-400 font-medium">
             Showing {data?.tasks.length} of {data?.total} tasks
           </p>
           {data?.tasks.map((task, idx) => (
@@ -337,14 +355,23 @@ export default function TasksPage() {
               task={task}
               variant="detailed"
               onComplete={(id) => completeMutation.mutate(id)}
-              onClick={() => handleOpenDialog(task)}
-              onEdit={() => handleOpenDialog(task)}
-              onDelete={(id) => setDeleteTaskId(id)}
+              onClick={handleTaskClick}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
               animationDelay={idx * 30}
             />
           ))}
         </div>
       )}
+
+      {/* Task Detail Modal */}
+      <TaskDetailModal
+        task={detailTask}
+        open={detailModalOpen}
+        onOpenChange={setDetailModalOpen}
+        onEdit={handleEditFromDetail}
+        onDelete={handleDelete}
+      />
 
       {/* Task Form Dialog */}
       <TaskFormDialog
@@ -352,27 +379,6 @@ export default function TasksPage() {
         onOpenChange={handleCloseDialog}
         task={editingTask}
       />
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteTaskId !== null} onOpenChange={() => setDeleteTaskId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Task</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this task? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteTaskId && deleteMutation.mutate(deleteTaskId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

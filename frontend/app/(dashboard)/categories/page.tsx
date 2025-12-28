@@ -200,8 +200,8 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Categories</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Categories</h1>
+          <p className="text-sm text-gray-500 font-medium mt-0.5">
             Organize tasks ({categories.length}/10)
           </p>
         </div>
@@ -209,7 +209,7 @@ export default function CategoriesPage() {
           onClick={() => handleOpenDialog()}
           disabled={categories.length >= 10}
           size="sm"
-          className="gap-1.5"
+          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm"
         >
           <Plus className="h-4 w-4" />
           Add Category
