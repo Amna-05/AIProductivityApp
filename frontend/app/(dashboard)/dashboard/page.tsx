@@ -5,13 +5,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
   AlertTriangle,
-  Loader2,
   PartyPopper,
   ListTodo,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Sparkles
 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays, startOfDay } from "date-fns";
+import confetti from "canvas-confetti";
 
 import { analyticsApi } from "@/lib/api/analytics";
 import { tasksApi } from "@/lib/api/tasks";
@@ -23,6 +24,17 @@ import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { cn } from "@/lib/utils/cn";
 import { Task } from "@/lib/types";
 import { toast } from "sonner";
+
+// Motivational quotes for progress
+const motivationalQuotes = [
+  { text: "You're on fire! Keep crushing it!", emoji: "🔥" },
+  { text: "Every task completed is a step forward!", emoji: "🚀" },
+  { text: "Productivity level: Expert!", emoji: "💪" },
+  { text: "Making progress one task at a time!", emoji: "⭐" },
+  { text: "You've got this! Keep going!", emoji: "🌟" },
+  { text: "Crushing goals like a champion!", emoji: "🏆" },
+  { text: "Look at you being productive!", emoji: "✨" },
+];
 
 // Stat card component
 function StatCard({
@@ -129,16 +141,24 @@ export default function DashboardPage() {
       }),
   });
 
-  // Complete task mutation
+  // Complete task mutation with confetti celebration
   const completeMutation = useMutation({
     mutationFn: (taskId: number) => tasksApi.update(taskId, { status: "done" }),
     onMutate: (taskId) => {
       setCompletedTaskId(taskId);
     },
     onSuccess: () => {
+      // Trigger confetti celebration!
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#10B981", "#34D399", "#6EE7B7", "#A7F3D0"],
+      });
+
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success("Task completed!", {
+      toast.success("Task completed! 🎉", {
         icon: <PartyPopper className="h-4 w-4" />,
       });
     },
@@ -249,6 +269,26 @@ export default function DashboardPage() {
   const completionRate = analytics?.total_tasks
     ? Math.round((analytics.completed_tasks / analytics.total_tasks) * 100)
     : 0;
+
+  // Get a consistent motivational quote based on completion rate
+  const motivationalQuote = useMemo(() => {
+    const index = Math.floor((completionRate / 100) * (motivationalQuotes.length - 1));
+    return motivationalQuotes[Math.min(index, motivationalQuotes.length - 1)];
+  }, [completionRate]);
+
+  // Quadrant colors for upcoming tasks
+  const getQuadrantStyles = (quadrant: string) => {
+    switch (quadrant) {
+      case "DO_FIRST":
+        return { border: "border-l-red-500", dot: "bg-red-500", hover: "hover:bg-red-50" };
+      case "SCHEDULE":
+        return { border: "border-l-blue-500", dot: "bg-blue-500", hover: "hover:bg-blue-50" };
+      case "DELEGATE":
+        return { border: "border-l-purple-500", dot: "bg-purple-500", hover: "hover:bg-purple-50" };
+      default:
+        return { border: "border-l-gray-400", dot: "bg-gray-400", hover: "hover:bg-gray-50" };
+    }
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up">
@@ -394,6 +434,17 @@ export default function DashboardPage() {
                 <span>{analytics?.completed_tasks || 0} completed</span>
                 <span>{analytics?.pending_tasks || 0} remaining</span>
               </div>
+              {/* Motivational Quote */}
+              {completionRate > 0 && (
+                <div className="mt-4 pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-amber-500" />
+                    <p className="text-sm text-gray-600 font-medium">
+                      {motivationalQuote.emoji} {motivationalQuote.text}
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -420,29 +471,33 @@ export default function DashboardPage() {
                         {dateLabel}
                       </p>
                       <div className="space-y-1.5">
-                        {tasks.slice(0, 2).map((task) => (
-                          <div
-                            key={task.id}
-                            onClick={() => handleTaskClick(task)}
-                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
-                          >
-                            <div className={cn(
-                              "w-2 h-2 rounded-full shrink-0",
-                              task.quadrant === "DO_FIRST" && "bg-red-500",
-                              task.quadrant === "SCHEDULE" && "bg-blue-500",
-                              task.quadrant === "DELEGATE" && "bg-purple-500",
-                              task.quadrant === "ELIMINATE" && "bg-gray-400"
-                            )} />
-                            <span className="text-sm truncate flex-1 text-gray-700 font-medium group-hover:text-gray-900">
-                              {task.title}
-                            </span>
-                            {task.due_date && (
-                              <span className="text-xs text-gray-400">
-                                {format(parseISO(task.due_date), "h:mm a")}
+                        {tasks.slice(0, 2).map((task) => {
+                          const styles = getQuadrantStyles(task.quadrant);
+                          return (
+                            <div
+                              key={task.id}
+                              onClick={() => handleTaskClick(task)}
+                              className={cn(
+                                "flex items-center gap-2 p-2.5 rounded-lg cursor-pointer",
+                                "transition-all duration-150 border-l-4",
+                                "hover:shadow-sm hover:-translate-x-0.5",
+                                styles.border,
+                                styles.hover,
+                                "group"
+                              )}
+                            >
+                              <div className={cn("w-2 h-2 rounded-full shrink-0", styles.dot)} />
+                              <span className="text-sm truncate flex-1 text-gray-700 font-medium group-hover:text-gray-900">
+                                {task.title}
                               </span>
-                            )}
-                          </div>
-                        ))}
+                              {task.due_date && (
+                                <span className="text-xs text-gray-400 group-hover:text-gray-600">
+                                  {format(parseISO(task.due_date), "h:mm a")}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   ))}
