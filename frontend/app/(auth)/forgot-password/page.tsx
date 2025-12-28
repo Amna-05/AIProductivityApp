@@ -67,18 +67,15 @@ export default function ForgotPasswordPage() {
               <CheckCircle2 className="h-8 w-8 text-green-600" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold mb-2 text-center">Check your console</CardTitle>
+          <CardTitle className="text-2xl font-bold mb-2 text-center">Check your email</CardTitle>
           <CardDescription className="text-muted-foreground text-center">
-            If an account exists with that email, password reset instructions have been logged to the backend console.
+            If an account exists with that email, you will receive password reset instructions.
           </CardDescription>
         </CardHeader>
         <CardContent className="px-10 pb-6">
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">
-              <strong>Portfolio Note:</strong> In a production app, you would receive an email.
-              For this demo, check the backend console for the reset link.
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground text-center">
+            Please check your email inbox (and spam folder) for the password reset link.
+          </p>
         </CardContent>
         <CardFooter className="px-10 pb-10">
           <Link href="/login" className="w-full">

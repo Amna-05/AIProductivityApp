@@ -98,43 +98,47 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6 animate-fade-in-up">
+    <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
+        <h1 className="text-2xl font-black text-gray-900 tracking-tight">Settings</h1>
+        <p className="text-sm text-gray-500 font-medium mt-0.5">
           Manage your account settings
         </p>
       </div>
 
       {/* Profile Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <User className="h-5 w-5 text-primary" />
+      <Card className="border-emerald-100 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50/50 to-white">
+        <CardHeader className="border-b border-emerald-50">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <div className="p-1.5 rounded-lg bg-emerald-100">
+              <User className="h-4 w-4 text-emerald-600" />
+            </div>
             Profile
           </CardTitle>
           <CardDescription>Your account information</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-4">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg ring-4 ring-emerald-100">
               {getUserInitials()}
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">{user?.username || "User"}</p>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <p className="text-lg font-bold text-gray-900">{user?.username || "User"}</p>
+              <p className="text-sm text-gray-500">{user?.email}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Change Password Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Lock className="h-5 w-5 text-primary" />
+      <Card className="border-blue-100 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50/50 to-white">
+        <CardHeader className="border-b border-blue-50">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <div className="p-1.5 rounded-lg bg-blue-100">
+              <Lock className="h-4 w-4 text-blue-600" />
+            </div>
             Change Password
           </CardTitle>
           <CardDescription>Update your password to keep your account secure</CardDescription>
@@ -238,24 +242,27 @@ export default function SettingsPage() {
       </Card>
 
       {/* Other Options */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <KeyRound className="h-5 w-5 text-primary" />
+      <Card className="border-amber-100 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-amber-50/50 to-white">
+        <CardHeader className="border-b border-amber-50">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <div className="p-1.5 rounded-lg bg-amber-100">
+              <KeyRound className="h-4 w-4 text-amber-600" />
+            </div>
             Account Actions
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-4">
           {/* Forgot Password Link */}
-          <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
             <div>
-              <p className="font-medium text-foreground">Forgot Password?</p>
-              <p className="text-sm text-muted-foreground">Reset your password via email</p>
+              <p className="font-semibold text-gray-900">Forgot Password?</p>
+              <p className="text-sm text-gray-500">Reset your password via email</p>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push("/forgot-password")}
+              className="shadow-sm hover:shadow-md transition-all"
             >
               Reset
             </Button>
@@ -264,7 +271,7 @@ export default function SettingsPage() {
           <Separator />
 
           {/* Logout */}
-          <div className="flex items-center justify-between p-3 rounded-lg border border-destructive/30 bg-destructive/5">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/50 transition-colors">
             <div>
               <p className="font-medium text-foreground">Logout</p>
               <p className="text-sm text-muted-foreground">Sign out of your account</p>

@@ -196,7 +196,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 animate-fade-in-up">
+    <div className="space-y-6 p-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-purple-50/30 min-h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -209,7 +209,7 @@ export default function CategoriesPage() {
           onClick={() => handleOpenDialog()}
           disabled={categories.length >= 10}
           size="sm"
-          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all"
         >
           <Plus className="h-4 w-4" />
           Add Category
@@ -223,33 +223,41 @@ export default function CategoriesPage() {
           const completedCount = (category as any).completed_count || 0;
           const progress = taskCount > 0 ? (completedCount / taskCount) * 100 : 0;
 
+          // Get a lighter version of the category color for background
+          const bgColor = category.color ? `${category.color}15` : "#f8fafc";
+          const borderColor = category.color ? `${category.color}30` : "#e2e8f0";
+
           return (
             <Card
               key={category.id}
-              className="group hover:shadow-md transition-all duration-150 animate-fade-in"
-              style={{ animationDelay: `${idx * 50}ms` }}
+              className="group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 animate-fade-in"
+              style={{
+                animationDelay: `${idx * 50}ms`,
+                background: `linear-gradient(135deg, ${bgColor} 0%, white 100%)`,
+                borderColor: borderColor,
+              }}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className="h-10 w-10 rounded-lg flex items-center justify-center text-xl shadow-sm"
+                      className="h-12 w-12 rounded-xl flex items-center justify-center text-xl shadow-md ring-2 ring-white"
                       style={{ backgroundColor: category.color || "#64748B" }}
                     >
                       {category.icon || "📁"}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base font-medium truncate">
+                      <CardTitle className="text-base font-semibold text-gray-900 truncate">
                         {category.name}
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-gray-500 font-medium">
                           {taskCount} task{taskCount !== 1 ? "s" : ""}
                         </span>
                         {taskCount > 0 && (
                           <>
-                            <span className="text-muted-foreground">•</span>
-                            <span className="text-xs text-success font-medium">
+                            <span className="text-gray-300">•</span>
+                            <span className="text-xs text-emerald-600 font-semibold">
                               {completedCount} done
                             </span>
                           </>
@@ -257,9 +265,9 @@ export default function CategoriesPage() {
                       </div>
                       {/* Mini progress bar */}
                       {taskCount > 0 && (
-                        <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="mt-2 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-primary transition-all duration-300 rounded-full"
+                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 rounded-full"
                             style={{ width: `${progress}%` }}
                           />
                         </div>

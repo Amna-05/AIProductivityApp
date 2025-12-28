@@ -23,35 +23,50 @@ import {
 const quadrantConfig: Record<TaskQuadrant, {
   color: string;
   bg: string;
+  cardBg: string;
+  hoverBg: string;
   border: string;
+  borderColor: string;
   dot: string;
   label: string;
 }> = {
   DO_FIRST: {
     color: "text-red-700",
     bg: "bg-red-50",
+    cardBg: "bg-gradient-to-r from-red-50/80 to-white",
+    hoverBg: "hover:from-red-100/80 hover:to-red-50/50",
     border: "border-l-red-500",
+    borderColor: "border-red-200",
     dot: "bg-red-500",
     label: "Do First"
   },
   SCHEDULE: {
     color: "text-blue-700",
     bg: "bg-blue-50",
+    cardBg: "bg-gradient-to-r from-blue-50/80 to-white",
+    hoverBg: "hover:from-blue-100/80 hover:to-blue-50/50",
     border: "border-l-blue-500",
+    borderColor: "border-blue-200",
     dot: "bg-blue-500",
     label: "Schedule"
   },
   DELEGATE: {
     color: "text-purple-700",
     bg: "bg-purple-50",
+    cardBg: "bg-gradient-to-r from-purple-50/80 to-white",
+    hoverBg: "hover:from-purple-100/80 hover:to-purple-50/50",
     border: "border-l-purple-500",
+    borderColor: "border-purple-200",
     dot: "bg-purple-500",
     label: "Delegate"
   },
   ELIMINATE: {
     color: "text-gray-600",
     bg: "bg-gray-50",
+    cardBg: "bg-gradient-to-r from-gray-50/80 to-white",
+    hoverBg: "hover:from-gray-100/80 hover:to-gray-50/50",
     border: "border-l-gray-400",
+    borderColor: "border-gray-200",
     dot: "bg-gray-400",
     label: "Later"
   },
@@ -137,7 +152,10 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          "bg-white hover:bg-gray-50 border border-gray-200",
+          quadrant.cardBg,
+          quadrant.hoverBg,
+          "border",
+          quadrant.borderColor,
           "border-l-4",
           quadrant.border,
           "shadow-sm hover:shadow-md hover:-translate-y-0.5",
@@ -255,7 +273,10 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          "bg-white hover:bg-gray-50 border border-gray-200",
+          quadrant.cardBg,
+          quadrant.hoverBg,
+          "border",
+          quadrant.borderColor,
           "border-l-4",
           quadrant.border,
           "shadow-sm hover:shadow-md hover:-translate-y-0.5",
@@ -380,10 +401,13 @@ export function TaskCard({
       style={{ animationDelay: `${animationDelay}ms` }}
       className={cn(
         "group flex items-start gap-4 p-4 rounded-xl cursor-pointer",
-        "bg-white hover:shadow-lg border border-gray-200",
+        quadrant.cardBg,
+        quadrant.hoverBg,
+        "border",
+        quadrant.borderColor,
         "border-l-4",
         quadrant.border,
-        "shadow-sm hover:-translate-y-0.5",
+        "shadow-sm hover:shadow-lg hover:-translate-y-0.5",
         "transition-all duration-150 ease-out animate-fade-in",
         isCompleted && "opacity-60",
         isCompleting && "scale-[0.98] opacity-60",

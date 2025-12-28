@@ -2,6 +2,24 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
+// Track if we're currently refreshing to prevent multiple refresh attempts
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: AxiosError | null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+  failedQueue = [];
+};
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,7 +28,7 @@ export const apiClient = axios.create({
   withCredentials: true, // CRITICAL: Send cookies with requests
 });
 
-// Request interceptor - no longer needed since we use cookies
+// Request interceptor
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     return config;
@@ -28,9 +46,22 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
+    // Skip refresh for auth endpoints to prevent loops
+    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+
     // If 401 and we haven't retried yet, try to refresh the token
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      if (isRefreshing) {
+        // Queue requests while refresh is in progress
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => apiClient(originalRequest))
+          .catch((err) => Promise.reject(err));
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
         // Try to refresh the access token using the refresh token cookie
@@ -40,14 +71,28 @@ apiClient.interceptors.response.use(
           { withCredentials: true }
         );
 
+        processQueue(null);
+
         // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, redirect to login
+        processQueue(refreshError as AxiosError);
+
+        // Only redirect to login if we're not already on an auth page
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          const isOnAuthPage = window.location.pathname.includes('/login') ||
+                               window.location.pathname.includes('/register') ||
+                               window.location.pathname.includes('/forgot-password') ||
+                               window.location.pathname.includes('/reset-password') ||
+                               window.location.pathname === '/';
+
+          if (!isOnAuthPage) {
+            window.location.href = "/login";
+          }
         }
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 

@@ -156,16 +156,16 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="px-6 py-6 space-y-8 animate-fade-in-up">
+    <div className="px-6 py-6 space-y-8 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
       {/* Header with Date Range Selector */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Analytics</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Analytics</h1>
+          <p className="text-sm text-gray-500 font-medium mt-0.5">
             Productivity insights
           </p>
         </div>
-        <div className="flex gap-1 p-1 bg-muted/50 rounded-lg">
+        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
           {dateRanges.map((range) => (
             <button
               key={range.value}
@@ -173,8 +173,8 @@ export default function AnalyticsPage() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150",
                 dateRange === range.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               )}
             >
               {range.label}
@@ -183,71 +183,79 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Overview Cards - Reduced 15% */}
+      {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-blue-100 bg-gradient-to-br from-blue-50 to-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-medium">Total Tasks</CardTitle>
-            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+            <CardTitle className="text-xs font-semibold text-blue-700">Total Tasks</CardTitle>
+            <div className="p-1.5 rounded-lg bg-blue-100">
+              <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold">{overview.total_tasks}</div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <div className="text-2xl font-bold text-blue-900">{overview.total_tasks}</div>
+            <p className="text-xs text-blue-600/70 mt-0.5">
               {overview.completed_tasks} completed
             </p>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-emerald-100 bg-gradient-to-br from-emerald-50 to-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-medium">Completion Rate</CardTitle>
-            <TrendingUp className="h-3.5 w-3.5 text-success" />
+            <CardTitle className="text-xs font-semibold text-emerald-700">Completion Rate</CardTitle>
+            <div className="p-1.5 rounded-lg bg-emerald-100">
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+            </div>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-success">
+            <div className="text-2xl font-bold text-emerald-600">
               {overview.completion_rate.toFixed(1)}%
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-emerald-600/70 mt-0.5">
               {overview.in_progress_tasks} in progress
             </p>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-amber-100 bg-gradient-to-br from-amber-50 to-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-medium">Avg. Completion</CardTitle>
-            <Clock className="h-3.5 w-3.5 text-info" />
+            <CardTitle className="text-xs font-semibold text-amber-700">Avg. Completion</CardTitle>
+            <div className="p-1.5 rounded-lg bg-amber-100">
+              <Clock className="h-3.5 w-3.5 text-amber-600" />
+            </div>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-amber-700">
               {overview.average_completion_time_days.toFixed(1)}
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-amber-600/70 mt-0.5">
               days on average
             </p>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-rose-100 bg-gradient-to-br from-rose-50 to-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-medium">Overdue Tasks</CardTitle>
-            <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+            <CardTitle className="text-xs font-semibold text-rose-700">Overdue Tasks</CardTitle>
+            <div className="p-1.5 rounded-lg bg-rose-100">
+              <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
+            </div>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-destructive">
+            <div className="text-2xl font-bold text-rose-600">
               {overview.overdue_tasks}
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-rose-600/70 mt-0.5">
               {overview.tasks_due_today} due today
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Completion Trends - Professional Sizing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Completion Trends</CardTitle>
+      {/* Completion Trends */}
+      <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
+          <CardTitle className="text-lg font-bold text-gray-900">Completion Trends</CardTitle>
           <CardDescription>
             Tasks created vs completed over the last {recent_trends.data.length} days
           </CardDescription>
@@ -306,12 +314,12 @@ export default function AnalyticsPage() {
         </CardContent>
       </Card>
 
-      {/* Priority Distribution & Category Performance - Professional Sizing */}
+      {/* Priority Distribution & Category Performance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Priority Distribution - Proportionate Pie Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Priority Distribution</CardTitle>
+        {/* Priority Distribution */}
+        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-purple-50/50 to-white">
+            <CardTitle className="text-lg font-bold text-gray-900">Priority Distribution</CardTitle>
             <CardDescription>Eisenhower Matrix quadrants</CardDescription>
           </CardHeader>
           <CardContent>
@@ -359,10 +367,10 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        {/* Category Performance - Proportionate Bar Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Category Performance</CardTitle>
+        {/* Category Performance */}
+        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-blue-50/50 to-white">
+            <CardTitle className="text-lg font-bold text-gray-900">Category Performance</CardTitle>
             <CardDescription>Top {top_categories.length} categories by task count</CardDescription>
           </CardHeader>
           <CardContent>
@@ -384,17 +392,17 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Top Tags - Reduced 15% */}
+      {/* Top Tags */}
       {top_tags.length > 0 && (
-        <Card>
-          <CardHeader className="p-4">
-            <CardTitle className="text-base font-semibold">Top Tags</CardTitle>
+        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="p-4 border-b border-gray-50 bg-gradient-to-r from-amber-50/50 to-white">
+            <CardTitle className="text-base font-bold text-gray-900">Top Tags</CardTitle>
             <CardDescription className="text-xs">Most used tags by count</CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="space-y-2">
+            <div className="space-y-2 mt-4">
               {top_tags.map((tag) => (
-                <div key={tag.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div key={tag.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 hover:bg-gray-100/50 border border-gray-100 hover:border-gray-200 transition-all duration-200">
                   <div className="flex items-center gap-2">
                     <div
                       className="h-8 w-8 rounded-lg flex items-center justify-center shadow-sm"

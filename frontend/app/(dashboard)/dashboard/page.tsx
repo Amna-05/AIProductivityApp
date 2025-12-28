@@ -280,21 +280,21 @@ export default function DashboardPage() {
   const getQuadrantStyles = (quadrant: string) => {
     switch (quadrant) {
       case "DO_FIRST":
-        return { border: "border-l-red-500", dot: "bg-red-500", hover: "hover:bg-red-50" };
+        return { border: "border-l-red-500", dot: "bg-red-500", bg: "bg-red-50/50", hover: "hover:bg-red-100/70", borderColor: "border-red-100" };
       case "SCHEDULE":
-        return { border: "border-l-blue-500", dot: "bg-blue-500", hover: "hover:bg-blue-50" };
+        return { border: "border-l-blue-500", dot: "bg-blue-500", bg: "bg-blue-50/50", hover: "hover:bg-blue-100/70", borderColor: "border-blue-100" };
       case "DELEGATE":
-        return { border: "border-l-purple-500", dot: "bg-purple-500", hover: "hover:bg-purple-50" };
+        return { border: "border-l-purple-500", dot: "bg-purple-500", bg: "bg-purple-50/50", hover: "hover:bg-purple-100/70", borderColor: "border-purple-100" };
       default:
-        return { border: "border-l-gray-400", dot: "bg-gray-400", hover: "hover:bg-gray-50" };
+        return { border: "border-l-gray-400", dot: "bg-gray-400", bg: "bg-gray-50/50", hover: "hover:bg-gray-100/70", borderColor: "border-gray-100" };
     }
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
       {/* Overdue Banner */}
       {filteredOverdueTasks.length > 0 && (
-        <Card className="border-red-200 bg-gradient-to-r from-red-50 to-rose-50 animate-scale-in">
+        <Card className="border-red-200 bg-gradient-to-r from-red-50 to-rose-50 animate-scale-in shadow-md">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
@@ -386,6 +386,12 @@ export default function DashboardPage() {
 
         {/* Right Column - Stats + Upcoming */}
         <div className="space-y-6">
+          {/* Stats Header */}
+          <div>
+            <h2 className="text-lg font-black text-gray-900 tracking-tight">Stats</h2>
+            <p className="text-xs text-gray-500 font-medium">Your productivity overview</p>
+          </div>
+
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3">
             <StatCard
@@ -415,16 +421,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Progress Summary */}
-          <Card className="border-gray-200 bg-white shadow-sm">
+          <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm font-semibold text-gray-900">Progress</span>
+                  <div className="p-1.5 rounded-lg bg-emerald-100">
+                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <span className="text-sm font-bold text-gray-900">Progress</span>
                 </div>
-                <span className="text-sm font-bold text-emerald-600">{completionRate}%</span>
+                <span className="text-lg font-bold text-emerald-600">{completionRate}%</span>
               </div>
-              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                 <div
                   className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
@@ -449,9 +457,12 @@ export default function DashboardPage() {
           </Card>
 
           {/* Upcoming Section */}
-          <Card className="border-gray-200 bg-white shadow-sm">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-bold text-gray-900">
+          <Card className="border-blue-100 bg-linear-to-br from-blue-50/30 to-white shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2 pt-4 px-4 border-b border-blue-50">
+              <CardTitle className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                <div className="p-1 rounded-md bg-blue-100">
+                  <Clock className="h-3 w-3 text-blue-600" />
+                </div>
                 Upcoming This Week
               </CardTitle>
             </CardHeader>
@@ -479,19 +490,21 @@ export default function DashboardPage() {
                               onClick={() => handleTaskClick(task)}
                               className={cn(
                                 "flex items-center gap-2 p-2.5 rounded-lg cursor-pointer",
-                                "transition-all duration-150 border-l-4",
+                                "transition-all duration-150 border-l-4 border",
                                 "hover:shadow-sm hover:-translate-x-0.5",
                                 styles.border,
+                                styles.bg,
+                                styles.borderColor,
                                 styles.hover,
                                 "group"
                               )}
                             >
-                              <div className={cn("w-2 h-2 rounded-full shrink-0", styles.dot)} />
-                              <span className="text-sm truncate flex-1 text-gray-700 font-medium group-hover:text-gray-900">
+                              <div className={cn("w-2.5 h-2.5 rounded-full shrink-0 shadow-sm", styles.dot)} />
+                              <span className="text-sm truncate flex-1 text-gray-700 font-semibold group-hover:text-gray-900">
                                 {task.title}
                               </span>
                               {task.due_date && (
-                                <span className="text-xs text-gray-400 group-hover:text-gray-600">
+                                <span className="text-xs text-gray-500 font-medium group-hover:text-gray-700">
                                   {format(parseISO(task.due_date), "h:mm a")}
                                 </span>
                               )}

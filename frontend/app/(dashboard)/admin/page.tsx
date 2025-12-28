@@ -97,11 +97,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-full">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl font-black text-gray-900 tracking-tight">Admin Dashboard</h1>
+        <p className="text-sm text-gray-500 font-medium mt-0.5">
           Manage users and view system statistics
         </p>
       </div>
@@ -109,54 +109,64 @@ export default function AdminPage() {
       {/* System Stats Cards */}
       {stats && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card>
+          <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-indigo-100 bg-gradient-to-br from-indigo-50 to-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold text-indigo-700">Total Users</CardTitle>
+              <div className="p-1.5 rounded-lg bg-indigo-100">
+                <Users className="h-4 w-4 text-indigo-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.total_users}</div>
+              <div className="text-2xl font-bold text-indigo-900">{stats.total_users}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-emerald-100 bg-gradient-to-br from-emerald-50 to-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-semibold text-emerald-700">Active Users</CardTitle>
+              <div className="p-1.5 rounded-lg bg-emerald-100">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.active_users}</div>
+              <div className="text-2xl font-bold text-emerald-600">{stats.active_users}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-blue-100 bg-gradient-to-br from-blue-50 to-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Admins</CardTitle>
-              <Shield className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-semibold text-blue-700">Admins</CardTitle>
+              <div className="p-1.5 rounded-lg bg-blue-100">
+                <Shield className="h-4 w-4 text-blue-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.admin_users}</div>
+              <div className="text-2xl font-bold text-blue-600">{stats.admin_users}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-amber-100 bg-gradient-to-br from-amber-50 to-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold text-amber-700">Total Tasks</CardTitle>
+              <div className="p-1.5 rounded-lg bg-amber-100">
+                <BarChart3 className="h-4 w-4 text-amber-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.total_tasks}</div>
+              <div className="text-2xl font-bold text-amber-700">{stats.total_tasks}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-purple-100 bg-gradient-to-br from-purple-50 to-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Tasks</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-semibold text-purple-700">Completed Tasks</CardTitle>
+              <div className="p-1.5 rounded-lg bg-purple-100">
+                <CheckCircle2 className="h-4 w-4 text-purple-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completed_tasks}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-purple-600">{stats.completed_tasks}</div>
+              <p className="text-xs text-purple-600/70">
                 {stats.total_tasks > 0
                   ? `${((stats.completed_tasks / stats.total_tasks) * 100).toFixed(1)}% completion`
                   : "No tasks"}
@@ -167,18 +177,18 @@ export default function AdminPage() {
       )}
 
       {/* Users Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>User Management</CardTitle>
+      <Card className="border-gray-100 shadow-sm">
+        <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
+          <CardTitle className="text-lg font-bold text-gray-900">User Management</CardTitle>
           <CardDescription>
             Manage user accounts, admin privileges, and access
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
+        <CardContent className="p-0">
+          <div className="rounded-b-lg overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-muted/50">
+                <tr className="border-b bg-gray-50/80">
                   <th className="p-3 text-left text-sm font-medium">User</th>
                   <th className="p-3 text-left text-sm font-medium">Email</th>
                   <th className="p-3 text-left text-sm font-medium">Tasks</th>

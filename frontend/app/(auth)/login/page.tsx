@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,25 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Check if already logged in - redirect to dashboard
+  useEffect(() => {
+    const checkExistingAuth = async () => {
+      try {
+        const userData = await authApi.getCurrentUser();
+        if (userData) {
+          setUser(userData);
+          router.replace("/dashboard");
+          return;
+        }
+      } catch {
+        // Not logged in, show login form
+      }
+      setCheckingAuth(false);
+    };
+    checkExistingAuth();
+  }, [router, setUser]);
 
   const {
     register,
@@ -55,6 +74,20 @@ export default function LoginPage() {
     }
   };
 
+  // Show checking auth state
+  if (checkingAuth) {
+    return (
+      <Card className="w-full shadow-lg border">
+        <CardContent className="py-16">
+          <div className="text-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mx-auto" />
+            <p className="text-sm text-gray-500">Checking session...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Show redirecting state
   if (isRedirecting) {
     return (
@@ -65,7 +98,7 @@ export default function LoginPage() {
               <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900">Welcome back! 🎉</p>
+              <p className="text-lg font-semibold text-gray-900">Welcome back!</p>
               <p className="text-sm text-gray-500 mt-1">Redirecting to dashboard...</p>
             </div>
           </div>

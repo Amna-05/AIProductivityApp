@@ -188,7 +188,7 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in-up">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -200,7 +200,7 @@ export default function TasksPage() {
         <Button
           onClick={() => handleOpenDialog()}
           size="sm"
-          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all"
         >
           <Plus className="h-4 w-4" />
           Add Task
@@ -213,14 +213,14 @@ export default function TasksPage() {
           placeholder="Search tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-300 focus:ring-emerald-200"
+          className="h-11 bg-white border-gray-200 shadow-sm focus:bg-white focus:border-emerald-400 focus:ring-emerald-200 focus:ring-2"
         />
       </div>
 
       {/* Filter Pills */}
       <div className="flex flex-wrap gap-2">
         {/* Status Pills */}
-        <div className="flex gap-1 p-1 bg-muted/50 rounded-lg">
+        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
           {statusFilters.map((status) => (
             <button
               key={status.value}
@@ -228,8 +228,8 @@ export default function TasksPage() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150",
                 statusFilter === status.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               )}
             >
               {status.label}
@@ -238,7 +238,7 @@ export default function TasksPage() {
         </div>
 
         {/* Quadrant Pills */}
-        <div className="flex gap-1 p-1 bg-muted/50 rounded-lg">
+        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
           {quadrantFilters.map((quadrant) => (
             <button
               key={quadrant.value}
@@ -246,8 +246,8 @@ export default function TasksPage() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 flex items-center gap-1.5",
                 quadrantFilter === quadrant.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-gray-900 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               )}
             >
               {quadrant.value !== "all" && (
@@ -260,14 +260,14 @@ export default function TasksPage() {
 
         {/* Category Pills */}
         {categories.length > 0 && (
-          <div className="flex gap-1 p-1 bg-muted/50 rounded-lg overflow-x-auto">
+          <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 overflow-x-auto">
             <button
               onClick={() => setCategoryFilter(null)}
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 whitespace-nowrap",
                 categoryFilter === null
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               )}
             >
               All
@@ -279,8 +279,8 @@ export default function TasksPage() {
                 className={cn(
                   "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap",
                   categoryFilter === category.id
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-purple-600 text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                 )}
               >
                 <div
