@@ -26,8 +26,8 @@ class RefreshToken(Base):
     
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())  
     
-    # Relationship
-    user = relationship("User", backref="refresh_tokens")
+    # Relationship - use lazy="noload" to prevent async context issues
+    user = relationship("User", backref="refresh_tokens", lazy="noload")
     
     def __repr__(self) -> str:
         return f"<RefreshToken(id={self.id}, user_id={self.user_id}, revoked={self.is_revoked})>"

@@ -20,6 +20,30 @@ const processQueue = (error: AxiosError | null) => {
   failedQueue = [];
 };
 
+// Check if error is a true auth failure (not server error)
+const isAuthError = (error: AxiosError): boolean => {
+  if (error.response?.status !== 401) return false;
+
+  // Check if it's a real auth error from our backend
+  const detail = (error.response?.data as { detail?: string })?.detail || "";
+  const authMessages = [
+    "not authenticated",
+    "invalid or expired",
+    "refresh token not found",
+    "please login",
+    "user not found"
+  ];
+
+  return authMessages.some(msg => detail.toLowerCase().includes(msg));
+};
+
+// Check if error is a server/DB error (should NOT redirect)
+const isServerError = (error: AxiosError): boolean => {
+  const status = error.response?.status;
+  // 500, 502, 503, 504 = server errors, network errors
+  return !status || status >= 500 || error.code === "ERR_NETWORK";
+};
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -49,7 +73,12 @@ apiClient.interceptors.response.use(
     // Skip refresh for auth endpoints to prevent loops
     const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
 
-    // If 401 and we haven't retried yet, try to refresh the token
+    // If server/DB error, just reject - don't redirect, don't try refresh
+    if (isServerError(error)) {
+      return Promise.reject(error);
+    }
+
+    // Only try refresh on true 401 auth errors
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       if (isRefreshing) {
         // Queue requests while refresh is in progress
@@ -76,10 +105,12 @@ apiClient.interceptors.response.use(
         // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError as AxiosError);
+        const refreshErr = refreshError as AxiosError;
+        processQueue(refreshErr);
 
-        // Only redirect to login if we're not already on an auth page
-        if (typeof window !== "undefined") {
+        // Only redirect if refresh actually failed with auth error (not server error)
+        // Server errors during refresh should NOT cause logout
+        if (!isServerError(refreshErr) && typeof window !== "undefined") {
           const isOnAuthPage = window.location.pathname.includes('/login') ||
                                window.location.pathname.includes('/register') ||
                                window.location.pathname.includes('/forgot-password') ||

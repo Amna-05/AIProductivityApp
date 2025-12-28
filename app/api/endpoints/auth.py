@@ -219,9 +219,9 @@ async def refresh_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token. Please login again."
         )
-    
-    # Get user
-    user = await user_repo.get_by_email(db_token.user.email)
+
+    # Get user by ID (avoid lazy loading .user relationship)
+    user = await user_repo.get_by_id(db_token.user_id)
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
