@@ -66,10 +66,11 @@ async def register(
     
     # 🆕 CREATE DEFAULT CATEGORIES
     default_categories = [
-        {"name": "Personal", "color": "#3B82F6", "icon": "👤"},
-        {"name": "Work", "color": "#10B981", "icon": "💼"},
-        {"name": "Health", "color": "#EF4444", "icon": "💪"},
-        {"name": "Finance", "color": "#F59E0B", "icon": "💰"},
+        {"name": "Work", "color": "#6366F1", "icon": "💼"},
+        {"name": "Personal", "color": "#8B5CF6", "icon": "👤"},
+        {"name": "Studies", "color": "#F59E0B", "icon": "📚"},
+        {"name": "Health", "color": "#10B981", "icon": "💪"},
+        {"name": "Other", "color": "#64748B", "icon": "📌"},
     ]
     
     for cat_data in default_categories:
@@ -296,6 +297,12 @@ class ResetPasswordRequest(BaseModel):
     new_password: str = Field(..., min_length=8, max_length=100)
 
 
+class ChangePasswordRequest(BaseModel):
+    """Change password while logged in."""
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+
 @router.post("/forgot-password")
 async def forgot_password(
     request: ForgotPasswordRequest,
@@ -378,4 +385,34 @@ async def reset_password(
 
     return {
         "message": "Password reset successful. Please login with your new password."
+    }
+
+
+@router.post("/change-password")
+async def change_password(
+    request: ChangePasswordRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Change password while logged in.
+
+    Requires current password verification.
+    """
+    user_repo = UserRepository(db)
+
+    # Verify current password
+    authenticated = await user_repo.authenticate(current_user.email, request.current_password)
+    if not authenticated:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    # Update password
+    current_user.hashed_password = get_password_hash(request.new_password)
+    await db.commit()
+
+    return {
+        "message": "Password changed successfully"
     }

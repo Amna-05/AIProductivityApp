@@ -97,15 +97,29 @@ async def update_category(
         )
     )
     db_category = result.scalars().first()
-    
+
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
-    
-    # Update fields
+
+    # Check name uniqueness only if name is being changed
     update_data = category_update.model_dump(exclude_none=True)
+    if "name" in update_data and update_data["name"] != db_category.name:
+        existing = await db.execute(
+            select(Category).where(
+                Category.user_id == current_user.id,
+                Category.name == update_data["name"]
+            )
+        )
+        if existing.scalars().first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Category '{update_data['name']}' already exists"
+            )
+
+    # Update fields
     for field, value in update_data.items():
         setattr(db_category, field, value)
-    
+
     await db.commit()
     await db.refresh(db_category)
     return CategoryResponse.model_validate(db_category)

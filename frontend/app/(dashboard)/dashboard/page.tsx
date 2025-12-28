@@ -1,226 +1,363 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import {
-  Clock,
-  CheckCircle,
-  TrendingUp,
-  AlertCircle,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, AlertTriangle, Calendar as CalendarIcon, Loader2, PartyPopper } from "lucide-react";
+import { format, parseISO, isToday, isTomorrow, addDays, startOfDay } from "date-fns";
 
 import { analyticsApi } from "@/lib/api/analytics";
 import { tasksApi } from "@/lib/api/tasks";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useSearch } from "@/components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
-import { AITaskParserDialog } from "@/components/ai/AITaskParserDialog";
-import { StatCard } from "@/components/dashboard/StatCard";
+import { cn } from "@/lib/utils/cn";
+import { Task } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [aiDialogOpen, setAiDialogOpen] = useState(false);
-  const [quickAddValue, setQuickAddValue] = useState("");
+  const { searchQuery } = useSearch();
+  const queryClient = useQueryClient();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [completedTaskId, setCompletedTaskId] = useState<number | null>(null);
 
-  // Fetch overview analytics
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+  // Fetch analytics overview
+  const { data: analytics } = useQuery({
     queryKey: ["analytics", "overview"],
     queryFn: analyticsApi.getOverview,
   });
 
-  // Fetch upcoming tasks (sorted by due date)
-  const { data: upcomingTasks, isLoading: tasksLoading } = useQuery({
-    queryKey: ["tasks", { limit: 10, sort_by: "due_date", sort_order: "asc" }],
+  // Fetch today's tasks (overdue + due today)
+  const { data: todayData, isLoading: loadingToday } = useQuery({
+    queryKey: ["tasks", "today"],
     queryFn: () =>
-      tasksApi.getAll({ limit: 10, sort_by: "due_date", sort_order: "asc" }),
+      tasksApi.getAll({
+        due_before: addDays(startOfDay(new Date()), 1).toISOString(),
+        completed: false,
+        limit: 10,
+        sort_by: "due_date",
+        sort_order: "asc",
+      }),
   });
 
-  const handleQuickAdd = () => {
-    if (quickAddValue.trim()) {
-      // If it looks like natural language, open AI parser
-      if (quickAddValue.length > 20 || quickAddValue.includes(",")) {
-        setAiDialogOpen(true);
+  // Fetch upcoming tasks (next 7 days)
+  const { data: upcomingData, isLoading: loadingUpcoming } = useQuery({
+    queryKey: ["tasks", "upcoming"],
+    queryFn: () =>
+      tasksApi.getAll({
+        due_after: addDays(startOfDay(new Date()), 1).toISOString(),
+        due_before: addDays(startOfDay(new Date()), 8).toISOString(),
+        completed: false,
+        limit: 15,
+        sort_by: "due_date",
+        sort_order: "asc",
+      }),
+  });
+
+  // Complete task mutation
+  const completeMutation = useMutation({
+    mutationFn: (taskId: number) => tasksApi.update(taskId, { status: "done" }),
+    onMutate: (taskId) => {
+      setCompletedTaskId(taskId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      toast.success("Task completed!", {
+        icon: <PartyPopper className="h-4 w-4" />,
+      });
+    },
+    onSettled: () => {
+      setTimeout(() => setCompletedTaskId(null), 300);
+    },
+  });
+
+  // Separate overdue from today's tasks
+  const { overdueTasks, todayTasks } = useMemo(() => {
+    const tasks = todayData?.tasks || [];
+    const now = new Date();
+    const overdue: Task[] = [];
+    const today: Task[] = [];
+
+    tasks.forEach((task) => {
+      if (task.due_date) {
+        const dueDate = parseISO(task.due_date);
+        if (dueDate < now && !isToday(dueDate)) {
+          overdue.push(task);
+        } else {
+          today.push(task);
+        }
       } else {
-        // Otherwise open regular task form
-        setTaskDialogOpen(true);
+        today.push(task);
       }
-    }
+    });
+
+    return { overdueTasks: overdue, todayTasks: today };
+  }, [todayData]);
+
+  // Group upcoming by date
+  const upcomingGrouped = useMemo(() => {
+    const tasks = upcomingData?.tasks || [];
+    const groups: { [key: string]: Task[] } = {};
+
+    tasks.forEach((task) => {
+      if (task.due_date) {
+        const dueDate = parseISO(task.due_date);
+        let label: string;
+
+        if (isTomorrow(dueDate)) {
+          label = "Tomorrow";
+        } else {
+          label = format(dueDate, "EEEE, MMM d");
+        }
+
+        if (!groups[label]) groups[label] = [];
+        groups[label].push(task);
+      }
+    });
+
+    return groups;
+  }, [upcomingData]);
+
+  // Filter tasks by search
+  const filterBySearch = (tasks: Task[]) => {
+    if (!searchQuery.trim()) return tasks;
+    const query = searchQuery.toLowerCase();
+    return tasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(query) ||
+        task.description?.toLowerCase().includes(query) ||
+        task.category?.name.toLowerCase().includes(query)
+    );
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "done":
-        return "bg-success/10 text-success border-success/20";
-      case "in_progress":
-        return "bg-info/10 text-info border-info/20";
-      default:
-        return "bg-muted text-muted-foreground border-border";
-    }
+  const filteredTodayTasks = filterBySearch(todayTasks);
+  const filteredOverdueTasks = filterBySearch(overdueTasks);
+
+  // Calendar date modifiers
+  const dateModifiers = useMemo(() => {
+    const allTasks = [...(todayData?.tasks || []), ...(upcomingData?.tasks || [])];
+    const taskDates: Date[] = [];
+    const overdueDates: Date[] = [];
+    const now = new Date();
+
+    allTasks.forEach((task) => {
+      if (!task.due_date) return;
+      const dueDate = parseISO(task.due_date);
+      if (dueDate < now && !isToday(dueDate)) {
+        overdueDates.push(dueDate);
+      } else {
+        taskDates.push(dueDate);
+      }
+    });
+
+    return { taskDates, overdueDates };
+  }, [todayData, upcomingData]);
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setEditDialogOpen(true);
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "done":
-        return "Done";
-      case "in_progress":
-        return "In Progress";
-      default:
-        return "To Do";
-    }
+  const handleComplete = (taskId: number) => {
+    completeMutation.mutate(taskId);
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "DO_FIRST":
-        return "bg-destructive";
-      case "SCHEDULE":
-        return "bg-warning";
-      case "DELEGATE":
-        return "bg-info";
-      default:
-        return "bg-muted";
-    }
-  };
+  const completionRate = analytics?.total_tasks
+    ? Math.round((analytics.completed_tasks / analytics.total_tasks) * 100)
+    : 0;
 
   return (
-    <div className="px-6 py-6 space-y-8 bg-background">{/* Ensure white background */}
+    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up">
+      {/* Overdue Banner */}
+      {filteredOverdueTasks.length > 0 && (
+        <Card className="border-destructive/30 bg-gradient-to-r from-destructive/10 to-destructive/5 animate-scale-in">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-destructive">
+                  {filteredOverdueTasks.length} Overdue Task{filteredOverdueTasks.length > 1 ? "s" : ""}
+                </p>
+                <p className="text-xs text-muted-foreground">Needs your attention</p>
+              </div>
+            </div>
+            {/* Show overdue tasks inline */}
+            <div className="mt-4 space-y-2">
+              {filteredOverdueTasks.slice(0, 3).map((task, idx) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  variant="minimal"
+                  onComplete={handleComplete}
+                  onClick={handleTaskClick}
+                  animationDelay={idx * 50}
+                  className={cn(
+                    completedTaskId === task.id && "opacity-50 scale-95 transition-all"
+                  )}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Clock}
-          label="Total Tasks"
-          value={analytics?.total_tasks || 0}
-          iconColor="text-primary"
-        />
-        <StatCard
-          icon={CheckCircle}
-          label="Completed"
-          value={analytics?.completed_tasks || 0}
-          iconColor="text-success"
-          valueColor="text-success"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="In Progress"
-          value={analytics?.in_progress_tasks || 0}
-          iconColor="text-info"
-          valueColor="text-info"
-        />
-        <StatCard
-          icon={AlertCircle}
-          label="Overdue"
-          value={analytics?.overdue_tasks || 0}
-          iconColor="text-destructive"
-          valueColor="text-destructive"
-        />
-      </div>
+      {/* Main Grid: Today's Focus + Upcoming */}
+      <div className="grid lg:grid-cols-[1fr,320px] gap-6">
+        {/* Today's Focus */}
+        <div className="space-y-4">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Today's Focus</h1>
+            <p className="text-sm text-muted-foreground">
+              {filteredTodayTasks.length} task{filteredTodayTasks.length !== 1 ? "s" : ""} for today
+            </p>
+          </div>
 
-      {/* Upcoming Deadlines Section - With Max Width */}
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Upcoming Deadlines</h2>
-          <Link href="/tasks">
-            <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
-              View all →
-            </Button>
-          </Link>
+          {loadingToday ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <TaskCardSkeleton key={i} variant="minimal" />
+              ))}
+            </div>
+          ) : filteredTodayTasks.length === 0 ? (
+            <Card variant="flat" className="bg-gradient-to-br from-primary/5 to-transparent">
+              <CardContent className="py-12 text-center">
+                <CheckCircle2 className="h-12 w-12 text-primary/60 mx-auto mb-3" />
+                <p className="text-lg font-semibold text-foreground">You're all caught up!</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  No tasks due today. Enjoy your day!
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {filteredTodayTasks.slice(0, 5).map((task, idx) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  variant="minimal"
+                  onComplete={handleComplete}
+                  onClick={handleTaskClick}
+                  animationDelay={idx * 50}
+                  className={cn(
+                    completedTaskId === task.id && "opacity-50 scale-95 transition-all"
+                  )}
+                />
+              ))}
+              {filteredTodayTasks.length > 5 && (
+                <p className="text-xs text-muted-foreground text-center py-2">
+                  +{filteredTodayTasks.length - 5} more tasks
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
-        {tasksLoading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        {/* Right Column: Upcoming + Calendar */}
+        <div className="space-y-6">
+          {/* Upcoming Section */}
+          <div className="space-y-3">
+            <h2 className="text-sm font-semibold text-foreground">Upcoming</h2>
+
+            {loadingUpcoming ? (
+              <div className="space-y-2">
+                <TaskCardSkeleton variant="minimal" />
+                <TaskCardSkeleton variant="minimal" />
+              </div>
+            ) : Object.keys(upcomingGrouped).length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">No upcoming tasks this week</p>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(upcomingGrouped).slice(0, 3).map(([dateLabel, tasks]) => (
+                  <div key={dateLabel}>
+                    <p className="text-xs font-medium text-muted-foreground mb-2">{dateLabel}</p>
+                    <div className="space-y-1.5">
+                      {tasks.slice(0, 3).map((task) => (
+                        <div
+                          key={task.id}
+                          onClick={() => handleTaskClick(task)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                        >
+                          <div className={cn(
+                            "w-1.5 h-1.5 rounded-full",
+                            task.quadrant === "DO_FIRST" && "bg-red-500",
+                            task.quadrant === "SCHEDULE" && "bg-amber-500",
+                            task.quadrant === "DELEGATE" && "bg-blue-500",
+                            task.quadrant === "ELIMINATE" && "bg-gray-400"
+                          )} />
+                          <span className="text-sm truncate flex-1 text-foreground">{task.title}</span>
+                          {task.due_date && (
+                            <span className="text-xs text-muted-foreground">
+                              {format(parseISO(task.due_date), "h:mm a")}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        ) : !upcomingTasks?.tasks || upcomingTasks.tasks.length === 0 ? (
-          <Card>
-            <CardContent className="py-12">
-              <div className="text-center space-y-3">
-                <p className="text-muted-foreground">
-                  No upcoming tasks. You're all caught up!
-                </p>
-                <Button onClick={() => setTaskDialogOpen(true)} variant="outline">
-                  Create your first task
-                </Button>
+
+          {/* Calendar Widget - Hidden on mobile per user decision */}
+          <div className="hidden lg:block">
+            <Card variant="flat" className="bg-card/50">
+              <CardHeader className="pb-2 pt-4 px-4">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  Calendar
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-0">
+                <Calendar
+                  mode="single"
+                  className="rounded-lg"
+                  modifiers={{
+                    hasTask: dateModifiers.taskDates,
+                    overdue: dateModifiers.overdueDates,
+                  }}
+                  modifiersClassNames={{
+                    hasTask: "font-semibold bg-primary/10 text-primary",
+                    overdue: "font-bold bg-destructive/10 text-destructive",
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Progress Summary */}
+          <Card variant="flat" className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium">Today's Progress</span>
+                <span className="text-sm font-bold text-primary">{completionRate}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full transition-all duration-500"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                <span>{analytics?.completed_tasks || 0} completed</span>
+                <span>{analytics?.pending_tasks || 0} remaining</span>
               </div>
             </CardContent>
           </Card>
-        ) : (
-          <div className="space-y-3">
-            {upcomingTasks.tasks
-              .filter((task) => task.status !== "done")
-              .slice(0, 10)
-              .map((task) => (
-                <Card
-                  key={task.id}
-                  className="hover:shadow-md hover:border-primary/30 transition-all cursor-pointer"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      {/* Left: Priority indicator + Task info */}
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
-                        {/* Priority Dot */}
-                        <div
-                          className={`h-2 w-2 rounded-full mt-2 shrink-0 ${getPriorityColor(
-                            task.priority
-                          )}`}
-                        />
-
-                        {/* Task Details */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-base line-clamp-1 mb-1">
-                            {task.title}
-                          </h3>
-
-                          {/* Meta info */}
-                          <div className="flex items-center gap-3 flex-wrap text-sm text-muted-foreground">
-                            {task.due_date && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {formatDistanceToNow(new Date(task.due_date), {
-                                  addSuffix: true,
-                                })}
-                              </span>
-                            )}
-
-                            {task.category && (
-                              <span className="flex items-center gap-1">
-                                <span
-                                  className="h-2 w-2 rounded-full"
-                                  style={{
-                                    backgroundColor: task.category.color || "#3B82F6",
-                                  }}
-                                />
-                                {task.category.name}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: Status Badge */}
-                      <span
-                        className={`text-xs font-medium px-3 py-1 rounded-full border shrink-0 ${getStatusColor(
-                          task.status
-                        )}`}
-                      >
-                        {getStatusLabel(task.status)}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-        )}
+        </div>
       </div>
 
-      {/* Dialogs */}
-      <TaskFormDialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen} />
-      <AITaskParserDialog open={aiDialogOpen} onOpenChange={setAiDialogOpen} />
+      {/* Edit Task Dialog */}
+      <TaskFormDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        task={selectedTask}
+      />
     </div>
   );
 }

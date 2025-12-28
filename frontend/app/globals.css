@@ -1,71 +1,99 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ELEVATE Brand Theme - "Lift Your Productivity to New Heights" */
+  /* ELEVATE Brand Theme - Calm, Minimal, Productive */
 
-  /* Core Colors - Light Mode (Pure White Background) */
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
+  /* Light Mode - Clean white background */
+  --color-background: #FFFFFF;
+  --color-foreground: #111827;
+  --color-card: #F9FAFB;
+  --color-card-foreground: #111827;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #111827;
 
-  /* ELEVATE Brand Primary (Blue - Upward, Motivational) */
-  --color-primary: #3b82f6;
-  --color-primary-foreground: #ffffff;
+  /* Primary - Emerald (Productivity & Growth) */
+  --color-primary: #10B981;
+  --color-primary-foreground: #FFFFFF;
 
   /* Secondary & Muted */
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #e2e8f0;
-  --color-muted-foreground: #64748b;
+  --color-secondary: #F3F4F6;
+  --color-secondary-foreground: #111827;
+  --color-muted: #E5E7EB;
+  --color-muted-foreground: #6B7280;
 
-  /* Accent */
-  --color-accent: #eff6ff;
-  --color-accent-foreground: #1e40af;
+  /* Accent - Subtle emerald tint */
+  --color-accent: #ECFDF5;
+  --color-accent-foreground: #065F46;
 
-  /* Semantic Colors (Task States & Actions) */
-  --color-success: #10b981;
-  --color-success-foreground: #ffffff;
-  --color-warning: #f59e0b;
-  --color-warning-foreground: #ffffff;
-  --color-info: #3b82f6;
-  --color-info-foreground: #ffffff;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
+  /* Calendar */
+  --color-calendar: #10B981;
+  --color-calendar-light: #D1FAE5;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-success-foreground: #FFFFFF;
+  --color-warning: #F59E0B;
+  --color-warning-foreground: #FFFFFF;
+  --color-info: #3B82F6;
+  --color-info-foreground: #FFFFFF;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+
+  /* Quadrant Colors - Eisenhower Matrix */
+  --color-quadrant-do-first: #EF4444;
+  --color-quadrant-do-first-bg: #FEF2F2;
+  --color-quadrant-schedule: #F59E0B;
+  --color-quadrant-schedule-bg: #FFFBEB;
+  --color-quadrant-delegate: #3B82F6;
+  --color-quadrant-delegate-bg: #EFF6FF;
+  --color-quadrant-eliminate: #9CA3AF;
+  --color-quadrant-eliminate-bg: #F9FAFB;
 
   /* Borders & Inputs */
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #3b82f6;
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #10B981;
 }
 
 .dark {
-  --color-background: #0a0e1a;
-  --color-foreground: #f1f5f9;
-  --color-card: #1e293b;
-  --color-card-foreground: #f1f5f9;
-  --color-popover: #1e293b;
-  --color-popover-foreground: #f1f5f9;
-  --color-primary: #3b82f6;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #334155;
-  --color-secondary-foreground: #f1f5f9;
-  --color-muted: #334155;
-  --color-muted-foreground: #94a3b8;
-  --color-accent: #1e3a8a;
-  --color-accent-foreground: #93c5fd;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #334155;
-  --color-input: #334155;
-  --color-ring: #60a5fa;
+  /* Dark Mode - Deep charcoal with subtle accents */
+  --color-background: #111827;
+  --color-foreground: #F3F4F6;
+  --color-card: #1F2937;
+  --color-card-foreground: #F3F4F6;
+  --color-popover: #1F2937;
+  --color-popover-foreground: #F3F4F6;
 
-  /* Additional colors for dark mode */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  /* Primary - Lighter emerald for dark */
+  --color-primary: #34D399;
+  --color-primary-foreground: #111827;
+
+  --color-secondary: #374151;
+  --color-secondary-foreground: #F3F4F6;
+  --color-muted: #374151;
+  --color-muted-foreground: #9CA3AF;
+  --color-accent: #064E3B;
+  --color-accent-foreground: #A7F3D0;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #374151;
+  --color-input: #374151;
+  --color-ring: #34D399;
+
+  /* Semantic - same for consistency */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-info: #3B82F6;
+
+  /* Quadrant Colors - Dark mode */
+  --color-quadrant-do-first: #EF4444;
+  --color-quadrant-do-first-bg: rgba(239, 68, 68, 0.1);
+  --color-quadrant-schedule: #F59E0B;
+  --color-quadrant-schedule-bg: rgba(245, 158, 11, 0.1);
+  --color-quadrant-delegate: #3B82F6;
+  --color-quadrant-delegate-bg: rgba(59, 130, 246, 0.1);
+  --color-quadrant-eliminate: #9CA3AF;
+  --color-quadrant-eliminate-bg: rgba(156, 163, 175, 0.1);
 }
 
 * {
@@ -78,22 +106,22 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Smooth transitions for all interactive elements */
+/* Smooth transitions - snappy 150ms */
 button,
 a,
 input,
 textarea,
 select {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s ease-out;
 }
 
-/* Card styling improvements */
+/* Card styling - rounded-xl default */
 .card {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease-out;
 }
 
 .card:hover {
@@ -101,43 +129,45 @@ select {
 }
 
 .dark .card {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .dark .card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - thinner */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--color-secondary);
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--color-muted-foreground) 20%, transparent);
-  border-radius: 0.375rem;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in srgb, var(--color-muted-foreground) 30%, transparent);
+  background-color: color-mix(in srgb, var(--color-muted-foreground) 40%, transparent);
 }
 
-/* Focus ring improvements */
+/* Focus ring - emerald */
 *:focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 
-/* ELEVATE Brand Animations */
+/* ELEVATE Animations - Snappy & Delightful */
+
+/* Fade in with subtle lift */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -145,6 +175,31 @@ select {
   }
 }
 
+/* Fade in up - for content areas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in - for modals/popovers */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide in from left */
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
@@ -154,30 +209,92 @@ select {
   }
 }
 
+/* Slide in from right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Subtle float for emphasis */
 @keyframes floatUp {
   0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
 }
 
+/* Gentle pulse */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.7;
   }
 }
 
+/* Checkbox tick animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Task completion strikethrough */
+@keyframes strikethrough {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Confetti burst for completion */
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+  }
+}
+
+/* Animation utility classes */
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.15s ease-out;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.25s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.2s ease-out;
 }
 
 .animate-float-up {
@@ -186,4 +303,37 @@ select {
 
 .animate-pulse {
   animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.2s ease-out;
+}
+
+/* Stagger animation delays for lists */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Task card completion state */
+.task-completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+  text-decoration-color: var(--color-muted-foreground);
+}
+
+.task-completed .task-title {
+  color: var(--color-muted-foreground);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

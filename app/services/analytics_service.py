@@ -644,20 +644,27 @@ class AnalyticsService:
     # COMBINED DASHBOARD
     # ========================================================================
 
-    async def get_dashboard_analytics(self, user_id: int) -> DashboardAnalytics:
+    async def get_dashboard_analytics(self, user_id: int, days: int = 30) -> DashboardAnalytics:
         """
         Get complete analytics dashboard data in a single call.
 
         Combines all analytics for efficient rendering.
 
+        Args:
+            user_id: User ID
+            days: Number of days for trends analysis (default: 30)
+
         Returns:
             DashboardAnalytics with all metrics
         """
-        logger.info(f"Generating complete analytics dashboard for user {user_id}")
+        logger.info(f"Generating complete analytics dashboard for user {user_id}, days={days}")
+
+        # Determine period label based on days
+        period = "week" if days <= 7 else "month" if days <= 30 else "quarter"
 
         # Get all analytics (can be optimized with concurrent queries)
         overview = await self.get_overview(user_id)
-        trends = await self.get_completion_trends(user_id, period="week", days=7)
+        trends = await self.get_completion_trends(user_id, period=period, days=days)
         priority_dist = await self.get_priority_distribution(user_id)
         category_perf = await self.get_category_performance(user_id)
         tag_analytics = await self.get_tag_analytics(user_id)

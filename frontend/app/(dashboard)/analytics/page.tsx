@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, TrendingUp, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { TrendingUp, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -20,31 +21,110 @@ import {
 
 import { analyticsApi } from "@/lib/api/analytics";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils/cn";
+
+// Date range options
+const dateRanges = [
+  { value: 7, label: "7d" },
+  { value: 30, label: "30d" },
+  { value: 90, label: "90d" },
+];
+
+// Skeleton components
+function StatCardSkeleton() {
+  return (
+    <Card className="animate-pulse">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
+        <div className="h-3 w-16 bg-muted rounded" />
+        <div className="h-3.5 w-3.5 bg-muted rounded" />
+      </CardHeader>
+      <CardContent className="p-3 pt-0">
+        <div className="h-7 w-12 bg-muted rounded mb-1" />
+        <div className="h-3 w-20 bg-muted rounded" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function ChartSkeleton({ height = "h-[178px]" }: { height?: string }) {
+  return (
+    <div className={cn("animate-pulse bg-muted/50 rounded-lg", height)} />
+  );
+}
 
 export default function AnalyticsPage() {
+  const [dateRange, setDateRange] = useState(30);
+
   // Fetch dashboard analytics
   const { data, isLoading, error } = useQuery({
-    queryKey: ["analytics", "dashboard"],
-    queryFn: analyticsApi.getDashboard,
+    queryKey: ["analytics", "dashboard", dateRange],
+    queryFn: () => analyticsApi.getDashboard(dateRange),
   });
 
+  // Loading skeleton UI
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="px-6 py-6 space-y-8 animate-fade-in-up">
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-32 bg-muted rounded animate-pulse" />
+            <div className="h-4 w-48 bg-muted rounded mt-2 animate-pulse" />
+          </div>
+          <div className="h-9 w-28 bg-muted rounded-lg animate-pulse" />
+        </div>
+
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </div>
+
+        {/* Chart skeletons */}
+        <Card>
+          <CardHeader>
+            <div className="h-5 w-36 bg-muted rounded animate-pulse" />
+            <div className="h-3 w-48 bg-muted rounded mt-1 animate-pulse" />
+          </CardHeader>
+          <CardContent>
+            <ChartSkeleton />
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <div className="h-5 w-40 bg-muted rounded animate-pulse" />
+            </CardHeader>
+            <CardContent>
+              <ChartSkeleton height="h-[167px]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="h-5 w-44 bg-muted rounded animate-pulse" />
+            </CardHeader>
+            <CardContent>
+              <ChartSkeleton height="h-[190px]" />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="border-destructive">
-        <CardContent className="py-12">
-          <p className="text-center text-destructive">
-            Failed to load analytics. Please try again.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="px-6 py-6 animate-fade-in-up">
+        <Card className="border-destructive bg-destructive/5">
+          <CardContent className="py-12">
+            <p className="text-center text-destructive">
+              Failed to load analytics. Please try again.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -60,6 +140,7 @@ export default function AnalyticsPage() {
     completion_rate: stats.completion_rate,
   }));
 
+  // Emerald palette for charts
   const COLORS = {
     DO_FIRST: "#EF4444",
     SCHEDULE: "#F59E0B",
@@ -67,14 +148,39 @@ export default function AnalyticsPage() {
     ELIMINATE: "#9CA3AF",
   };
 
+  const CHART_COLORS = {
+    primary: "#10B981",    // emerald-500
+    secondary: "#34D399",  // emerald-400
+    accent: "#059669",     // emerald-600
+    muted: "#6EE7B7",      // emerald-300
+  };
+
   return (
-    <div className="px-6 py-6 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Analytics</h1>
-        <p className="text-muted-foreground mt-1">
-          Insights into your productivity and task management
-        </p>
+    <div className="px-6 py-6 space-y-8 animate-fade-in-up">
+      {/* Header with Date Range Selector */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Analytics</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Productivity insights
+          </p>
+        </div>
+        <div className="flex gap-1 p-1 bg-muted/50 rounded-lg">
+          {dateRanges.map((range) => (
+            <button
+              key={range.value}
+              onClick={() => setDateRange(range.value)}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150",
+                dateRange === range.value
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Overview Cards - Reduced 15% */}
@@ -165,18 +271,18 @@ export default function AnalyticsPage() {
                 <Line
                   type="monotone"
                   dataKey="created"
-                  stroke="#3B82F6"
+                  stroke={CHART_COLORS.muted}
                   strokeWidth={2}
                   name="Created"
-                  dot={{ fill: '#3B82F6', r: 4 }}
+                  dot={{ fill: CHART_COLORS.muted, r: 4 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="completed"
-                  stroke="#10B981"
+                  stroke={CHART_COLORS.primary}
                   strokeWidth={2}
                   name="Completed"
-                  dot={{ fill: '#10B981', r: 4 }}
+                  dot={{ fill: CHART_COLORS.primary, r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -268,8 +374,8 @@ export default function AnalyticsPage() {
                   <YAxis tick={{ fill: '#64748b', fontSize: 12 }} />
                   <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
                   <Legend />
-                  <Bar dataKey="completed_tasks" fill="#10B981" name="Completed" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="in_progress_tasks" fill="#3B82F6" name="In Progress" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="completed_tasks" fill={CHART_COLORS.primary} name="Completed" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="in_progress_tasks" fill={CHART_COLORS.secondary} name="In Progress" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="pending_tasks" fill="#9CA3AF" name="Pending" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

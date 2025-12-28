@@ -231,9 +231,12 @@ async def get_time_analytics(
     description="""
     Get all analytics in a single call for dashboard rendering.
 
+    **Parameters:**
+    - days: Number of days for trends (default: 30)
+
     **Returns:**
     - Overview metrics
-    - Recent completion trends (last 7 days)
+    - Recent completion trends (configurable period)
     - Priority distribution
     - Top 5 categories by task count
     - Top 5 tags by usage
@@ -247,11 +250,17 @@ async def get_time_analytics(
     """
 )
 async def get_dashboard_analytics(
+    days: int = Query(
+        30,
+        ge=1,
+        le=365,
+        description="Number of days for trends analysis"
+    ),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ) -> DashboardAnalytics:
     """Get complete dashboard analytics for current user."""
-    logger.info(f"Fetching complete dashboard analytics for user {current_user.id}")
+    logger.info(f"Fetching complete dashboard analytics for user {current_user.id}, days={days}")
 
     service = AnalyticsService(db)
-    return await service.get_dashboard_analytics(current_user.id)
+    return await service.get_dashboard_analytics(current_user.id, days=days)

@@ -104,7 +104,7 @@ A production-ready task management system featuring:
     lifespan=lifespan,
     contact={
         "name": "API Support",
-        "url": "https://github.com/yourusername/task-manager",
+        "url": "https://github.com/ Amna-05/AI-Productivity-App/issues",
     },
     license_info={
         "name": "MIT",

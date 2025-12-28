@@ -125,6 +125,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
     mutationFn: tasksApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Task created successfully");
       onOpenChange(false);
       form.reset();
@@ -140,6 +141,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       tasksApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Task updated successfully");
       onOpenChange(false);
     },

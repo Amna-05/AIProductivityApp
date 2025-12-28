@@ -31,8 +31,9 @@ class Settings(BaseSettings):
     
     # CORS - For frontend apps
     BACKEND_CORS_ORIGINS: List[str] = [
-        "http://localhost:3000",  # React default
-        "http://localhost:8080",  # Vue default
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8080",
     ]
         
     # Database
@@ -51,7 +52,7 @@ class Settings(BaseSettings):
     # Email Service (Resend)
     RESEND_API_KEY: Optional[str] = "your-resend-api-key-here"  # Get from resend.com
     EMAIL_FROM: str = "ELEVATE <onboarding@resend.dev>"  # Sender email (update in production)
-    FRONTEND_URL: str = "http://localhost:3000"  # Frontend URL for reset links
+    FRONTEND_URL: str = "http://localhost:3001"  # Frontend URL for reset links
 
     # Authentication & Security
     SECRET_KEY: str = ""

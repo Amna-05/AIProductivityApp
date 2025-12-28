@@ -42,4 +42,12 @@ export const authApi = {
     });
     return response.data;
   },
+
+  changePassword: async (current_password: string, new_password: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>("/auth/change-password", {
+      current_password,
+      new_password,
+    });
+    return response.data;
+  },
 };

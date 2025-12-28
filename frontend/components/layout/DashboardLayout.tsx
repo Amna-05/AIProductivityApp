@@ -1,45 +1,71 @@
 "use client";
 
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
+import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
+import { AITaskParserDialog } from "@/components/ai/AITaskParserDialog";
 import { cn } from "@/lib/utils/cn";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-// Create context for dialog handlers
-interface DialogContextType {
-  openTaskDialog: () => void;
-  openAIDialog: () => void;
+interface SearchContextType {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
-const DialogContext = createContext<DialogContextType | null>(null);
+const SearchContext = createContext<SearchContextType>({
+  searchQuery: "",
+  setSearchQuery: () => {},
+});
 
-export const useDialogs = () => {
-  const context = useContext(DialogContext);
-  if (!context) {
-    return { openTaskDialog: () => {}, openAIDialog: () => {} };
-  }
-  return context;
-};
+export const useSearch = () => useContext(SearchContext);
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const { user, setUser, setLoading, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [taskDialogTrigger, setTaskDialogTrigger] = useState(0);
-  const [aiDialogTrigger, setAIDialogTrigger] = useState(0);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Cmd/Ctrl + N: New task
+    if ((e.metaKey || e.ctrlKey) && e.key === "n") {
+      e.preventDefault();
+      setTaskDialogOpen(true);
+    }
+    // Cmd/Ctrl + Shift + A: AI Parser
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "a") {
+      e.preventDefault();
+      setAiDialogOpen(true);
+    }
+    // Cmd/Ctrl + K: Focus search (if implemented in header)
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      // Focus search input - could emit event or use ref
+      const searchInput = document.querySelector('input[placeholder="Search tasks..."]') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Since we use HttpOnly cookies, we can't check localStorage
-      // Instead, try to fetch the user directly - if it fails, we're not authenticated
       if (!user) {
         try {
           setLoading(true);
@@ -47,8 +73,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           setUser(userData);
         } catch (error) {
           console.error("Auth check failed:", error);
-          // Only redirect to login if we get 401 (unauthorized)
-          // This prevents redirect loop
           if ((error as any)?.response?.status === 401) {
             router.push("/login");
           }
@@ -59,20 +83,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
 
     checkAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, []);
 
-  const dialogHandlers = {
-    openTaskDialog: () => setTaskDialogTrigger((prev) => prev + 1),
-    openAIDialog: () => setAIDialogTrigger((prev) => prev + 1),
-  };
-
-  // Show loading state
   if (isLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
           <p className="text-sm text-muted-foreground">Loading ELEVATE...</p>
         </div>
       </div>
@@ -80,7 +97,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <DialogContext.Provider value={dialogHandlers}>
+    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
       <div className="flex h-screen overflow-hidden">
         {/* Desktop Sidebar */}
         <aside className="hidden md:block">
@@ -95,7 +112,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           >
             <div
               className={cn(
-                "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform",
+                "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 ease-out",
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               )}
               onClick={(e) => e.stopPropagation()}
@@ -105,18 +122,47 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
 
-        {/* Main Content */}
+        {/* Main Content Area */}
         <div className="flex flex-1 flex-col overflow-hidden">
           <Header
             onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-            onAddTask={() => setTaskDialogTrigger((prev) => prev + 1)}
-            onAIParser={() => setAIDialogTrigger((prev) => prev + 1)}
+            onAddTask={() => setTaskDialogOpen(true)}
+            onAIParser={() => setAiDialogOpen(true)}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
           />
           <main className="flex-1 overflow-y-auto bg-background">
             {children}
           </main>
         </div>
       </div>
-    </DialogContext.Provider>
+
+      {/* Floating AI Button */}
+      <Button
+        variant="default"
+        size="icon"
+        className={cn(
+          "fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50",
+          "bg-gradient-to-br from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90",
+          "transition-all duration-200 hover:scale-105 hover:shadow-xl",
+          "animate-fade-in"
+        )}
+        onClick={() => setAiDialogOpen(true)}
+      >
+        <Sparkles className="h-5 w-5 text-white" />
+        <span className="sr-only">AI Task Parser</span>
+      </Button>
+
+      {/* Dialogs */}
+      <TaskFormDialog
+        open={taskDialogOpen}
+        onOpenChange={setTaskDialogOpen}
+        task={null}
+      />
+      <AITaskParserDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+      />
+    </SearchContext.Provider>
   );
 }

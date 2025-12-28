@@ -116,8 +116,10 @@ export const analyticsApi = {
     return response.data;
   },
 
-  getDashboard: async (): Promise<DashboardAnalytics> => {
-    const response = await apiClient.get<DashboardAnalytics>("/analytics/dashboard");
+  getDashboard: async (days?: number): Promise<DashboardAnalytics> => {
+    const response = await apiClient.get<DashboardAnalytics>("/analytics/dashboard", {
+      params: days ? { days } : undefined,
+    });
     return response.data;
   },
 };
