@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { tasksApi } from "@/lib/api/tasks";
 import { categoriesApi } from "@/lib/api/categories";
 import { tagsApi } from "@/lib/api/tags";
-import { Task, TaskStatus } from "@/lib/types";
+import { Task } from "@/lib/types";
 import { MultiSelect } from "@/components/ui/multi-select";
 
 import {
@@ -47,12 +47,12 @@ import { Switch } from "@/components/ui/switch";
 const taskFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
   description: z.string().max(1000, "Description must be less than 1000 characters").optional().nullable(),
-  is_urgent: z.boolean().default(false),
-  is_important: z.boolean().default(false),
-  status: z.enum(["todo", "in_progress", "done"]).default("todo"),
+  is_urgent: z.boolean(),
+  is_important: z.boolean(),
+  status: z.enum(["todo", "in_progress", "done"]),
   due_date: z.string().optional().nullable(),
   category_id: z.number().optional().nullable(),
-  tag_ids: z.array(z.number()).optional().default([]),
+  tag_ids: z.array(z.number()),
 });
 
 type TaskFormValues = z.infer<typeof taskFormSchema>;
@@ -130,8 +130,9 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to create task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to create task");
     },
   });
 
@@ -145,8 +146,18 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       toast.success("Task updated successfully");
       onOpenChange(false);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to update task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      const message = axiosError.response?.data?.detail || "";
+
+      // User-friendly error messages
+      if (message.toLowerCase().includes("not found")) {
+        toast.error("Task no longer exists. It may have been deleted.");
+        onOpenChange(false);
+        queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      } else {
+        toast.error(message || "Failed to update task. Please try again.");
+      }
     },
   });
 

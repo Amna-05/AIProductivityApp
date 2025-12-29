@@ -36,9 +36,23 @@ class Settings(BaseSettings):
         "http://localhost:8080",
     ]
         
-    # Database
+    # Database (Railway auto-provides DATABASE_URL, we auto-derive SYNC version)
     DATABASE_URL: str
-    SYNC_DATABASE_URL: str  # For Alembic migrations
+    SYNC_DATABASE_URL: str = ""  # Auto-derived if empty
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Railway provides postgresql:// but async SQLAlchemy needs postgresql+asyncpg://
+        if self.DATABASE_URL.startswith("postgresql://"):
+            object.__setattr__(
+                self,
+                "DATABASE_URL",
+                self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+            )
+        # Auto-derive SYNC_DATABASE_URL for Alembic if not set
+        if not self.SYNC_DATABASE_URL:
+            sync_url = self.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://", 1)
+            object.__setattr__(self, "SYNC_DATABASE_URL", sync_url)
     
     # Database Pool Settings 
     DB_POOL_SIZE: int = 5
@@ -60,13 +74,41 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30  # 30 days session
 
-    # Cookie Settings
+    # Cookie Settings (auto-configured based on ENVIRONMENT)
     COOKIE_DOMAIN: str | None = None
-    COOKIE_SECURE: bool = False  # Set to True in production with HTTPS
-    COOKIE_SAMESITE: str = "lax"
+    COOKIE_SECURE: bool = False  # Auto-set True in production (see property below)
+    COOKIE_SAMESITE: str = "none"  # "none" required for cross-site cookies with Secure
 
     # Environment
     ENVIRONMENT: str = "development"  # development, staging, production
+
+    @property
+    def is_production(self) -> bool:
+        """Check if running in production."""
+        return self.ENVIRONMENT == "production"
+
+    def get_cookie_secure(self) -> bool:
+        """
+        Get cookie secure setting.
+        - Production: True (HTTPS required)
+        - Development: False (localhost exception in browsers)
+
+        Note: Chrome allows SameSite=None + Secure=False for localhost
+        """
+        return self.is_production
+
+    def get_cookie_samesite(self) -> str:
+        """
+        Get cookie samesite setting.
+
+        IMPORTANT: Different ports = different origins!
+        localhost:3000 → localhost:8000 is CROSS-ORIGIN
+
+        - 'none': Required for cross-origin cookie sending
+        - Chrome requires this for cross-port requests
+        - Works with Secure=False on localhost (browser exception)
+        """
+        return "none"
 
     # Logging & Monitoring (Phase 1)
     LOG_LEVEL: str = "INFO"

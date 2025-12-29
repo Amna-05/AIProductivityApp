@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, Zap, CheckCircle2, ArrowRight, Star, Users,  Target } from "lucide-react";
+import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, Zap, CheckCircle2, ArrowRight, Star, Users, Target, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
@@ -11,18 +11,58 @@ import { Button } from "@/components/ui/button";
 export default function HomePage() {
   const router = useRouter();
   const { setUser } = useAuthStore();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [navigating, setNavigating] = useState<string | null>(null);
 
   // Silent auth check - if logged in, go to dashboard
   useEffect(() => {
     authApi.getCurrentUser()
       .then(userData => {
         setUser(userData);
+        setNavigating("dashboard");
         router.replace("/dashboard");
       })
       .catch(() => {
         // Not logged in - stay on landing page
+        setCheckingAuth(false);
       });
   }, [router, setUser]);
+
+  const handleNavigate = (path: string) => {
+    setNavigating(path);
+    router.push(path);
+  };
+
+  // Show loading while checking auth
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mx-auto">
+            <ArrowUp className="h-8 w-8 text-white" />
+          </div>
+          <Loader2 className="h-6 w-6 animate-spin text-emerald-600 mx-auto" />
+        </div>
+      </div>
+    );
+  }
+
+  // Show navigating state
+  if (navigating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mx-auto">
+            <ArrowUp className="h-8 w-8 text-white" />
+          </div>
+          <Loader2 className="h-6 w-6 animate-spin text-emerald-600 mx-auto" />
+          <p className="text-sm text-gray-600">
+            {navigating === "dashboard" ? "Redirecting to dashboard..." : `Loading ${navigating}...`}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
@@ -36,16 +76,12 @@ export default function HomePage() {
             <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">ELEVATE</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="font-medium hover:bg-emerald-50 hover:text-emerald-700">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/30 font-semibold">
-                Get Started Free
-              </Button>
-            </Link>
+            <Button variant="ghost" className="font-medium hover:bg-emerald-50 hover:text-emerald-700" onClick={() => handleNavigate("/login")}>
+              Sign In
+            </Button>
+            <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/30 font-semibold" onClick={() => handleNavigate("/register")}>
+              Get Started Free
+            </Button>
           </div>
         </div>
       </nav>
@@ -139,18 +175,14 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in">
-            <Link href="/register">
-              <Button size="lg" className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 px-8 h-14 text-lg font-bold shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all duration-300">
-                <Sparkles className="h-5 w-5" />
-                Start Free Trial
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="px-8 h-14 text-lg font-semibold border-2 border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-300">
-                Sign In
-              </Button>
-            </Link>
+            <Button size="lg" className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 px-8 h-14 text-lg font-bold shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all duration-300" onClick={() => handleNavigate("/register")}>
+              <Sparkles className="h-5 w-5" />
+              Start Free Trial
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+            <Button size="lg" variant="outline" className="px-8 h-14 text-lg font-semibold border-2 border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-300" onClick={() => handleNavigate("/login")}>
+              Sign In
+            </Button>
           </div>
 
           {/* Stats Row */}
@@ -381,12 +413,10 @@ export default function HomePage() {
             Join thousands of productive people who&apos;ve transformed their workflow. Start your journey today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register">
-              <Button size="lg" className="gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-10 h-16 text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300">
-                <Sparkles className="h-6 w-6" />
-                Get Started Free
-              </Button>
-            </Link>
+            <Button size="lg" className="gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-10 h-16 text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300" onClick={() => handleNavigate("/register")}>
+              <Sparkles className="h-6 w-6" />
+              Get Started Free
+            </Button>
           </div>
           <p className="mt-6 text-white/70 text-sm">No credit card required • Free forever plan available</p>
         </div>

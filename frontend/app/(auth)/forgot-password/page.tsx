@@ -38,9 +38,10 @@ export default function ForgotPasswordPage() {
 
       toast.success(response.message || "Password reset instructions sent!");
       setEmailSent(true);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Forgot password error:", error);
-      toast.error(error.response?.data?.detail || "Failed to send reset instructions");
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to send reset instructions");
     } finally {
       setIsLoading(false);
     }

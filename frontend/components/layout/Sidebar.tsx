@@ -80,7 +80,8 @@ function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150",
+        "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold",
+        "transition-all duration-100 active:scale-[0.97] active:opacity-80",
         isActive
           ? "bg-emerald-50 text-emerald-700 border-l-[3px] border-emerald-500 -ml-px"
           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -104,7 +105,7 @@ export function Sidebar() {
       logout();
       toast.success("Logged out");
       router.push("/login");
-    } catch (error) {
+    } catch {
       toast.error("Failed to logout");
     }
   };
@@ -183,7 +184,8 @@ export function Sidebar() {
             <Link
               href="/admin"
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150",
+                "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold",
+                "transition-all duration-100 active:scale-[0.97] active:opacity-80",
                 pathname === "/admin"
                   ? "bg-emerald-50 text-emerald-700 border-l-[3px] border-emerald-500 -ml-px"
                   : "text-gray-700 hover:bg-gray-100"
@@ -200,7 +202,8 @@ export function Sidebar() {
           <Link
             href="/settings"
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150",
+              "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold",
+              "transition-all duration-100 active:scale-[0.97] active:opacity-80",
               pathname === "/settings"
                 ? "bg-emerald-50 text-emerald-700 border-l-[3px] border-emerald-500 -ml-px"
                 : "text-gray-700 hover:bg-gray-100"

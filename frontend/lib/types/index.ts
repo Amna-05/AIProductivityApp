@@ -141,6 +141,7 @@ export interface Tag {
   name: string;
   color: string;                      // Has default: #3B82F6
   created_at: string;
+  task_count?: number;                // Optional count of tasks using this tag
 }
 
 export interface CreateTagData {

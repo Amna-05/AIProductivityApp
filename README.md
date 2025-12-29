@@ -1,48 +1,73 @@
-# Task Manager API 🚀
+# ELEVATE - AI-Powered Task Management
 
-A production-ready RESTful API for intelligent task management with AI-powered natural language processing, built with modern Python best practices.
+A production-ready full-stack task management application with AI-powered natural language processing, Eisenhower Priority Matrix, and comprehensive analytics.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.118+-009688.svg)](https://fastapi.tiangolo.com)
+[![Next.js 15](https://img.shields.io/badge/Next.js-15.5-black.svg)](https://nextjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791.svg)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-34%20passing-brightgreen.svg)](tests/)
-[![Coverage](https://img.shields.io/badge/coverage-36%25-yellow.svg)](htmlcov/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC.svg)](https://tailwindcss.com/)
+
+**Live Demo:** [Frontend on Vercel](https://your-app.vercel.app) | [API on Railway](https://your-app.railway.app/docs)
 
 ## ✨ Features
 
 ### Core Functionality
 - **Task Management** - Full CRUD with advanced filtering (15+ query parameters)
 - **Priority Matrix** - Eisenhower Matrix quadrants (Urgent/Important classification)
-- **User Authentication** - JWT-based auth with secure refresh tokens + password reset
+- **User Authentication** - JWT-based auth with httpOnly cookies + auto token refresh
 - **Role-Based Authorization** - Admin dashboard with user management capabilities
 - **Analytics Dashboard** - Comprehensive insights (trends, distributions, productivity metrics)
-- **AI Task Parser** - Natural language task creation using Groq LLaMA 3.3 70B
+- **AI Task Parser** - Natural language & voice input task creation using Groq LLaMA 3.3 70B
 - **Category & Tag System** - Flexible organization with many-to-many relationships
+
+### Frontend Features
+
+- **Modern React 19** - Latest React with Next.js 15 App Router
+- **Responsive Design** - Mobile-first with Tailwind CSS 4.0
+- **Dark/Light Mode Ready** - Theme system built-in
+- **Real-time Updates** - TanStack Query with automatic cache invalidation
+- **Voice Input** - Web Speech API for hands-free task creation
+- **Animations** - Smooth transitions with CSS animations
 
 ### Technical Highlights
 - **Clean Architecture** - Repository pattern with service layer separation
-- **Type Safety** - Pydantic v2 schemas with strict validation
+- **Type Safety** - Pydantic v2 (backend) + TypeScript (frontend)
 - **Async/Await** - Fully asynchronous SQLAlchemy 2.0 ORM
-- **Production Logging** - Structured logging with Loguru, correlation IDs, performance monitoring
+- **Production Logging** - Structured logging with Loguru, correlation IDs
 - **Database Migrations** - Alembic with version control
 - **Comprehensive Testing** - 34 unit tests with pytest-asyncio
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
 ```
-app/
-├── api/endpoints/       # API route handlers (thin controllers)
-├── core/                # Configuration, security, logging
-├── db/                  # Database and repositories
-│   └── repositories/    # Data access layer (Repository pattern)
-├── middleware/          # Request/response processing
-├── models/              # SQLAlchemy ORM models
-├── schemas/             # Pydantic request/response schemas
-└── services/            # Business logic layer
+task-manager-app/
+├── app/                         # Backend (FastAPI)
+│   ├── api/endpoints/           # API route handlers
+│   ├── core/                    # Config, security, logging
+│   ├── db/repositories/         # Data access layer
+│   ├── middleware/              # Request/response processing
+│   ├── models/                  # SQLAlchemy ORM models
+│   ├── schemas/                 # Pydantic schemas
+│   └── services/                # Business logic
+├── frontend/                    # Frontend (Next.js)
+│   ├── app/                     # Next.js App Router pages
+│   │   ├── (auth)/              # Public auth pages
+│   │   └── (dashboard)/         # Protected dashboard
+│   ├── components/              # React components
+│   │   ├── ai/                  # AI task parser
+│   │   ├── layout/              # Sidebar, headers
+│   │   ├── tasks/               # Task cards, forms
+│   │   └── ui/                  # shadcn/ui components
+│   └── lib/                     # Utils, API client, stores
+├── alembic/                     # Database migrations
+├── tests/                       # Backend tests
+├── Dockerfile                   # Railway deployment
+└── railway.toml                 # Railway config
 ```
 
-**Design Patterns**: Repository Pattern, Dependency Injection, Service Layer, DTO (Data Transfer Objects)
+**Design Patterns**: Repository Pattern, Dependency Injection, Service Layer, Zustand State Management
 
 ## 🚀 Quick Start
 
@@ -330,22 +355,64 @@ SENTRY_DSN=<your-sentry-dsn>
 - **Pagination**: Offset/limit pagination for list endpoints
 - **Index Optimization**: Indexes on frequently queried columns
 
+## 🚢 Deployment
+
+### Backend → Railway
+
+1. Create new project in [Railway](https://railway.app)
+2. Deploy from GitHub repo
+3. Add PostgreSQL plugin
+4. Set environment variables:
+
+```bash
+ENVIRONMENT=production
+SECRET_KEY=<generate: python -c "import secrets; print(secrets.token_hex(32))">
+BACKEND_CORS_ORIGINS=["https://your-app.vercel.app"]
+FRONTEND_URL=https://your-app.vercel.app
+GROQ_API_KEY=<your-key>
+# DATABASE_URL auto-injected by Railway
+```
+
+### Frontend → Vercel
+
+1. Import `frontend` folder to [Vercel](https://vercel.com)
+2. Set environment variable:
+
+```bash
+NEXT_PUBLIC_API_URL=https://your-railway-app.railway.app/api/v1
+```
+
+Deploy and update Railway CORS with your Vercel domain.
+
+### Local Development
+
+```bash
+# Backend
+uvicorn app.main:app --reload  # http://localhost:8000
+
+# Frontend
+cd frontend && npm run dev     # http://localhost:3000
+```
+
 ## 🛣️ Roadmap
 
 **Completed** ✅
+
 - [x] Task CRUD with advanced filtering
-- [x] User authentication with JWT
+- [x] User authentication with JWT + auto refresh
 - [x] Password reset functionality
 - [x] Role-based authorization (Admin)
 - [x] Admin dashboard & user management
 - [x] Analytics dashboard
-- [x] AI-powered task parsing
+- [x] AI-powered task parsing with voice input
 - [x] Comprehensive unit tests
 - [x] Structured logging
+- [x] Production deployment (Railway + Vercel)
 
 **Planned** 🔮
+
 - [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Docker containerization
+- [ ] Push notifications
 
 ## 🔑 Password Reset Flow
 

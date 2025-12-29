@@ -88,8 +88,9 @@ export default function CategoriesPage() {
       resetForm();
       setDialogOpen(false);
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to create category");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to create category");
     },
   });
 
@@ -103,8 +104,9 @@ export default function CategoriesPage() {
       resetForm();
       setDialogOpen(false);
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to update category");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update category");
     },
   });
 
@@ -118,8 +120,9 @@ export default function CategoriesPage() {
       setDeleteDialogOpen(false);
       setDeletingCategory(null);
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to delete category");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to delete category");
     },
   });
 
@@ -219,8 +222,9 @@ export default function CategoriesPage() {
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((category, idx) => {
-          const taskCount = (category as string | any).task_count || 0;
-          const completedCount = (category as string | any).completed_count || 0;
+          const categoryWithCounts = category as Category & { task_count?: number; completed_count?: number };
+          const taskCount = categoryWithCounts.task_count || 0;
+          const completedCount = categoryWithCounts.completed_count || 0;
           const progress = taskCount > 0 ? (completedCount / taskCount) * 100 : 0;
 
           // Get a lighter version of the category color for background

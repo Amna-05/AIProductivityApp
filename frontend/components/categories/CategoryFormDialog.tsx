@@ -101,8 +101,9 @@ export function CategoryFormDialog({
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to create category");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to create category");
     },
   });
 
@@ -115,8 +116,9 @@ export function CategoryFormDialog({
       toast.success("Category updated successfully");
       onOpenChange(false);
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to update category");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update category");
     },
   });
 

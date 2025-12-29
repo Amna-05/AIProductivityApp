@@ -101,27 +101,30 @@ async def register(
     refresh_token = await token_repo.create(db_user.id)
     
     
-    # Set cookies
+    # Set cookies (production uses secure=True, samesite=none for cross-origin)
+    cookie_secure = settings.get_cookie_secure()
+    cookie_samesite = settings.get_cookie_samesite()
+
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        samesite=settings.COOKIE_SAMESITE,
-        secure=settings.COOKIE_SECURE,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN
     )
-    
+
     response.set_cookie(
         key="refresh_token",
         value=refresh_token.token,
         httponly=True,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        samesite=settings.COOKIE_SAMESITE,
-        secure=settings.COOKIE_SECURE,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN
     )
-    
+
     return {
         "message": "Registration successful. You are now logged in!",
         "user": UserResponse.model_validate(db_user)
@@ -164,27 +167,30 @@ async def login(
     # Create refresh token (7 days)
     refresh_token = await token_repo.create(user.id)
     
-    # Set cookies
+    # Set cookies (production uses secure=True, samesite=none for cross-origin)
+    cookie_secure = settings.get_cookie_secure()
+    cookie_samesite = settings.get_cookie_samesite()
+
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        samesite=settings.COOKIE_SAMESITE,
-        secure=settings.COOKIE_SECURE,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN
     )
-    
+
     response.set_cookie(
         key="refresh_token",
         value=refresh_token.token,
         httponly=True,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        samesite=settings.COOKIE_SAMESITE,
-        secure=settings.COOKIE_SECURE,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN
     )
-    
+
     return {
         "message": "Login successful. You can now access protected routes.",
         "user": UserResponse.model_validate(user)
@@ -235,17 +241,20 @@ async def refresh_access_token(
         expires_delta=access_token_expires
     )
     
-    # Set new access token cookie
+    # Set new access token cookie (production uses secure=True, samesite=none)
+    cookie_secure = settings.get_cookie_secure()
+    cookie_samesite = settings.get_cookie_samesite()
+
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        samesite=settings.COOKIE_SAMESITE,
-        secure=settings.COOKIE_SECURE,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN
     )
-    
+
     return {
         "message": "Access token refreshed successfully"
     }

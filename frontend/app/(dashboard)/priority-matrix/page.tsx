@@ -102,8 +102,9 @@ export default function PriorityMatrixPage() {
         icon: <PartyPopper className="h-4 w-4" />,
       });
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to update task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update task");
     },
   });
 
@@ -128,8 +129,9 @@ export default function PriorityMatrixPage() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Task moved!");
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to move task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to move task");
     },
   });
 
@@ -167,7 +169,7 @@ export default function PriorityMatrixPage() {
   };
 
   // Group tasks by quadrant
-  const tasksByQuadrant = data?.tasks.reduce(
+  const tasksByQuadrant: Record<TaskQuadrant, Task[]> = data?.tasks.reduce(
     (acc, task) => {
       if (!acc[task.quadrant]) {
         acc[task.quadrant] = [];
@@ -175,8 +177,8 @@ export default function PriorityMatrixPage() {
       acc[task.quadrant].push(task);
       return acc;
     },
-    {} as Record<TaskQuadrant, Task[]>
-  ) || {};
+    { DO_FIRST: [], SCHEDULE: [], DELEGATE: [], ELIMINATE: [] } as Record<TaskQuadrant, Task[]>
+  ) || { DO_FIRST: [], SCHEDULE: [], DELEGATE: [], ELIMINATE: [] };
 
   const renderQuadrant = (quadrant: TaskQuadrant, index: number) => {
     const config = quadrantConfig[quadrant];

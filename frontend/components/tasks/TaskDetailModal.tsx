@@ -6,7 +6,6 @@ import {
   Calendar,
   Folder,
   Tag,
-  X,
   Pencil,
   Trash2,
   Clock,

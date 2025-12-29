@@ -1,4 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -21,6 +22,7 @@ const processQueue = (error: AxiosError | null) => {
 };
 
 // Check if error is a true auth failure (not server error)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isAuthError = (error: AxiosError): boolean => {
   if (error.response?.status !== 401) return false;
 
@@ -73,8 +75,13 @@ apiClient.interceptors.response.use(
     // Skip refresh for auth endpoints to prevent loops
     const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
 
-    // If server/DB error, just reject - don't redirect, don't try refresh
+    // If server/DB error, show friendly message - don't redirect, don't try refresh
     if (isServerError(error)) {
+      if (error.code === "ERR_NETWORK") {
+        toast.error("Connection failed. Please check your internet.");
+      } else if (error.response?.status === 503) {
+        toast.error("Server temporarily unavailable. Please try again.");
+      }
       return Promise.reject(error);
     }
 

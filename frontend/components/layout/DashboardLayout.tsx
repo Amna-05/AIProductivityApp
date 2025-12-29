@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, createContext, useContext, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, createContext, useContext, useCallback, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Sidebar } from "./Sidebar";
@@ -31,12 +31,23 @@ export const useSearch = () => useContext(SearchContext);
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, setUser, setLoading, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const prevPathRef = useRef(pathname);
+
+  // Track page navigation for loading indicator
+  useEffect(() => {
+    if (prevPathRef.current !== pathname) {
+      setIsNavigating(false);
+      prevPathRef.current = pathname;
+    }
+  }, [pathname]);
 
   // Check if user is new (first visit)
   useEffect(() => {
@@ -83,9 +94,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           setLoading(true);
           const userData = await authApi.getCurrentUser();
           setUser(userData);
-        } catch (error: string | any) {
+        } catch (error) {
           console.error("Auth check failed:", error);
-          const status = error?.response?.status;
+          const axiosError = error as { response?: { status?: number } };
+          const status = axiosError?.response?.status;
 
           // Only redirect on true 401 auth error
           if (status === 401) {
@@ -99,6 +111,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
 
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading || !user) {
@@ -115,6 +128,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
       <div className="flex h-screen overflow-hidden">
+        {/* Top loading bar for navigation */}
+        {isNavigating && (
+          <div className="fixed top-0 left-0 right-0 z-[100] h-1 bg-primary/20">
+            <div className="h-full bg-primary animate-pulse" style={{ width: "60%" }} />
+          </div>
+        )}
+
         {/* Desktop Sidebar */}
         <aside className="hidden md:block">
           <Sidebar />

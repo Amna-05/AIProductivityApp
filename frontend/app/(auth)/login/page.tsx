@@ -67,9 +67,10 @@ export default function LoginPage() {
       toast.success("Welcome back! 🎉");
       setIsRedirecting(true);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
-      toast.error(error.response?.data?.detail || "Invalid credentials");
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Invalid credentials");
       setIsLoading(false);
     }
   };

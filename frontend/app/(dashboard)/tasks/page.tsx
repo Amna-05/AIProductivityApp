@@ -87,8 +87,9 @@ export default function TasksPage() {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Task deleted");
     },
-    onError: (error: string | any ) => {
-      toast.error(error.response?.data?.detail || "Failed to delete task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to delete task");
     },
   });
 
@@ -102,8 +103,9 @@ export default function TasksPage() {
         icon: <PartyPopper className="h-4 w-4" />,
       });
     },
-    onError: (error:string |any) => {
-      toast.error(error.response?.data?.detail || "Failed to update task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update task");
     },
   });
 

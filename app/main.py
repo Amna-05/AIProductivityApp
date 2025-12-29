@@ -170,12 +170,17 @@ app.include_router(admin.router, prefix=settings.API_V1_PREFIX)
 async def root():
     return {"message": "Welcome to the Productivity App API!"}
 
-# Health check endpoint
+# Health check endpoints (both paths for flexibility)
 @app.get("/health")
+@app.get("/api/v1/health")
 async def health_check():
-    """Health check endpoint."""
+    """
+    Health check endpoint for load balancers and monitoring.
+    Railway uses this to know when app is ready to receive traffic.
+    """
     return {
         "status": "healthy",
         "app": settings.PROJECT_NAME,
-        "version": settings.VERSION
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT
     }

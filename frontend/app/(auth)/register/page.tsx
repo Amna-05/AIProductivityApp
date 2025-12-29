@@ -27,6 +27,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const { setUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -46,14 +47,34 @@ export default function RegisterPage() {
       setUser(response.user);
 
       toast.success(response.message || "Account created successfully!");
+      setIsRedirecting(true);
       router.push("/dashboard");
-    } catch (error: string) {
+    } catch (error) {
       console.error("Registration error:", error);
-      toast.error(error.response?.data?.detail || "Registration failed");
-    } finally {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Registration failed");
       setIsLoading(false);
     }
   };
+
+  // Show redirecting state
+  if (isRedirecting) {
+    return (
+      <Card className="w-full shadow-lg border">
+        <CardContent className="py-16">
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mx-auto">
+              <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-gray-900">Account created!</p>
+              <p className="text-sm text-gray-500 mt-1">Redirecting to dashboard...</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full shadow-lg border">

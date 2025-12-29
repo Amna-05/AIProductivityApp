@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 // Form validation schema
 const tagFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(30, "Name must be less than 30 characters"),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format (use #RRGGBB)").default("#3B82F6"),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format (use #RRGGBB)"),
 });
 
 type TagFormValues = z.infer<typeof tagFormSchema>;
@@ -95,8 +95,9 @@ export function TagFormDialog({ open, onOpenChange, tag }: TagFormDialogProps) {
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to create tag");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to create tag");
     },
   });
 
@@ -109,8 +110,9 @@ export function TagFormDialog({ open, onOpenChange, tag }: TagFormDialogProps) {
       toast.success("Tag updated successfully");
       onOpenChange(false);
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to update tag");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update tag");
     },
   });
 

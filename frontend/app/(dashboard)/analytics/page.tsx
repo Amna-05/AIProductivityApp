@@ -331,7 +331,7 @@ export default function AnalyticsPage() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(entry) => `${entry.name.split(' ')[0]} (${entry.count})`}
+                    label={(entry) => `${String(entry.name || '').split(' ')[0]} (${(entry as { count?: number }).count || 0})`}
                     outerRadius={54}
                     fill="#8884d8"
                     dataKey="count"

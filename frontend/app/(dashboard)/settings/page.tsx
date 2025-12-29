@@ -64,8 +64,9 @@ export default function SettingsPage() {
       toast.success("Password changed successfully");
       form.reset();
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to change password");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to change password");
     },
   });
 
@@ -76,7 +77,7 @@ export default function SettingsPage() {
       logout();
       toast.success("Logged out successfully");
       router.push("/login");
-    } catch (error) {
+    } catch {
       toast.error("Failed to logout");
     } finally {
       setIsLoggingOut(false);

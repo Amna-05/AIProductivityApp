@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, Check, X, Mic, MicOff } from "lucide-react";
 
 import { aiApi, ParsedTaskResponse } from "@/lib/api/ai";
-//import { tasksApi } from "@/lib/api/tasks";
 
 import {
   Dialog,
@@ -17,41 +16,67 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-//import { Card, CardContent } from "@/components/ui/card";
+
+// Type definition for Web Speech API
+interface SpeechRecognitionType {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
 
 interface AITaskParserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+// User-friendly speech recognition error messages
+const getSpeechErrorMessage = (error: string): string => {
+  const messages: Record<string, string> = {
+    "no-speech": "No speech detected. Please speak louder or closer to your microphone.",
+    "audio-capture": "Microphone not found. Please check your audio settings.",
+    "not-allowed": "Microphone access denied. Please allow microphone access in your browser settings.",
+    "network": "Network error. Please check your internet connection.",
+    "aborted": "Voice input was cancelled.",
+    "service-not-allowed": "Speech service is unavailable in your browser.",
+    "bad-grammar": "Could not understand. Please try speaking more clearly.",
+  };
+  return messages[error] || "Voice input failed. Please try again.";
+};
+
 export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogProps) {
   const queryClient = useQueryClient();
   const [inputText, setInputText] = useState("");
   const [parsedTask, setParsedTask] = useState<ParsedTaskResponse | null>(null);
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<string>(null);
+  const recognitionRef = useRef<SpeechRecognitionType | null>(null);
 
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SpeechRecognition =
-        (window as string|any ).SpeechRecognition || (window as string | any).webkitSpeechRecognition;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const windowWithSpeech = window as typeof window & { SpeechRecognition?: any; webkitSpeechRecognition?: any };
+      const SpeechRecognition = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
+        const recognition = new SpeechRecognition() as SpeechRecognitionType;
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = "en-US";
 
-        recognition.onresult = (event: string | any) => {
+        recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
           setInputText((prev) => (prev ? prev + " " + transcript : transcript));
           setIsListening(false);
         };
 
-        recognition.onerror = (event: string | any) => {
+        recognition.onerror = (event) => {
           console.error("Speech recognition error:", event.error);
-          toast.error("Voice input failed: " + event.error);
+          toast.error(getSpeechErrorMessage(event.error));
           setIsListening(false);
         };
 
@@ -98,8 +123,9 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
       setParsedTask(data);
       toast.success("Task parsed successfully!");
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to parse task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to parse task");
     },
   });
 
@@ -111,8 +137,9 @@ export function AITaskParserDialog({ open, onOpenChange }: AITaskParserDialogPro
       toast.success("Task created successfully!");
       handleClose();
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to create task");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to create task");
     },
   });
 

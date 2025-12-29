@@ -28,8 +28,9 @@ export default function TagsPage() {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
       toast.success("Tag deleted successfully");
     },
-    onError: (error: string | any) => {
-      toast.error(error.response?.data?.detail || "Failed to delete tag");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to delete tag");
     },
   });
 

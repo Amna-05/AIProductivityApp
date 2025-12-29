@@ -62,9 +62,10 @@ function ResetPasswordForm() {
 
       toast.success(response.message || "Password reset successful!");
       router.push("/login");
-    } catch (error: string) {
+    } catch (error) {
       console.error("Reset password error:", error);
-      toast.error(error.response?.data?.detail || "Failed to reset password. Link may be expired.");
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to reset password. Link may be expired.");
     } finally {
       setIsLoading(false);
     }

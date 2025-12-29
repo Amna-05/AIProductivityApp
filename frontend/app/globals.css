@@ -81,6 +81,17 @@ select {
   transition: all 0.15s ease-out;
 }
 
+/* Global button click feedback - instant visual response */
+button:not(:disabled):active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Link click feedback */
+a:active {
+  opacity: 0.8;
+}
+
 /* Card styling - rounded-xl default */
 .card {
   background-color: var(--color-card);
