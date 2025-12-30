@@ -1,0 +1,14 @@
+2025-12-30 10:53:11 | INFO     | app.core.logging_config:setup_logging:137 | Logging system initialized | {'environment': 'production', 'level': 'INFO'}
+2025-12-30 10:53:11 | WARNING  | app.core.logging_config:setup_sentry:158 | Sentry DSN not configured, error tracking disabled. Set SENTRY_DSN environment variable to enable. | {}
+2025-12-30 10:53:11 | INFO     | app.main:lifespan:55 | Starting Productivity App API v1.0.0 | {}
+2025-12-30 10:53:11 | INFO     | app.main:lifespan:56 | Environment: development | {}
+2025-12-30 10:53:11 | INFO     | app.main:lifespan:57 | Documentation: http://localhost:8000/docs | {}
+2025-12-30 10:53:11 | INFO     | app.main:lifespan:58 | Database migrations managed by Alembic | {}
+2025-12-30 10:53:11 | INFO     | app.main:lifespan:59 | Run 'alembic upgrade head' to apply migrations | {}
+2025-12-30 10:53:11 | INFO     | logging:callHandlers:1706 | Application startup complete. | {}
+2025-12-30 10:53:11 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /docs | {'correlation_id': '231c0f15-a093-4396-83d1-b9ca7836866b', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-30 10:53:11 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /docs → 200 (2.34ms) | {'correlation_id': '231c0f15-a093-4396-83d1-b9ca7836866b', 'user_id': None, 'method': 'GET', 'path': '/docs', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 2.34}
+2025-12-30 10:53:11 | INFO     | logging:callHandlers:1706 | 127.0.0.1:57484 - "GET /docs HTTP/1.1" 200 | {}
+2025-12-30 10:53:12 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET /api/v1/openapi.json | {'correlation_id': '083acfc4-f09d-42a4-a78d-5204287b6b9a', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}
+2025-12-30 10:53:12 | INFO     | app.middleware.logging_middleware:dispatch:95 | ← GET /api/v1/openapi.json → 200 (359.8ms) | {'correlation_id': '083acfc4-f09d-42a4-a78d-5204287b6b9a', 'user_id': None, 'method': 'GET', 'path': '/api/v1/openapi.json', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'status_code': 200, 'duration_ms': 359.8}
+2025-12-30 10:53:12 | INFO     | logging:callHandlers:1706 | 127.0.0.1:59326 - "GET /api/v1/openapi.json HTTP/1.1" 200 | {}

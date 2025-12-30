@@ -1,7 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+// Use relative URL - Next.js rewrites proxy to backend
+// This makes cookies same-origin (fixes Chrome SameSite issues)
+// localhost:3000/api/v1/* → proxied to → localhost:8000/api/v1/*
+const API_BASE_URL = "/api/v1";
 
 // Track if we're currently refreshing to prevent multiple refresh attempts
 let isRefreshing = false;

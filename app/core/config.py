@@ -101,14 +101,13 @@ class Settings(BaseSettings):
         """
         Get cookie samesite setting.
 
-        IMPORTANT: Different ports = different origins!
-        localhost:3000 → localhost:8000 is CROSS-ORIGIN
+        With Next.js rewrite proxy, requests are same-origin:
+        - Dev: localhost:3000/api/* → localhost:8000/api/* (proxied)
+        - Prod: vercel.app/api/* → railway.app/api/* (proxied)
 
-        - 'none': Required for cross-origin cookie sending
-        - Chrome requires this for cross-port requests
-        - Works with Secure=False on localhost (browser exception)
+        'lax' is safest and works for same-origin requests.
         """
-        return "none"
+        return "lax"
 
     # Logging & Monitoring (Phase 1)
     LOG_LEVEL: str = "INFO"
