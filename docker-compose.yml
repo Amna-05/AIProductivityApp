@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_manager_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/task_manager_db
+      - SECRET_KEY=W/iqNYgPwa/fZbyZ7EyDMf+OqBtzpnmjdD8M9hklOeE=
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=15
+      - REFRESH_TOKEN_EXPIRE_DAYS=30
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - EMAIL_FROM=ELEVATE <onboarding@resend.dev>
+      - FRONTEND_URL=http://localhost:3000
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:3001"]
+      - ENVIRONMENT=development
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
