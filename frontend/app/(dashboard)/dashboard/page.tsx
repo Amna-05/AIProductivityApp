@@ -36,42 +36,46 @@ const motivationalQuotes = [
   { text: "Look at you being productive!", emoji: "✨" },
 ];
 
-// Stat card component
+// Enhanced Stat card - taller, colorful, animated
 function StatCard({
   title,
   value,
+  subtitle,
   icon: Icon,
   color,
+  delay = 0,
 }: {
   title: string;
   value: number | undefined;
+  subtitle?: string;
   icon: React.ComponentType<{ className?: string }>;
   color: "blue" | "emerald" | "amber" | "rose";
+  delay?: number;
 }) {
   const colors = {
     blue: {
-      bg: "bg-blue-50",
-      border: "border-blue-100",
-      icon: "text-blue-600",
-      text: "text-blue-700",
+      gradient: "from-blue-500 to-indigo-600",
+      iconBg: "bg-blue-400/30",
+      shadow: "shadow-blue-200 hover:shadow-blue-300",
+      glow: "bg-blue-500/10",
     },
     emerald: {
-      bg: "bg-emerald-50",
-      border: "border-emerald-100",
-      icon: "text-emerald-600",
-      text: "text-emerald-700",
+      gradient: "from-emerald-500 to-teal-600",
+      iconBg: "bg-emerald-400/30",
+      shadow: "shadow-emerald-200 hover:shadow-emerald-300",
+      glow: "bg-emerald-500/10",
     },
     amber: {
-      bg: "bg-amber-50",
-      border: "border-amber-100",
-      icon: "text-amber-600",
-      text: "text-amber-700",
+      gradient: "from-amber-500 to-orange-600",
+      iconBg: "bg-amber-400/30",
+      shadow: "shadow-amber-200 hover:shadow-amber-300",
+      glow: "bg-amber-500/10",
     },
     rose: {
-      bg: "bg-rose-50",
-      border: "border-rose-100",
-      icon: "text-rose-600",
-      text: "text-rose-700",
+      gradient: "from-rose-500 to-pink-600",
+      iconBg: "bg-rose-400/30",
+      shadow: "shadow-rose-200 hover:shadow-rose-300",
+      glow: "bg-rose-500/10",
     },
   };
 
@@ -80,20 +84,32 @@ function StatCard({
   return (
     <div
       className={cn(
-        "p-4 rounded-xl border",
-        c.bg,
-        c.border,
-        "hover:shadow-md hover:-translate-y-0.5 transition-all duration-150"
+        "relative overflow-hidden rounded-2xl p-5 h-[120px]",
+        "bg-gradient-to-br", c.gradient,
+        "shadow-lg hover:shadow-xl transition-all duration-300",
+        "hover:-translate-y-1 hover:scale-[1.02]",
+        "cursor-default group",
+        c.shadow
       )}
+      style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex items-center gap-3">
-        <div className={cn("p-2 rounded-lg bg-white/80 shadow-sm", c.icon)}>
-          <Icon className="h-4 w-4" />
+      {/* Glow effect */}
+      <div className={cn("absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity", c.glow)} />
+
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col justify-between">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wider">{title}</p>
+            <p className="text-white text-3xl font-black mt-1">{value ?? 0}</p>
+          </div>
+          <div className={cn("p-2.5 rounded-xl", c.iconBg)}>
+            <Icon className="h-5 w-5 text-white" />
+          </div>
         </div>
-        <div>
-          <p className={cn("text-2xl font-bold", c.text)}>{value ?? 0}</p>
-          <p className="text-xs text-gray-500 font-medium">{title}</p>
-        </div>
+        {subtitle && (
+          <p className="text-white/70 text-xs font-medium">{subtitle}</p>
+        )}
       </div>
     </div>
   );
@@ -292,6 +308,42 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
+      {/* Stats Row - 4 cards at top */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Tasks"
+          value={analytics?.total_tasks}
+          subtitle={`${analytics?.pending_tasks || 0} pending`}
+          icon={ListTodo}
+          color="blue"
+          delay={0}
+        />
+        <StatCard
+          title="Completed"
+          value={analytics?.completed_tasks}
+          subtitle={`${completionRate}% completion rate`}
+          icon={CheckCircle2}
+          color="emerald"
+          delay={50}
+        />
+        <StatCard
+          title="In Progress"
+          value={analytics?.in_progress_tasks}
+          subtitle="Currently working"
+          icon={Clock}
+          color="amber"
+          delay={100}
+        />
+        <StatCard
+          title="Overdue"
+          value={analytics?.overdue_tasks}
+          subtitle={analytics?.tasks_due_today ? `${analytics.tasks_due_today} due today` : "None due today"}
+          icon={AlertTriangle}
+          color="rose"
+          delay={150}
+        />
+      </div>
+
       {/* Overdue Banner */}
       {filteredOverdueTasks.length > 0 && (
         <Card className="border-red-200 bg-gradient-to-r from-red-50 to-rose-50 animate-scale-in shadow-md">
@@ -329,7 +381,7 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* Main Grid: Today's Focus + Stats */}
+      {/* Main Grid: Today's Focus + Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6">
         {/* Left Column - Today's Focus */}
         <div className="space-y-4">
@@ -384,42 +436,8 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Right Column - Stats + Upcoming */}
+        {/* Right Column - Progress + Upcoming */}
         <div className="space-y-6">
-          {/* Stats Header */}
-          <div>
-            <h2 className="text-lg font-black text-gray-900 tracking-tight">Stats</h2>
-            <p className="text-xs text-gray-500 font-medium">Your productivity overview</p>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              title="Total Tasks"
-              value={analytics?.total_tasks}
-              icon={ListTodo}
-              color="blue"
-            />
-            <StatCard
-              title="Completed"
-              value={analytics?.completed_tasks}
-              icon={CheckCircle2}
-              color="emerald"
-            />
-            <StatCard
-              title="In Progress"
-              value={analytics?.in_progress_tasks}
-              icon={Clock}
-              color="amber"
-            />
-            <StatCard
-              title="Overdue"
-              value={analytics?.overdue_tasks}
-              icon={AlertTriangle}
-              color="rose"
-            />
-          </div>
-
           {/* Progress Summary */}
           <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4">
