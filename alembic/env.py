@@ -38,14 +38,30 @@ config = context.config
 
 # Set the database URL from our app's settings
 # This converts async URL to sync URL for Alembic
+print(f"[ALEMBIC DEBUG] INPUT DATABASE_URL: {settings.DATABASE_URL[:60]}...")
+print(f"[ALEMBIC DEBUG] SYNC_DATABASE_URL: {settings.SYNC_DATABASE_URL[:60] if settings.SYNC_DATABASE_URL else 'EMPTY'}...")
+
 database_url = settings.DATABASE_URL
+
+# Handle different URL formats
 if database_url.startswith("postgresql+asyncpg://"):
+    print("[ALEMBIC DEBUG] Converting from asyncpg to psycopg2...")
     # Alembic needs sync driver
     database_url = database_url.replace(
         "postgresql+asyncpg://",
         "postgresql+psycopg2://"
     )
+elif database_url.startswith("postgresql://"):
+    print("[ALEMBIC DEBUG] Converting from sync postgresql to psycopg2...")
+    # If it's already sync postgresql, just add psycopg2
+    database_url = database_url.replace(
+        "postgresql://",
+        "postgresql+psycopg2://"
+    )
+else:
+    print(f"[ALEMBIC DEBUG] WARNING: Unknown URL format! {database_url[:50]}...")
 
+print(f"[ALEMBIC DEBUG] FINAL DATABASE_URL for Alembic: {database_url[:60]}...")
 config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging

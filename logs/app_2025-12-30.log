@@ -274,3 +274,4 @@
 2025-12-30 14:14:24 | INFO     | app.main:lifespan:58 | Database migrations managed by Alembic | {}
 2025-12-30 14:14:24 | INFO     | app.main:lifespan:59 | Run 'alembic upgrade head' to apply migrations | {}
 2025-12-30 14:14:24 | INFO     | logging:callHandlers:1706 | Application startup complete. | {}
+2025-12-30 16:27:01 | INFO     | app.middleware.logging_middleware:dispatch:59 | → GET / | {'correlation_id': 'b879cc04-3a39-4c97-af6d-a96b4135d758', 'user_id': None, 'method': 'GET', 'path': '/', 'client_ip': '127.0.0.1', 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'}

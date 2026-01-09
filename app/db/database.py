@@ -14,7 +14,6 @@ from typing import AsyncGenerator
 
 from app.core.config import settings
 
-
 # Create async engine with connection pooling
 engine = create_async_engine(
     settings.DATABASE_URL,
@@ -49,12 +48,12 @@ class Base(DeclarativeBase):
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency that provides a database session.
-    
+
     Usage in endpoints:
         @router.get("/tasks")
         async def get_tasks(db: AsyncSession = Depends(get_db)):
             # Use db here
-    
+
     Why this pattern?
     - Automatic session management
     - Proper cleanup (even on errors)
@@ -74,7 +73,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_db() -> None:
     """
     Initialize database - create all tables.
-    
+
     Called on application startup.
     """
     async with engine.begin() as conn:
@@ -85,7 +84,7 @@ async def init_db() -> None:
 async def close_db() -> None:
     """
     Close database connections.
-    
+
     Called on application shutdown.
     """
     await engine.dispose()
