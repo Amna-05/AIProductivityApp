@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", onSearchChange }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-sm supports-[backdrop-filter]:bg-card/60">
       <div className="flex h-14 items-center px-4 md:px-6 gap-4">
         {/* Mobile Menu Button */}
         <Button
@@ -28,7 +28,7 @@ export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", o
 
         {/* ELEVATE Logo (mobile only) */}
         <div className="flex items-center gap-2 md:hidden">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-emerald-600 text-white">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white">
             <ArrowUp className="h-4 w-4" />
           </div>
           <span className="font-bold text-foreground">ELEVATE</span>
@@ -37,17 +37,14 @@ export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", o
         {/* Search Bar (center) - with keyboard hint */}
         <div className="hidden md:flex flex-1 max-w-md mx-auto">
           <div className="relative w-full group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               type="text"
-              placeholder="Search tasks..."
+              placeholder="Search tasks... ⌘K"
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              className="pl-9 pr-16 h-9 bg-muted/50 border-transparent focus:bg-background focus:border-input"
+              className="pl-9 pr-4 h-9 bg-secondary border-border hover:border-primary/40 focus-visible:border-primary"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 group-focus-within:opacity-0 transition-opacity">
-              <span className="text-xs">⌘</span>K
-            </kbd>
           </div>
         </div>
 
@@ -59,6 +56,7 @@ export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", o
             size="sm"
             className="hidden md:flex gap-1.5 h-9 px-3"
             onClick={onAIParser}
+            title="Parse task with AI"
           >
             <Sparkles className="h-4 w-4" />
             <span>AI</span>
@@ -70,6 +68,7 @@ export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", o
             size="sm"
             className="hidden md:flex gap-1.5 h-9 px-3"
             onClick={onAddTask}
+            title="New task (⌘N)"
           >
             <Plus className="h-4 w-4" />
             <span>Add Task</span>
@@ -81,6 +80,7 @@ export function Header({ onMenuClick, onAddTask, onAIParser, searchQuery = "", o
             size="icon"
             className="md:hidden h-9 w-9"
             onClick={onAddTask}
+            title="New task"
           >
             <Plus className="h-5 w-5" />
           </Button>

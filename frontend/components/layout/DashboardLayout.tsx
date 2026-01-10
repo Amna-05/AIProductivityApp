@@ -176,26 +176,27 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Floating AI Button with Pulse Effect */}
       <div className="fixed bottom-6 right-6 z-50">
         {/* Pulse ring for attention */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 animate-ping opacity-30" />
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent animate-pulse opacity-20" />
         <Button
           variant="default"
           size="icon"
           className={cn(
             "relative h-14 w-14 rounded-full shadow-xl",
-            "bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700",
-            "transition-all duration-200 hover:scale-110 hover:shadow-2xl hover:shadow-violet-500/40",
+            "bg-gradient-to-br from-primary to-accent hover:shadow-2xl hover:shadow-primary/40",
+            "transition-all duration-200 hover:scale-110 active:scale-95",
             "animate-fade-in"
           )}
           onClick={() => setAiDialogOpen(true)}
+          title="AI Task Parser (Shift+⌘A)"
         >
           <Sparkles className="h-6 w-6 text-white" />
           <span className="sr-only">AI Task Parser</span>
         </Button>
         {/* Tooltip */}
         <div className="absolute bottom-full right-0 mb-2 opacity-0 hover:opacity-100 pointer-events-none transition-opacity">
-          <div className="bg-gray-900 text-white text-xs font-medium px-3 py-2 rounded-lg whitespace-nowrap shadow-lg">
-            AI Voice Parser
-            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+          <div className="bg-card border border-border text-foreground text-xs font-medium px-3 py-2 rounded-lg whitespace-nowrap shadow-lg">
+            AI Task Parser
+            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-card" />
           </div>
         </div>
       </div>
@@ -203,10 +204,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Welcome Modal for New Users */}
       {showWelcome && (
         <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <Card className="max-w-lg w-full animate-scale-in bg-white shadow-2xl border-0 overflow-hidden">
+          <Card className="max-w-lg w-full animate-scale-in bg-card shadow-2xl border-border overflow-hidden variant-elevated">
             {/* Gradient Header */}
-            <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-6 text-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzLTItMi00LTItNCAwLTQgMi0yIDQtMiA0IDIgMiA0IDIgNC0yIDQtMiAwLTQgMC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+            <div className="bg-gradient-to-r from-primary to-accent p-6 text-center relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10" />
               <div className="relative">
                 <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur mx-auto mb-4">
                   <ArrowUp className="h-8 w-8 text-white" />
@@ -220,57 +221,57 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
 
-            <CardContent className="p-6">
+            <CardContent className="p-6 space-y-5">
               {/* Pro Feature Highlight */}
-              <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-4 mb-5">
+              <div className="bg-secondary border border-primary/30 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-1 bg-gradient-to-r from-primary to-accent text-white text-xs font-bold px-2 py-1 rounded-full">
                     <Star className="h-3 w-3" />
-                    PRO FEATURE
+                    AI POWERED
                   </div>
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-violet-600" />
-                  AI Task Parser with Voice
+                <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Natural Language Task Parser
                 </h3>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-sm text-muted-foreground mb-3">
                   Just speak or type naturally! Say things like:
                 </p>
                 <div className="space-y-2 mb-3">
-                  <div className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-violet-100">
-                    <Mic className="h-4 w-4 text-violet-500" />
-                    <span className="text-gray-700">&apos;Meeting with team tomorrow at 3pm&apos;</span>
+                  <div className="flex items-center gap-2 text-sm bg-card rounded-lg px-3 py-2 border border-primary/20">
+                    <Mic className="h-4 w-4 text-primary" />
+                    <span className="text-foreground">&apos;Meeting with team tomorrow at 3pm&apos;</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm bg-white rounded-lg px-3 py-2 border border-violet-100">
-                    <Mic className="h-4 w-4 text-violet-500" />
-                    <span className="text-gray-700">&apos;Urgent: Submit report by Friday&apos;</span>
+                  <div className="flex items-center gap-2 text-sm bg-card rounded-lg px-3 py-2 border border-primary/20">
+                    <Mic className="h-4 w-4 text-primary" />
+                    <span className="text-foreground">&apos;Urgent: Submit report by Friday&apos;</span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   AI extracts title, date, priority & category automatically!
                 </p>
               </div>
 
               {/* Quick Features */}
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                <div className="text-center p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                  <Zap className="h-6 w-6 text-emerald-600 mx-auto mb-1" />
-                  <p className="text-xs font-medium text-gray-700">Smart Priority</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 rounded-xl bg-secondary border border-primary/20">
+                  <Zap className="h-6 w-6 text-primary mx-auto mb-1" />
+                  <p className="text-xs font-medium text-foreground">Smart Priority</p>
                 </div>
-                <div className="text-center p-3 rounded-xl bg-blue-50 border border-blue-100">
-                  <Rocket className="h-6 w-6 text-blue-600 mx-auto mb-1" />
-                  <p className="text-xs font-medium text-gray-700">Analytics</p>
+                <div className="text-center p-3 rounded-xl bg-secondary border border-info/20">
+                  <Rocket className="h-6 w-6 text-info mx-auto mb-1" />
+                  <p className="text-xs font-medium text-foreground">Analytics</p>
                 </div>
-                <div className="text-center p-3 rounded-xl bg-amber-50 border border-amber-100">
-                  <Star className="h-6 w-6 text-amber-600 mx-auto mb-1" />
-                  <p className="text-xs font-medium text-gray-700">Streaks</p>
+                <div className="text-center p-3 rounded-xl bg-secondary border border-warning/20">
+                  <Star className="h-6 w-6 text-warning mx-auto mb-1" />
+                  <p className="text-xs font-medium text-foreground">Streaks</p>
                 </div>
               </div>
 
               {/* CTA Buttons */}
-              <div className="space-y-3">
+              <div className="space-y-3 pt-2">
                 <Button
-                  className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 font-semibold text-base gap-2 shadow-lg shadow-violet-500/30"
+                  className="w-full h-12 bg-gradient-to-r from-primary to-accent font-semibold text-base gap-2 shadow-lg shadow-primary/30"
                   onClick={() => {
                     localStorage.setItem("elevate_welcomed", "true");
                     setShowWelcome(false);
@@ -278,7 +279,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   }}
                 >
                   <Mic className="h-5 w-5" />
-                  Try AI Voice Parser
+                  Try AI Parser
                   <ChevronRight className="h-5 w-5" />
                 </Button>
                 <Button
