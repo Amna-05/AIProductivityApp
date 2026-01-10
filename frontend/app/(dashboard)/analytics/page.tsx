@@ -3,13 +3,15 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { TrendingUp, CheckCircle2, Clock, AlertCircle, Download } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { analyticsApi } from "@/lib/api/analytics";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
-// Lazy load heavy recharts components (reduces initial bundle by ~100KB)
+// Lazy load recharts
 const ResponsiveContainer = dynamic(
   () => import("recharts").then((mod) => mod.ResponsiveContainer),
   { ssr: false }
@@ -18,20 +20,20 @@ const LineChart = dynamic(
   () => import("recharts").then((mod) => mod.LineChart),
   { ssr: false }
 );
-const Line = dynamic(
-  () => import("recharts").then((mod) => mod.Line),
-  { ssr: false }
-);
 const BarChart = dynamic(
   () => import("recharts").then((mod) => mod.BarChart),
   { ssr: false }
 );
-const Bar = dynamic(
-  () => import("recharts").then((mod) => mod.Bar),
-  { ssr: false }
-);
 const PieChart = dynamic(
   () => import("recharts").then((mod) => mod.PieChart),
+  { ssr: false }
+);
+const Line = dynamic(
+  () => import("recharts").then((mod) => mod.Line),
+  { ssr: false }
+);
+const Bar = dynamic(
+  () => import("recharts").then((mod) => mod.Bar),
   { ssr: false }
 );
 const Pie = dynamic(
@@ -63,90 +65,86 @@ const Legend = dynamic(
   { ssr: false }
 );
 
-// Date range options
 const dateRanges = [
   { value: 7, label: "7d" },
   { value: 30, label: "30d" },
   { value: 90, label: "90d" },
 ];
 
-// Skeleton components
+// Chart colors - dark theme with orange accents
+const chartColors = {
+  primary: "#FF6B35",      // primary orange
+  accent: "#FF8C42",       // accent orange
+  success: "#10B981",      // success green
+  warning: "#FBBF24",      // warning amber
+  destructive: "#EF4444",  // destructive red
+  muted: "#6B7280",        // muted gray
+};
+
 function StatCardSkeleton() {
   return (
-    <Card className="animate-pulse">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
+    <Card className="animate-pulse bg-secondary/50">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="h-3 w-16 bg-muted rounded" />
-        <div className="h-3.5 w-3.5 bg-muted rounded" />
+        <div className="h-8 w-8 bg-muted rounded" />
       </CardHeader>
-      <CardContent className="p-3 pt-0">
-        <div className="h-7 w-12 bg-muted rounded mb-1" />
-        <div className="h-3 w-20 bg-muted rounded" />
+      <CardContent>
+        <div className="h-8 w-16 bg-muted rounded mb-2" />
+        <div className="h-3 w-24 bg-muted rounded" />
       </CardContent>
     </Card>
   );
 }
 
-function ChartSkeleton({ height = "h-[178px]" }: { height?: string }) {
+function ChartSkeleton({ height = "h-80" }: { height?: string }) {
   return (
-    <div className={cn("animate-pulse bg-muted/50 rounded-lg", height)} />
+    <div className={cn("animate-pulse bg-secondary/50 rounded-lg", height)} />
   );
 }
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState(30);
 
-  // Fetch dashboard analytics
   const { data, isLoading, error } = useQuery({
     queryKey: ["analytics", "dashboard", dateRange],
     queryFn: () => analyticsApi.getDashboard(dateRange),
   });
 
-  // Loading skeleton UI
   if (isLoading) {
     return (
-      <div className="px-6 py-6 space-y-8 animate-fade-in-up">
+      <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
           <div>
             <div className="h-8 w-32 bg-muted rounded animate-pulse" />
             <div className="h-4 w-48 bg-muted rounded mt-2 animate-pulse" />
           </div>
-          <div className="h-9 w-28 bg-muted rounded-lg animate-pulse" />
+          <div className="h-9 w-32 bg-muted rounded-lg animate-pulse" />
         </div>
 
         {/* Stats skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <StatCardSkeleton key={i} />
           ))}
         </div>
 
         {/* Chart skeletons */}
-        <Card>
-          <CardHeader>
-            <div className="h-5 w-36 bg-muted rounded animate-pulse" />
-            <div className="h-3 w-48 bg-muted rounded mt-1 animate-pulse" />
-          </CardHeader>
-          <CardContent>
-            <ChartSkeleton />
-          </CardContent>
-        </Card>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+          <Card className="bg-secondary/30">
             <CardHeader>
               <div className="h-5 w-40 bg-muted rounded animate-pulse" />
             </CardHeader>
             <CardContent>
-              <ChartSkeleton height="h-[167px]" />
+              <ChartSkeleton />
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-secondary/30">
             <CardHeader>
-              <div className="h-5 w-44 bg-muted rounded animate-pulse" />
+              <div className="h-5 w-40 bg-muted rounded animate-pulse" />
             </CardHeader>
             <CardContent>
-              <ChartSkeleton height="h-[190px]" />
+              <ChartSkeleton />
             </CardContent>
           </Card>
         </div>
@@ -156,8 +154,8 @@ export default function AnalyticsPage() {
 
   if (error) {
     return (
-      <div className="px-6 py-6 animate-fade-in-up">
-        <Card className="border-destructive bg-destructive/5">
+      <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <Card className="border-destructive bg-destructive/10">
           <CardContent className="py-12">
             <p className="text-center text-destructive">
               Failed to load analytics. Please try again.
@@ -170,307 +168,382 @@ export default function AnalyticsPage() {
 
   if (!data) return null;
 
-  const { overview, recent_trends, priority_distribution, top_categories, top_tags } = data;
+  const { overview, recent_trends, priority_distribution, top_categories } = data;
 
-  // Prepare chart data
-  const quadrantData = Object.entries(priority_distribution.by_quadrant).map(([name, stats]) => ({
-    name: name.replace("_", " "),
-    count: stats.count,
-    completed: stats.completed,
-    completion_rate: stats.completion_rate,
-  }));
+  const quadrantData = Object.entries(priority_distribution.by_quadrant).map(
+    ([name, stats]) => ({
+      name: name.replace("_", " "),
+      count: (stats as any).count,
+      value: (stats as any).count,
+      completed: (stats as any).completed,
+      completion_rate: (stats as any).completion_rate,
+    })
+  );
 
-  // Emerald palette for charts
-  const COLORS = {
-    DO_FIRST: "#EF4444",
-    SCHEDULE: "#F59E0B",
-    DELEGATE: "#3B82F6",
-    ELIMINATE: "#9CA3AF",
-  };
-
-  const CHART_COLORS = {
-    primary: "#10B981",    // emerald-500
-    secondary: "#34D399",  // emerald-400
-    accent: "#059669",     // emerald-600
-    muted: "#6EE7B7",      // emerald-300
+  const QUADRANT_COLORS: Record<string, string> = {
+    "Do First": chartColors.destructive,
+    "Schedule": chartColors.primary,
+    "Delegate": chartColors.warning,
+    "Eliminate": chartColors.muted,
   };
 
   return (
-    <div className="px-6 py-6 space-y-8 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
-      {/* Header with Date Range Selector */}
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+      >
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Analytics</h1>
-          <p className="text-sm text-gray-500 font-medium mt-0.5">
-            Productivity insights
+          <h1 className="text-3xl font-black text-white tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground font-medium mt-1">
+            Productivity insights & performance metrics
           </p>
         </div>
-        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
-          {dateRanges.map((range) => (
-            <button
-              key={range.value}
-              onClick={() => setDateRange(range.value)}
-              className={cn(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150",
-                dateRange === range.value
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-              )}
-            >
-              {range.label}
-            </button>
-          ))}
+
+        {/* Date Range Selector & Export */}
+        <div className="flex gap-3">
+          <div className="flex gap-1 p-1 bg-secondary/50 rounded-lg border border-border">
+            {dateRanges.map((range) => (
+              <button
+                key={range.value}
+                onClick={() => setDateRange(range.value)}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                  dateRange === range.value
+                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-sm"
+                    : "text-muted-foreground hover:text-white hover:bg-secondary"
+                )}
+              >
+                {range.label}
+              </button>
+            ))}
+          </div>
+          <Button size="sm" variant="outline" className="gap-1.5">
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">Export</span>
+          </Button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-blue-100 bg-gradient-to-br from-blue-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-semibold text-blue-700">Total Tasks</CardTitle>
-            <div className="p-1.5 rounded-lg bg-blue-100">
-              <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
-            </div>
+      {/* KPI Cards */}
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 },
+          },
+        }}
+        initial="hidden"
+        animate="show"
+      >
+        {/* Total Tasks */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+          <Card className="bg-gradient-to-br from-secondary to-secondary/50 border-border hover:border-primary/40 hover:shadow-lg transition-all">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Total Tasks
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-primary/20">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl font-black text-white"
+              >
+                {overview.total_tasks}
+              </motion.div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {overview.completed_tasks} completed
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Completion Rate */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+          <Card className="bg-gradient-to-br from-secondary to-secondary/50 border-border hover:border-primary/40 hover:shadow-lg transition-all">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Completion Rate
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-success/20">
+                <TrendingUp className="h-4 w-4 text-success" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl font-black text-success"
+              >
+                {overview.completion_rate.toFixed(0)}%
+              </motion.div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {overview.in_progress_tasks} in progress
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Avg Completion Time */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+          <Card className="bg-gradient-to-br from-secondary to-secondary/50 border-border hover:border-primary/40 hover:shadow-lg transition-all">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Avg. Completion
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-warning/20">
+                <Clock className="h-4 w-4 text-warning" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl font-black text-warning"
+              >
+                {overview.average_completion_time_days.toFixed(1)}
+              </motion.div>
+              <p className="text-xs text-muted-foreground mt-2">days</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Overdue Tasks */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+          <Card className="bg-gradient-to-br from-secondary to-secondary/50 border-border hover:border-primary/40 hover:shadow-lg transition-all">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Overdue
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-destructive/20">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl font-black text-destructive"
+              >
+                {overview.overdue_tasks}
+              </motion.div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {overview.tasks_due_today} due today
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      {/* Charts Grid */}
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        {/* Completion Trend */}
+        <Card className="bg-secondary/30 border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Completion Trend</CardTitle>
+            <CardDescription>Tasks completed over time</CardDescription>
           </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-blue-900">{overview.total_tasks}</div>
-            <p className="text-xs text-blue-600/70 mt-0.5">
-              {overview.completed_tasks} completed
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-emerald-100 bg-gradient-to-br from-emerald-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-semibold text-emerald-700">Completion Rate</CardTitle>
-            <div className="p-1.5 rounded-lg bg-emerald-100">
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-emerald-600">
-              {overview.completion_rate.toFixed(1)}%
-            </div>
-            <p className="text-xs text-emerald-600/70 mt-0.5">
-              {overview.in_progress_tasks} in progress
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-amber-100 bg-gradient-to-br from-amber-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-semibold text-amber-700">Avg. Completion</CardTitle>
-            <div className="p-1.5 rounded-lg bg-amber-100">
-              <Clock className="h-3.5 w-3.5 text-amber-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-amber-700">
-              {overview.average_completion_time_days.toFixed(1)}
-            </div>
-            <p className="text-xs text-amber-600/70 mt-0.5">
-              days on average
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-rose-100 bg-gradient-to-br from-rose-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3">
-            <CardTitle className="text-xs font-semibold text-rose-700">Overdue Tasks</CardTitle>
-            <div className="p-1.5 rounded-lg bg-rose-100">
-              <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <div className="text-2xl font-bold text-rose-600">
-              {overview.overdue_tasks}
-            </div>
-            <p className="text-xs text-rose-600/70 mt-0.5">
-              {overview.tasks_due_today} due today
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Completion Trends */}
-      <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
-          <CardTitle className="text-lg font-bold text-gray-900">Completion Trends</CardTitle>
-          <CardDescription>
-            Tasks created vs completed over the last {recent_trends.data.length} days
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[178px] max-w-3xl mx-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={recent_trends.data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={recent_trends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  tick={{ fontSize: 12 }}
+                  stroke="#9CA3AF"
+                  style={{ fontSize: "12px" }}
                 />
-                <YAxis tick={{ fill: '#64748b', fontSize: 12 }} />
+                <YAxis stroke="#9CA3AF" style={{ fontSize: "12px" }} />
                 <Tooltip
-                  labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                  contentStyle={{
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#F3F4F6",
+                  }}
                 />
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="created"
-                  stroke={CHART_COLORS.muted}
+                  dataKey="completed"
+                  stroke={chartColors.primary}
                   strokeWidth={2}
-                  name="Created"
-                  dot={{ fill: CHART_COLORS.muted, r: 4 }}
+                  dot={false}
+                  name="Completed"
                 />
                 <Line
                   type="monotone"
-                  dataKey="completed"
-                  stroke={CHART_COLORS.primary}
+                  dataKey="created"
+                  stroke={chartColors.muted}
                   strokeWidth={2}
-                  name="Completed"
-                  dot={{ fill: CHART_COLORS.primary, r: 4 }}
+                  dot={false}
+                  name="Created"
+                  strokeOpacity={0.6}
                 />
               </LineChart>
             </ResponsiveContainer>
-          </div>
-          <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Total Created</p>
-              <p className="text-2xl font-bold text-primary">{recent_trends.total_created}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Total Completed</p>
-              <p className="text-2xl font-bold text-success">{recent_trends.total_completed}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Net Change</p>
-              <p className={`text-2xl font-bold ${recent_trends.net_change > 0 ? 'text-destructive' : 'text-success'}`}>
-                {recent_trends.net_change > 0 ? '+' : ''}{recent_trends.net_change}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Priority Distribution & Category Performance */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Priority Distribution */}
-        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-purple-50/50 to-white">
-            <CardTitle className="text-lg font-bold text-gray-900">Priority Distribution</CardTitle>
-            <CardDescription>Eisenhower Matrix quadrants</CardDescription>
+        <Card className="bg-secondary/30 border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Priority Distribution</CardTitle>
+            <CardDescription>Tasks by Eisenhower quadrant</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[167px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={quadrantData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={(entry) => `${String(entry.name || '').split(' ')[0]} (${(entry as { count?: number }).count || 0})`}
-                    outerRadius={54}
-                    fill="#8884d8"
-                    dataKey="count"
-                  >
-                    {quadrantData.map((entry, index) => {
-                      const colorKey = entry.name.replace(" ", "_").toUpperCase() as keyof typeof COLORS;
-                      return <Cell key={`cell-${index}`} fill={COLORS[colorKey] || "#9CA3AF"} />;
-                    })}
-                  </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 space-y-2">
-              {quadrantData.map((quad, index) => {
-                const colorKey = quad.name.replace(" ", "_").toUpperCase() as keyof typeof COLORS;
-                return (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: COLORS[colorKey] || "#9CA3AF" }}
-                      />
-                      <span className="font-medium">{quad.name}</span>
-                    </div>
-                    <span className="text-muted-foreground">
-                      {quad.completion_rate.toFixed(0)}% completed
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={quadrantData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={(entry) => `${entry.name.split(" ")[0]}: ${entry.value}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {quadrantData.map((entry) => (
+                    <Cell
+                      key={`cell-${entry.name}`}
+                      fill={QUADRANT_COLORS[entry.name] || chartColors.primary}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#F3F4F6",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
+      </motion.div>
 
-        {/* Category Performance */}
-        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="border-b border-gray-50 bg-gradient-to-r from-blue-50/50 to-white">
-            <CardTitle className="text-lg font-bold text-gray-900">Category Performance</CardTitle>
-            <CardDescription>Top {top_categories.length} categories by task count</CardDescription>
+      {/* Category Performance */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
+        <Card className="bg-secondary/30 border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Category Performance</CardTitle>
+            <CardDescription>Tasks completed by category</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[190px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={top_categories}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 12 }} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                  <Legend />
-                  <Bar dataKey="completed_tasks" fill={CHART_COLORS.primary} name="Completed" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="in_progress_tasks" fill={CHART_COLORS.secondary} name="In Progress" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="pending_tasks" fill="#9CA3AF" name="Pending" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={top_categories}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12 }}
+                  stroke="#9CA3AF"
+                  style={{ fontSize: "12px" }}
+                />
+                <YAxis stroke="#9CA3AF" style={{ fontSize: "12px" }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#F3F4F6",
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="count" fill={chartColors.primary} name="Total Tasks" />
+                <Bar
+                  dataKey="completed"
+                  fill={chartColors.success}
+                  name="Completed"
+                  radius={[0, 0, 8, 8]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
-      {/* Top Tags */}
-      {top_tags.length > 0 && (
-        <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="p-4 border-b border-gray-50 bg-gradient-to-r from-amber-50/50 to-white">
-            <CardTitle className="text-base font-bold text-gray-900">Top Tags</CardTitle>
-            <CardDescription className="text-xs">Most used tags by count</CardDescription>
+      {/* Insights Section */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.4 }}
+      >
+        <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <span>💡</span>
+              Insights
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="space-y-2 mt-4">
-              {top_tags.map((tag) => (
-                <div key={tag.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 hover:bg-gray-100/50 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-8 w-8 rounded-lg flex items-center justify-center shadow-sm"
-                      style={{ backgroundColor: tag.color || "#3B82F6" }}
-                    >
-                      <span className="text-white text-xs font-bold">
-                        {tag.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{tag.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {tag.usage_count} {tag.usage_count === 1 ? 'task' : 'tasks'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-base font-semibold text-success">
-                      {tag.completion_rate.toFixed(0)}%
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <div className="text-2xl">📊</div>
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    {overview.completion_rate > 80
+                      ? "Excellent productivity!"
+                      : overview.completion_rate > 60
+                      ? "Good progress on tasks"
+                      : "Room for improvement"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your completion rate is {overview.completion_rate.toFixed(0)}% this period.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="text-2xl">⏱️</div>
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    Average completion: {overview.average_completion_time_days.toFixed(1)} days
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tasks take {overview.average_completion_time_days.toFixed(1)} days on average to complete.
+                  </p>
+                </div>
+              </div>
+              {overview.overdue_tasks > 0 && (
+                <div className="flex gap-3">
+                  <div className="text-2xl">⚠️</div>
+                  <div>
+                    <p className="text-sm font-medium text-destructive">
+                      {overview.overdue_tasks} overdue task{overview.overdue_tasks !== 1 ? "s" : ""}
                     </p>
-                    <p className="text-xs text-muted-foreground">completed</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Consider prioritizing overdue tasks to get back on track.
+                    </p>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
-      )}
+      </motion.div>
     </div>
   );
 }
