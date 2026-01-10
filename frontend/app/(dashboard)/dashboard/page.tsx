@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -9,7 +10,8 @@ import {
   ListTodo,
   Clock,
   TrendingUp,
-  Sparkles
+  Sparkles,
+  Zap
 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays, startOfDay } from "date-fns";
 import confetti from "canvas-confetti";
@@ -24,6 +26,7 @@ import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { cn } from "@/lib/utils/cn";
 import { Task } from "@/lib/types";
 import { toast } from "sonner";
+import { cardContainerVariants, cardItemVariants } from "@/lib/animations/variants";
 
 // Motivational quotes for progress
 const motivationalQuotes = [
@@ -36,7 +39,7 @@ const motivationalQuotes = [
   { text: "Look at you being productive!", emoji: "✨" },
 ];
 
-// Enhanced Stat card - taller, colorful, animated
+// Enhanced Stat card - dark theme with orange/amber accents
 function StatCard({
   title,
   value,
@@ -49,40 +52,40 @@ function StatCard({
   value: number | undefined;
   subtitle?: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: "blue" | "emerald" | "amber" | "rose";
+  color: "primary" | "success" | "warning" | "destructive";
   delay?: number;
 }) {
   const colors = {
-    blue: {
-      gradient: "from-blue-500 to-indigo-600",
-      iconBg: "bg-blue-400/30",
-      shadow: "shadow-blue-200 hover:shadow-blue-300",
-      glow: "bg-blue-500/10",
+    primary: {
+      gradient: "from-primary to-accent",
+      iconBg: "bg-primary/20",
+      shadow: "shadow-primary/20 hover:shadow-primary/40",
+      glow: "bg-primary/10",
     },
-    emerald: {
-      gradient: "from-emerald-500 to-teal-600",
-      iconBg: "bg-emerald-400/30",
-      shadow: "shadow-emerald-200 hover:shadow-emerald-300",
-      glow: "bg-emerald-500/10",
+    success: {
+      gradient: "from-success to-success/80",
+      iconBg: "bg-success/20",
+      shadow: "shadow-success/20 hover:shadow-success/40",
+      glow: "bg-success/10",
     },
-    amber: {
-      gradient: "from-amber-500 to-orange-600",
-      iconBg: "bg-amber-400/30",
-      shadow: "shadow-amber-200 hover:shadow-amber-300",
-      glow: "bg-amber-500/10",
+    warning: {
+      gradient: "from-warning to-warning/80",
+      iconBg: "bg-warning/20",
+      shadow: "shadow-warning/20 hover:shadow-warning/40",
+      glow: "bg-warning/10",
     },
-    rose: {
-      gradient: "from-rose-500 to-pink-600",
-      iconBg: "bg-rose-400/30",
-      shadow: "shadow-rose-200 hover:shadow-rose-300",
-      glow: "bg-rose-500/10",
+    destructive: {
+      gradient: "from-destructive to-destructive/80",
+      iconBg: "bg-destructive/20",
+      shadow: "shadow-destructive/20 hover:shadow-destructive/40",
+      glow: "bg-destructive/10",
     },
   };
 
   const c = colors[color];
 
   return (
-    <div
+    <motion.div
       className={cn(
         "relative overflow-hidden rounded-2xl p-5 h-[120px]",
         "bg-gradient-to-br", c.gradient,
@@ -91,7 +94,9 @@ function StatCard({
         "cursor-default group",
         c.shadow
       )}
-      style={{ animationDelay: `${delay}ms` }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: delay / 1000 }}
     >
       {/* Glow effect */}
       <div className={cn("absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity", c.glow)} />
@@ -111,7 +116,7 @@ function StatCard({
           <p className="text-white/70 text-xs font-medium">{subtitle}</p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -169,7 +174,7 @@ export default function DashboardPage() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#10B981", "#34D399", "#6EE7B7", "#A7F3D0"],
+        colors: ["#FF6B35", "#FF8C42", "#FFA55C", "#D97706"],
       });
 
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -292,30 +297,35 @@ export default function DashboardPage() {
     return motivationalQuotes[Math.min(index, motivationalQuotes.length - 1)];
   }, [completionRate]);
 
-  // Quadrant colors for upcoming tasks
+  // Quadrant colors for upcoming tasks (dark theme)
   const getQuadrantStyles = (quadrant: string) => {
     switch (quadrant) {
       case "DO_FIRST":
-        return { border: "border-l-red-500", dot: "bg-red-500", bg: "bg-red-50/50", hover: "hover:bg-red-100/70", borderColor: "border-red-100" };
+        return { border: "border-l-destructive", dot: "bg-destructive", bg: "bg-destructive/10", hover: "hover:bg-destructive/20", borderColor: "border-destructive/30" };
       case "SCHEDULE":
-        return { border: "border-l-blue-500", dot: "bg-blue-500", bg: "bg-blue-50/50", hover: "hover:bg-blue-100/70", borderColor: "border-blue-100" };
+        return { border: "border-l-primary", dot: "bg-primary", bg: "bg-primary/10", hover: "hover:bg-primary/20", borderColor: "border-primary/30" };
       case "DELEGATE":
-        return { border: "border-l-purple-500", dot: "bg-purple-500", bg: "bg-purple-50/50", hover: "hover:bg-purple-100/70", borderColor: "border-purple-100" };
+        return { border: "border-l-warning", dot: "bg-warning", bg: "bg-warning/10", hover: "hover:bg-warning/20", borderColor: "border-warning/30" };
       default:
-        return { border: "border-l-gray-400", dot: "bg-gray-400", bg: "bg-gray-50/50", hover: "hover:bg-gray-100/70", borderColor: "border-gray-100" };
+        return { border: "border-l-border", dot: "bg-muted-foreground", bg: "bg-secondary/50", hover: "hover:bg-secondary", borderColor: "border-border" };
     }
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 min-h-full">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 bg-background min-h-full">
       {/* Stats Row - 4 cards at top */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={cardContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <StatCard
           title="Total Tasks"
           value={analytics?.total_tasks}
           subtitle={`${analytics?.pending_tasks || 0} pending`}
           icon={ListTodo}
-          color="blue"
+          color="primary"
           delay={0}
         />
         <StatCard
@@ -323,7 +333,7 @@ export default function DashboardPage() {
           value={analytics?.completed_tasks}
           subtitle={`${completionRate}% completion rate`}
           icon={CheckCircle2}
-          color="emerald"
+          color="success"
           delay={50}
         />
         <StatCard
@@ -331,7 +341,7 @@ export default function DashboardPage() {
           value={analytics?.in_progress_tasks}
           subtitle="Currently working"
           icon={Clock}
-          color="amber"
+          color="warning"
           delay={100}
         />
         <StatCard
@@ -339,26 +349,31 @@ export default function DashboardPage() {
           value={analytics?.overdue_tasks}
           subtitle={analytics?.tasks_due_today ? `${analytics.tasks_due_today} due today` : "None due today"}
           icon={AlertTriangle}
-          color="rose"
+          color="destructive"
           delay={150}
         />
-      </div>
+      </motion.div>
 
       {/* Overdue Banner */}
       {filteredOverdueTasks.length > 0 && (
-        <Card className="border-red-200 bg-gradient-to-r from-red-50 to-rose-50 animate-scale-in shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="border-destructive/30 bg-destructive/10 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-destructive">
+                    {filteredOverdueTasks.length} Overdue Task{filteredOverdueTasks.length > 1 ? "s" : ""}
+                  </p>
+                  <p className="text-xs text-destructive/70">Needs your attention</p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-red-700">
-                  {filteredOverdueTasks.length} Overdue Task{filteredOverdueTasks.length > 1 ? "s" : ""}
-                </p>
-                <p className="text-xs text-red-600/70">Needs your attention</p>
-              </div>
-            </div>
             {/* Show overdue tasks inline */}
             <div className="mt-4 space-y-2">
               {filteredOverdueTasks.slice(0, 3).map((task, idx) => (
@@ -377,17 +392,23 @@ export default function DashboardPage() {
                 />
               ))}
             </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Main Grid: Today's Focus + Upcoming */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6"
+        variants={cardContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Left Column - Today's Focus */}
-        <div className="space-y-4">
+        <motion.div variants={cardItemVariants} className="space-y-4">
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Today&apos;s Focus</h1>
-            <p className="text-sm text-gray-500 font-medium">
+            <h1 className="text-2xl font-black text-foreground tracking-tight">Today&apos;s Focus</h1>
+            <p className="text-sm text-muted-foreground font-medium">
               {filteredTodayTasks.length} task{filteredTodayTasks.length !== 1 ? "s" : ""} for today
             </p>
           </div>
@@ -399,13 +420,13 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : filteredTodayTasks.length === 0 ? (
-            <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white">
+            <Card className="border-success/30 bg-success/10">
               <CardContent className="py-12 text-center">
-                <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                <div className="h-16 w-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 className="h-8 w-8 text-success" />
                 </div>
-                <p className="text-lg font-bold text-gray-900">You&apos;re all caught up!</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-lg font-bold text-foreground">You&apos;re all caught up!</p>
+                <p className="text-sm text-muted-foreground mt-1">
                   No tasks due today. Enjoy your day!
                 </p>
               </CardContent>
@@ -437,35 +458,35 @@ export default function DashboardPage() {
         </div>
 
         {/* Right Column - Progress + Upcoming */}
-        <div className="space-y-6">
+        <motion.div variants={cardItemVariants} className="space-y-6">
           {/* Progress Summary */}
-          <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-success/30 bg-success/10 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-emerald-100">
-                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  <div className="p-1.5 rounded-lg bg-success/20">
+                    <TrendingUp className="h-4 w-4 text-success" />
                   </div>
-                  <span className="text-sm font-bold text-gray-900">Progress</span>
+                  <span className="text-sm font-bold text-foreground">Progress</span>
                 </div>
-                <span className="text-lg font-bold text-emerald-600">{completionRate}%</span>
+                <span className="text-lg font-bold text-success">{completionRate}%</span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+              <div className="h-3 bg-secondary rounded-full overflow-hidden shadow-inner">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-success to-success/80 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-3 text-xs text-gray-500 font-medium">
+              <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground font-medium">
                 <span>{analytics?.completed_tasks || 0} completed</span>
                 <span>{analytics?.pending_tasks || 0} remaining</span>
               </div>
               {/* Motivational Quote */}
               {completionRate > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-100">
+                <div className="mt-4 pt-3 border-t border-border">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-amber-500" />
-                    <p className="text-sm text-gray-600 font-medium">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <p className="text-sm text-muted-foreground font-medium">
                       {motivationalQuote.emoji} {motivationalQuote.text}
                     </p>
                   </div>
@@ -475,11 +496,11 @@ export default function DashboardPage() {
           </Card>
 
           {/* Upcoming Section */}
-          <Card className="border-blue-100 bg-linear-to-br from-blue-50/30 to-white shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 pt-4 px-4 border-b border-blue-50">
-              <CardTitle className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <div className="p-1 rounded-md bg-blue-100">
-                  <Clock className="h-3 w-3 text-blue-600" />
+          <Card className="border-info/30 bg-info/10 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2 pt-4 px-4 border-b border-info/20">
+              <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                <div className="p-1 rounded-md bg-info/20">
+                  <Clock className="h-3 w-3 text-info" />
                 </div>
                 Upcoming This Week
               </CardTitle>
@@ -487,28 +508,30 @@ export default function DashboardPage() {
             <CardContent className="px-4 pb-4">
               {loadingUpcoming ? (
                 <div className="space-y-2">
-                  <div className="h-8 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-8 bg-secondary rounded animate-pulse" />
+                  <div className="h-8 bg-secondary rounded animate-pulse" />
                 </div>
               ) : Object.keys(upcomingGrouped).length === 0 ? (
-                <p className="text-sm text-gray-400 py-4 text-center">No upcoming tasks</p>
+                <p className="text-sm text-muted-foreground py-4 text-center">No upcoming tasks</p>
               ) : (
                 <div className="space-y-4">
                   {Object.entries(upcomingGrouped).slice(0, 3).map(([dateLabel, tasks]) => (
                     <div key={dateLabel}>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-2">
                         {dateLabel}
                       </p>
                       <div className="space-y-1.5">
                         {tasks.slice(0, 2).map((task) => {
                           const styles = getQuadrantStyles(task.quadrant);
                           return (
-                            <div
+                            <motion.div
                               key={task.id}
                               onClick={() => handleTaskClick(task)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
                               className={cn(
                                 "flex items-center gap-2 p-2.5 rounded-lg cursor-pointer",
-                                "transition-all duration-150 border-l-4 border",
+                                "transition-all duration-150 border-l-4",
                                 "hover:shadow-sm hover:-translate-x-0.5",
                                 styles.border,
                                 styles.bg,
@@ -518,15 +541,15 @@ export default function DashboardPage() {
                               )}
                             >
                               <div className={cn("w-2.5 h-2.5 rounded-full shrink-0 shadow-sm", styles.dot)} />
-                              <span className="text-sm truncate flex-1 text-gray-700 font-semibold group-hover:text-gray-900">
+                              <span className="text-sm truncate flex-1 text-foreground font-semibold group-hover:text-foreground">
                                 {task.title}
                               </span>
                               {task.due_date && (
-                                <span className="text-xs text-gray-500 font-medium group-hover:text-gray-700">
+                                <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground">
                                   {format(parseISO(task.due_date), "h:mm a")}
                                 </span>
                               )}
-                            </div>
+                            </motion.div>
                           );
                         })}
                       </div>
@@ -536,8 +559,8 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Task Detail Modal - Read only view */}
       <TaskDetailModal
