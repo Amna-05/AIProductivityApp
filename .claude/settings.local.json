@@ -15,7 +15,10 @@
       "Bash(test-config-debug python -c \"from app.core.config import settings; print\\(''✅ Config loaded''\\); print\\(''CORS:'', settings.BACKEND_CORS_ORIGINS\\)\")",
       "Bash(test-config-debug alembic upgrade:*)",
       "Bash(docker-compose ps:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(cat:*)",
+      "Bash(git commit:*)",
+      "Bash(grep:*)"
     ]
   }
 }

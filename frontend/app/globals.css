@@ -1,69 +1,74 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ELEVATE Brand Theme - Bright, Modern, Professional SaaS */
+  /* ELEVATE Dark Theme - Modern SaaS with Orange/Amber Accents */
 
-  /* Core - Clean white backgrounds with high contrast text */
-  --color-background: #FFFFFF;
-  --color-foreground: #1F2937;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1F2937;
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #1F2937;
+  /* Core - Dark backgrounds with high contrast text */
+  --color-background: #0A0A0A;
+  --color-foreground: #FFFFFF;
+  --color-card: #151515;
+  --color-card-foreground: #FFFFFF;
+  --color-popover: #1A1A1A;
+  --color-popover-foreground: #FFFFFF;
 
-  /* Primary - Vibrant Emerald (Productivity & Growth) */
-  --color-primary: #10B981;
+  /* Primary - Vibrant Orange (Modern & Energetic) */
+  --color-primary: #FF6B35;
   --color-primary-foreground: #FFFFFF;
 
-  /* Secondary & Muted - Crisp grays */
-  --color-secondary: #F3F4F6;
-  --color-secondary-foreground: #1F2937;
-  --color-muted: #F3F4F6;
-  --color-muted-foreground: #6B7280;
+  /* Secondary & Muted - Dark grays */
+  --color-secondary: #1F1F1F;
+  --color-secondary-foreground: #E5E5E5;
+  --color-muted: #2A2A2A;
+  --color-muted-foreground: #A0A0A0;
 
-  /* Accent - Emerald tint for highlights */
-  --color-accent: #ECFDF5;
-  --color-accent-foreground: #065F46;
+  /* Accent - Orange tint for highlights */
+  --color-accent: #FF8C42;
+  --color-accent-foreground: #0A0A0A;
 
-  /* Semantic Colors - Vibrant & Clear */
+  /* Semantic Colors - Clear on dark */
   --color-success: #10B981;
   --color-success-foreground: #FFFFFF;
   --color-warning: #FBBF24;
-  --color-warning-foreground: #1F2937;
+  --color-warning-foreground: #0A0A0A;
   --color-info: #3B82F6;
   --color-info-foreground: #FFFFFF;
   --color-destructive: #EF4444;
   --color-destructive-foreground: #FFFFFF;
 
-  /* Quadrant Colors - Eisenhower Matrix (Vibrant) */
+  /* Quadrant Colors - Eisenhower Matrix (Dark themed) */
   --color-quadrant-do-first: #EF4444;
-  --color-quadrant-do-first-bg: #FEF2F2;
-  --color-quadrant-do-first-text: #DC2626;
-  --color-quadrant-do-first-border: #FECACA;
+  --color-quadrant-do-first-bg: #1A0F0F;
+  --color-quadrant-do-first-text: #FF6B6B;
+  --color-quadrant-do-first-border: #DC2626;
 
-  --color-quadrant-schedule: #3B82F6;
-  --color-quadrant-schedule-bg: #EFF6FF;
-  --color-quadrant-schedule-text: #2563EB;
-  --color-quadrant-schedule-border: #BFDBFE;
+  --color-quadrant-schedule: #FF6B35;
+  --color-quadrant-schedule-bg: #1A1108;
+  --color-quadrant-schedule-text: #FF8C42;
+  --color-quadrant-schedule-border: #FF6B35;
 
-  --color-quadrant-delegate: #A78BFA;
-  --color-quadrant-delegate-bg: #F5F3FF;
-  --color-quadrant-delegate-text: #7C3AED;
-  --color-quadrant-delegate-border: #DDD6FE;
+  --color-quadrant-delegate: #FFA55C;
+  --color-quadrant-delegate-bg: #1A1108;
+  --color-quadrant-delegate-text: #FFB876;
+  --color-quadrant-delegate-border: #FFA55C;
 
-  --color-quadrant-eliminate: #9CA3AF;
-  --color-quadrant-eliminate-bg: #F9FAFB;
-  --color-quadrant-eliminate-text: #6B7280;
-  --color-quadrant-eliminate-border: #E5E7EB;
+  --color-quadrant-eliminate: #666666;
+  --color-quadrant-eliminate-bg: #1A1A1A;
+  --color-quadrant-eliminate-text: #888888;
+  --color-quadrant-eliminate-border: #444444;
 
   /* Borders & Inputs */
-  --color-border: #E5E7EB;
-  --color-input: #E5E7EB;
-  --color-ring: #10B981;
+  --color-border: #2A2A2A;
+  --color-input: #1F1F1F;
+  --color-ring: #FF6B35;
 }
 
 * {
   border-color: var(--color-border);
+}
+
+html {
+  background-color: var(--color-background);
+  color-scheme: dark;
 }
 
 body {
@@ -125,7 +130,7 @@ a:active {
   background-color: color-mix(in srgb, var(--color-muted-foreground) 40%, transparent);
 }
 
-/* Focus ring - emerald */
+/* Focus ring - orange */
 *:focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
