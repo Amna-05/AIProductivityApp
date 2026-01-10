@@ -17,6 +17,7 @@ import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import { ListView } from "@/components/tasks/ListView";
 import { TimelineView } from "@/components/tasks/TimelineView";
+import { QuadrantMatrix } from "@/components/tasks/QuadrantMatrix";
 import { cn } from "@/lib/utils/cn";
 
 type ViewType = "kanban" | "list" | "timeline" | "matrix";
@@ -129,6 +130,26 @@ export default function TasksPage() {
     },
   });
 
+  // Update task quadrant mutation (for Matrix drag-drop)
+  const quadrantChangeMutation = useMutation({
+    mutationFn: (params: { taskId: number; quadrant: TaskQuadrant }) => {
+      const isUrgent = params.quadrant === "DO_FIRST" || params.quadrant === "DELEGATE";
+      const isImportant = params.quadrant === "DO_FIRST" || params.quadrant === "SCHEDULE";
+      return tasksApi.update(params.taskId, {
+        is_urgent: isUrgent,
+        is_important: isImportant,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update task");
+    },
+  });
+
   // Click card -> open detail modal
   const handleTaskClick = (task: Task) => {
     setDetailTask(task);
@@ -164,6 +185,10 @@ export default function TasksPage() {
 
   const handleStatusChange = (taskId: number, newStatus: TaskStatus) => {
     statusChangeMutation.mutate({ taskId, status: newStatus });
+  };
+
+  const handleQuadrantChange = (taskId: number, newQuadrant: TaskQuadrant) => {
+    quadrantChangeMutation.mutate({ taskId, quadrant: newQuadrant });
   };
 
   // Active filters for chips display
@@ -422,12 +447,14 @@ export default function TasksPage() {
           onClick={handleTaskClick}
         />
       ) : (
-        // Matrix view - placeholder
-        <div className="rounded-xl border border-destructive bg-destructive/10 p-6 text-center">
-          <p className="text-sm text-destructive">
-            Matrix view coming in Phase 7C
-          </p>
-        </div>
+        <QuadrantMatrix
+          tasks={data?.tasks || []}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onComplete={(id) => completeMutation.mutate(id)}
+          onClick={handleTaskClick}
+          onTaskQuadrantChange={handleQuadrantChange}
+        />
       )}
 
       {/* Task Detail Modal */}
