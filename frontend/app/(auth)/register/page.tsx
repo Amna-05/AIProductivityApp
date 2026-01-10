@@ -7,13 +7,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/store/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUp, Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -60,87 +61,93 @@ export default function RegisterPage() {
   // Show redirecting state
   if (isRedirecting) {
     return (
-      <Card className="w-full shadow-lg border">
+      <Card variant="elevated" className="w-full">
         <CardContent className="py-16">
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mx-auto">
-              <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center space-y-4"
+          >
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-success/20 mx-auto">
+              <Loader2 className="h-8 w-8 animate-spin text-success" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900">Account created!</p>
-              <p className="text-sm text-gray-500 mt-1">Redirecting to dashboard...</p>
+              <p className="text-lg font-semibold text-foreground">Account created!</p>
+              <p className="text-sm text-muted-foreground mt-1">Redirecting to dashboard...</p>
             </div>
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full shadow-lg border">
-      <CardHeader className="p-10 pb-8">
-        {/* ELEVATE Logo */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary shadow-sm">
-              <ArrowUp className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">ELEVATE</h1>
-              <p className="text-xs text-muted-foreground">Lift Your Productivity</p>
-            </div>
-          </div>
-        </div>
-        <CardTitle className="text-2xl font-bold mb-2">Create an account</CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Enter your information to get started
-        </CardDescription>
+    <Card variant="elevated" className="w-full">
+      <CardHeader className="p-8 pb-6">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <CardTitle className="text-2xl font-bold mb-2">Create an account</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Join ELEVATE and boost your productivity
+          </CardDescription>
+        </motion.div>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="px-10 pb-6 space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-semibold">
-              Email Address
-            </Label>
+        <CardContent className="px-8 pb-6 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="space-y-2"
+          >
+            <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
               type="email"
               placeholder="john@example.com"
               {...register("email")}
               disabled={isLoading}
-              className="h-12 border-2 focus:ring-2"
             />
             {errors.email && (
               <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-semibold">
-              Username
-            </Label>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="space-y-2"
+          >
+            <Label htmlFor="username">Username</Label>
             <Input
               id="username"
               placeholder="johndoe"
               {...register("username")}
               disabled={isLoading}
-              className="h-12 border-2 focus:ring-2"
             />
             {errors.username && (
               <p className="text-sm text-destructive">{errors.username.message}</p>
             )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-semibold">
-              Password
-            </Label>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="space-y-2"
+          >
+            <Label htmlFor="password">Password</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Create a strong password (min 8 characters)"
+                placeholder="Create a strong password (min 8 chars)"
                 {...register("password")}
                 disabled={isLoading}
-                className="h-12 border-2 focus:ring-2 pr-10"
               />
               <button
                 type="button"
@@ -159,36 +166,58 @@ export default function RegisterPage() {
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              Must be at least 8 characters long
+              Must be at least 8 characters
             </p>
-          </div>
+          </motion.div>
         </CardContent>
-        <CardFooter className="px-10 pb-10 flex flex-col gap-4 pt-2">
-          <Button type="submit" className="w-full h-12 font-semibold" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Creating account...
-              </>
-            ) : (
-              "Create account"
-            )}
-          </Button>
-          <div className="relative my-2">
+
+        <CardFooter className="px-8 pb-8 flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="w-full"
+          >
+            <Button type="submit" className="w-full h-11 font-semibold" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create account"
+              )}
+            </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="relative my-2"
+          >
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-3 text-muted-foreground">
-                Already have an account?
+                Already a member?
               </span>
             </div>
-          </div>
-          <Link href="/login" className="w-full">
-            <Button variant="outline" className="w-full h-12 font-semibold" type="button">
-              Sign in instead
-            </Button>
-          </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="w-full"
+          >
+            <Link href="/login" className="w-full block">
+              <Button variant="outline" className="w-full h-11 font-semibold" type="button">
+                Sign in instead
+              </Button>
+            </Link>
+          </motion.div>
         </CardFooter>
       </form>
     </Card>
