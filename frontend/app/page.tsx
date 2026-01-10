@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, Zap, CheckCircle2, ArrowRight, Star, Users, Target, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
+import { cardContainerVariants, cardItemVariants, pageVariants, fadeInUpVariants } from "@/lib/animations/variants";
 
 export default function HomePage() {
   const router = useRouter();
@@ -36,13 +38,18 @@ export default function HomePage() {
   // Show loading while checking auth
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mx-auto">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div
+          className="text-center space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg mx-auto">
             <ArrowUp className="h-8 w-8 text-white" />
           </div>
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-600 mx-auto" />
-        </div>
+          <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+        </motion.div>
       </div>
     );
   }
@@ -50,226 +57,286 @@ export default function HomePage() {
   // Show navigating state
   if (navigating) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mx-auto">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div
+          className="text-center space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg mx-auto">
             <ArrowUp className="h-8 w-8 text-white" />
           </div>
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-600 mx-auto" />
-          <p className="text-sm text-gray-600">
+          <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">
             {navigating === "dashboard" ? "Redirecting to dashboard..." : `Loading ${navigating}...`}
           </p>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
+    <div className="min-h-screen bg-background overflow-hidden">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         <div className="container mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/30">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30">
               <ArrowUp className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">ELEVATE</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">ELEVATE</span>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="font-medium hover:bg-emerald-50 hover:text-emerald-700" onClick={() => handleNavigate("/login")}>
+            <Button variant="ghost" className="font-medium hover:bg-secondary hover:text-primary" onClick={() => handleNavigate("/login")}>
               Sign In
             </Button>
-            <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/30 font-semibold" onClick={() => handleNavigate("/register")}>
+            <Button className="bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 font-semibold" onClick={() => handleNavigate("/register")}>
               Get Started Free
             </Button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 overflow-x-clip">
+      <section className="relative pt-32 pb-20 px-6 overflow-x-clip bg-background">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-400/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-40 right-20 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+        <div className="absolute inset-0 bg-background" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-40 right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
 
         {/* Floating Elements */}
-        <div className="absolute top-32 left-[10%] animate-float z-20 hidden lg:block">
-          <div className="bg-white rounded-2xl shadow-xl p-4 border border-emerald-100">
+        <motion.div
+          className="absolute top-32 left-[10%] animate-float z-20 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="bg-card rounded-2xl shadow-xl p-4 border border-border hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <CheckCircle2 className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Task Completed!</p>
-                <p className="text-xs text-gray-500">+10 productivity points</p>
+                <p className="text-sm font-semibold text-foreground">Task Completed!</p>
+                <p className="text-xs text-muted-foreground">+10 productivity points</p>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="absolute top-48 right-[8%] animate-float z-20 hidden lg:block" style={{ animationDelay: "0.5s" }}>
-          <div className="bg-white rounded-2xl shadow-xl p-4 border border-emerald-100">
+        <motion.div
+          className="absolute top-48 right-[8%] animate-float z-20 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="bg-card rounded-2xl shadow-xl p-4 border border-border hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <Star className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">7 Day Streak!</p>
-                <p className="text-xs text-gray-500">Keep it up!</p>
+                <p className="text-sm font-semibold text-foreground">7 Day Streak!</p>
+                <p className="text-xs text-muted-foreground">Keep it up!</p>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="absolute bottom-32 left-[15%] animate-float z-20 hidden lg:block" style={{ animationDelay: "1s" }}>
-          <div className="bg-white rounded-2xl shadow-xl p-4 border border-emerald-100">
+        <motion.div
+          className="absolute bottom-32 left-[15%] animate-float z-20 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <div className="bg-card rounded-2xl shadow-xl p-4 border border-border hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Productivity Up</p>
-                <p className="text-xs text-emerald-600 font-medium">+23% this week</p>
+                <p className="text-sm font-semibold text-foreground">Productivity Up</p>
+                <p className="text-xs text-primary font-medium">+23% this week</p>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="absolute bottom-40 right-[12%] animate-float z-20 hidden lg:block" style={{ animationDelay: "1.5s" }}>
-          <div className="bg-white rounded-2xl shadow-xl p-4 border border-emerald-100">
+        <motion.div
+          className="absolute bottom-40 right-[12%] animate-float z-20 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <div className="bg-card rounded-2xl shadow-xl p-4 border border-border hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 border-2 border-white" />
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-white" />
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-white" />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-background" />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-primary border-2 border-background" />
+                <div className="w-8 h-8 rounded-full bg-primary/80 border-2 border-background" />
               </div>
-              <p className="text-xs text-gray-600 font-medium">2k+ users</p>
+              <p className="text-xs text-muted-foreground font-medium">2k+ users</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="container mx-auto max-w-6xl relative z-10">
           {/* Badge */}
-          <div className="flex justify-center mb-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200 rounded-full px-5 py-2">
-              <Zap className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-semibold text-emerald-700">AI-Powered Task Management</span>
+          <motion.div
+            className="flex justify-center mb-8"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-5 py-2 hover:bg-primary/15 transition-colors">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">AI-Powered Task Management</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Main Headline */}
-          <div className="text-center mb-8 space-y-6 animate-fade-in">
-            <h1 className="text-6xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight">
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">ELEVATE</span>
+          <motion.div
+            className="text-center mb-8 space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h1 className="text-6xl md:text-7xl font-black text-foreground leading-tight tracking-tight">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">ELEVATE</span>
               <br />
               Your Productivity
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               The all-in-one task management platform that helps you
-              <span className="font-semibold text-emerald-600"> organize, prioritize, </span>
-              and <span className="font-semibold text-teal-600">achieve</span> — effortlessly.
+              <span className="font-semibold text-primary"> organize, prioritize, </span>
+              and <span className="font-semibold text-accent">achieve</span> — effortlessly.
             </p>
-          </div>
+          </motion.div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in">
-            <Button size="lg" className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 px-8 h-14 text-lg font-bold shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all duration-300" onClick={() => handleNavigate("/register")}>
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 px-8 h-14 text-lg font-bold shadow-xl transition-all duration-300" onClick={() => handleNavigate("/register")}>
               <Sparkles className="h-5 w-5" />
               Start Free Trial
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="px-8 h-14 text-lg font-semibold border-2 border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-300" onClick={() => handleNavigate("/login")}>
+            <Button size="lg" variant="outline" className="px-8 h-14 text-lg font-semibold border-2 border-border hover:border-primary hover:bg-secondary hover:text-primary transition-all duration-300" onClick={() => handleNavigate("/login")}>
               Sign In
             </Button>
-          </div>
+          </motion.div>
 
           {/* Stats Row */}
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-16 animate-fade-in">
+          <motion.div
+            className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             <div className="text-center">
-              <p className="text-4xl font-black text-gray-900">2K+</p>
-              <p className="text-sm text-gray-500 font-medium">Active Users</p>
+              <p className="text-4xl font-black text-foreground">2K+</p>
+              <p className="text-sm text-muted-foreground font-medium">Active Users</p>
             </div>
-            <div className="w-px h-12 bg-gray-200 hidden md:block" />
+            <div className="w-px h-12 bg-border hidden md:block" />
             <div className="text-center">
-              <p className="text-4xl font-black text-gray-900">50K+</p>
-              <p className="text-sm text-gray-500 font-medium">Tasks Completed</p>
+              <p className="text-4xl font-black text-foreground">50K+</p>
+              <p className="text-sm text-muted-foreground font-medium">Tasks Completed</p>
             </div>
-            <div className="w-px h-12 bg-gray-200 hidden md:block" />
+            <div className="w-px h-12 bg-border hidden md:block" />
             <div className="text-center">
-              <p className="text-4xl font-black text-emerald-600">4.9</p>
-              <p className="text-sm text-gray-500 font-medium">User Rating</p>
+              <p className="text-4xl font-black text-primary">4.9</p>
+              <p className="text-sm text-muted-foreground font-medium">User Rating</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* App Preview */}
-          <div className="relative max-w-5xl mx-auto animate-fade-in">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-2xl opacity-20 transform scale-95" />
-            <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-gray-100 to-gray-50 px-4 py-3 flex items-center gap-2 border-b">
+          <motion.div
+            className="relative max-w-5xl mx-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-3xl blur-2xl opacity-15 transform scale-95" />
+            <div className="relative bg-card rounded-3xl shadow-2xl border border-border overflow-hidden">
+              <div className="bg-secondary px-4 py-3 flex items-center gap-2 border-b border-border">
                 <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
+                  <div className="w-3 h-3 rounded-full bg-destructive" />
+                  <div className="w-3 h-3 rounded-full bg-warning" />
+                  <div className="w-3 h-3 rounded-full bg-success" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <div className="bg-white rounded-lg px-4 py-1 text-sm text-gray-500 border">app.elevate.io/dashboard</div>
+                  <div className="bg-card rounded-lg px-4 py-1 text-sm text-muted-foreground border border-border">app.elevate.io/dashboard</div>
                 </div>
               </div>
-              <div className="aspect-video bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/50 p-8">
+              <div className="aspect-video bg-background p-8">
                 <div className="h-full grid grid-cols-3 gap-4">
                   {/* Sidebar Mock */}
-                  <div className="col-span-1 bg-white rounded-2xl shadow-lg p-4 space-y-3">
+                  <div className="col-span-1 bg-card rounded-2xl shadow-lg p-4 space-y-3 border border-border">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600" />
-                      <div className="h-4 w-20 bg-gray-200 rounded" />
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent" />
+                      <div className="h-4 w-20 bg-secondary rounded" />
                     </div>
                     {[1,2,3,4].map(i => (
-                      <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${i === 1 ? 'bg-emerald-100' : ''}`}>
-                        <div className={`w-6 h-6 rounded ${i === 1 ? 'bg-emerald-500' : 'bg-gray-200'}`} />
-                        <div className={`h-3 w-16 rounded ${i === 1 ? 'bg-emerald-300' : 'bg-gray-200'}`} />
+                      <div key={i} className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${i === 1 ? 'bg-primary/20' : 'hover:bg-secondary/50'}`}>
+                        <div className={`w-6 h-6 rounded ${i === 1 ? 'bg-primary' : 'bg-secondary'}`} />
+                        <div className={`h-3 w-16 rounded ${i === 1 ? 'bg-primary/40' : 'bg-secondary'}`} />
                       </div>
                     ))}
                   </div>
                   {/* Main Content Mock */}
                   <div className="col-span-2 space-y-4">
                     <div className="flex gap-4">
-                      {['emerald', 'blue', 'purple', 'amber'].map((color, i) => (
-                        <div key={i} className={`flex-1 bg-white rounded-xl shadow-lg p-4 border-l-4 border-${color}-500`}>
-                          <div className={`h-8 w-8 rounded-lg bg-${color}-100 mb-2`} />
-                          <div className="h-3 w-12 bg-gray-200 rounded mb-1" />
-                          <div className="h-6 w-8 bg-gray-300 rounded font-bold" />
+                      {[
+                        { bg: 'from-primary to-accent', label: 'Tasks' },
+                        { bg: 'from-blue-600 to-blue-500', label: 'In Progress' },
+                        { bg: 'from-purple-600 to-purple-500', label: 'Done' },
+                        { bg: 'from-amber-500 to-orange-500', label: 'Urgent' }
+                      ].map((item, i) => (
+                        <div key={i} className={`flex-1 bg-card rounded-xl shadow-lg p-4 border-l-4 border-transparent hover:border-primary transition-all`}>
+                          <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${item.bg} mb-2`} />
+                          <div className="h-3 w-12 bg-secondary rounded mb-1" />
+                          <div className="h-6 w-8 bg-secondary rounded font-bold" />
                         </div>
                       ))}
                     </div>
                     <div className="grid grid-cols-2 gap-4 h-48">
-                      <div className="bg-white rounded-xl shadow-lg p-4">
-                        <div className="h-3 w-24 bg-gray-200 rounded mb-4" />
+                      <div className="bg-card rounded-xl shadow-lg p-4 border border-border">
+                        <div className="h-3 w-24 bg-secondary rounded mb-4" />
                         <div className="grid grid-cols-2 gap-2 h-32">
-                          <div className="bg-red-100 rounded-lg p-2">
-                            <div className="h-2 w-12 bg-red-300 rounded mb-1" />
-                            <div className="h-2 w-8 bg-red-200 rounded" />
+                          <div className="bg-destructive/20 rounded-lg p-2 border border-destructive/30">
+                            <div className="h-2 w-12 bg-destructive/40 rounded mb-1" />
+                            <div className="h-2 w-8 bg-destructive/30 rounded" />
                           </div>
-                          <div className="bg-blue-100 rounded-lg p-2">
-                            <div className="h-2 w-12 bg-blue-300 rounded mb-1" />
-                            <div className="h-2 w-8 bg-blue-200 rounded" />
+                          <div className="bg-warning/20 rounded-lg p-2 border border-warning/30">
+                            <div className="h-2 w-12 bg-warning/40 rounded mb-1" />
+                            <div className="h-2 w-8 bg-warning/30 rounded" />
                           </div>
-                          <div className="bg-purple-100 rounded-lg p-2">
-                            <div className="h-2 w-12 bg-purple-300 rounded mb-1" />
-                            <div className="h-2 w-8 bg-purple-200 rounded" />
+                          <div className="bg-success/20 rounded-lg p-2 border border-success/30">
+                            <div className="h-2 w-12 bg-success/40 rounded mb-1" />
+                            <div className="h-2 w-8 bg-success/30 rounded" />
                           </div>
-                          <div className="bg-gray-100 rounded-lg p-2">
-                            <div className="h-2 w-12 bg-gray-300 rounded mb-1" />
-                            <div className="h-2 w-8 bg-gray-200 rounded" />
+                          <div className="bg-info/20 rounded-lg p-2 border border-info/30">
+                            <div className="h-2 w-12 bg-info/40 rounded mb-1" />
+                            <div className="h-2 w-8 bg-info/30 rounded" />
                           </div>
                         </div>
                       </div>
-                      <div className="bg-white rounded-xl shadow-lg p-4">
-                        <div className="h-3 w-20 bg-gray-200 rounded mb-4" />
+                      <div className="bg-card rounded-xl shadow-lg p-4 border border-border">
+                        <div className="h-3 w-20 bg-secondary rounded mb-4" />
                         <div className="flex items-end gap-2 h-32">
                           {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-                            <div key={i} className="flex-1 bg-gradient-to-t from-emerald-500 to-teal-400 rounded-t" style={{ height: `${h}%` }} />
+                            <div key={i} className="flex-1 bg-gradient-to-t from-primary to-accent rounded-t" style={{ height: `${h}%` }} />
                           ))}
                         </div>
                       </div>
@@ -278,134 +345,180 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 px-6 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+      <section className="py-24 px-6 bg-background relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary" />
 
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-200 rounded-full px-5 py-2 mb-6">
-              <Sparkles className="h-4 w-4 text-violet-600" />
-              <span className="text-sm font-semibold text-violet-700">Powerful Features</span>
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-5 py-2 mb-6 hover:bg-primary/15 transition-colors">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Powerful Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-foreground mb-4">
               Everything You Need to
-              <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent"> Succeed</span>
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> Succeed</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Supercharge your workflow with intelligent features designed for maximum productivity
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={cardContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
             {/* Feature Card 1 */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <motion.div
+              variants={cardItemVariants}
+              className="group relative bg-card rounded-3xl p-8 shadow-lg border border-border hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30 group-hover:bg-white group-hover:shadow-white/30 transition-all duration-500">
-                  <Sparkles className="h-8 w-8 text-white group-hover:text-emerald-600 transition-colors duration-500" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-300">
+                  <Sparkles className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-white transition-colors duration-500">AI Task Parser</h3>
-                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-500">
+                <h3 className="text-xl font-bold mb-3 text-foreground">AI Task Parser</h3>
+                <p className="text-muted-foreground">
                   Describe tasks naturally and let AI extract dates, priorities, and categories instantly.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature Card 2 */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <motion.div
+              variants={cardItemVariants}
+              className="group relative bg-card rounded-3xl p-8 shadow-lg border border-border hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6 shadow-lg shadow-amber-500/30 group-hover:bg-white group-hover:shadow-white/30 transition-all duration-500">
-                  <Grid2x2 className="h-8 w-8 text-white group-hover:text-amber-600 transition-colors duration-500" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-300">
+                  <Grid2x2 className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-white transition-colors duration-500">Priority Matrix</h3>
-                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-500">
+                <h3 className="text-xl font-bold mb-3 text-foreground">Priority Matrix</h3>
+                <p className="text-muted-foreground">
                   Eisenhower method visualization to focus on what truly matters.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature Card 3 */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <motion.div
+              variants={cardItemVariants}
+              className="group relative bg-card rounded-3xl p-8 shadow-lg border border-border hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30 group-hover:bg-white group-hover:shadow-white/30 transition-all duration-500">
-                  <BarChart3 className="h-8 w-8 text-white group-hover:text-blue-600 transition-colors duration-500" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-300">
+                  <BarChart3 className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-white transition-colors duration-500">Smart Analytics</h3>
-                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-500">
+                <h3 className="text-xl font-bold mb-3 text-foreground">Smart Analytics</h3>
+                <p className="text-muted-foreground">
                   Comprehensive insights with charts, trends, and productivity scores.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature Card 4 */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <motion.div
+              variants={cardItemVariants}
+              className="group relative bg-card rounded-3xl p-8 shadow-lg border border-border hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-lg shadow-violet-500/30 group-hover:bg-white group-hover:shadow-white/30 transition-all duration-500">
-                  <TrendingUp className="h-8 w-8 text-white group-hover:text-violet-600 transition-colors duration-500" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-300">
+                  <TrendingUp className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-white transition-colors duration-500">Progress Tracking</h3>
-                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-500">
+                <h3 className="text-xl font-bold mb-3 text-foreground">Progress Tracking</h3>
+                <p className="text-muted-foreground">
                   Daily streaks, completion rates, and achievement badges to stay motivated.
                 </p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 px-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+      <section className="py-24 px-6 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
         </div>
 
         <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-black text-foreground mb-4">
               Get Started in
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"> Seconds</span>
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> Seconds</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Three simple steps to transform your productivity
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={cardContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
             {[
-              { num: "01", icon: Users, title: "Create Account", desc: "Sign up free in 30 seconds. No credit card required.", color: "emerald" },
-              { num: "02", icon: Target, title: "Add Your Tasks", desc: "Use AI or manual input to capture everything you need to do.", color: "teal" },
-              { num: "03", icon: TrendingUp, title: "Get Productive", desc: "Watch your productivity soar with smart prioritization.", color: "cyan" },
+              { num: "01", icon: Users, title: "Create Account", desc: "Sign up free in 30 seconds. No credit card required." },
+              { num: "02", icon: Target, title: "Add Your Tasks", desc: "Use AI or manual input to capture everything you need to do." },
+              { num: "03", icon: TrendingUp, title: "Get Productive", desc: "Watch your productivity soar with smart prioritization." },
             ].map((step, i) => (
-              <div key={i} className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-500" />
-                <div className="relative bg-gray-800 rounded-3xl p-8 border border-gray-700 hover:border-emerald-500/50 transition-all duration-500">
-                  <div className="text-6xl font-black text-gray-700 mb-4">{step.num}</div>
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-${step.color}-500 to-${step.color}-600 flex items-center justify-center mb-4 shadow-lg shadow-${step.color}-500/30`}>
+              <motion.div
+                key={i}
+                variants={cardItemVariants}
+                className="relative group"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
+                <div className="relative bg-card rounded-3xl p-8 border border-border hover:border-primary/40 transition-all duration-500">
+                  <div className="text-6xl font-black text-muted-foreground mb-4">{step.num}</div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
                     <step.icon className="h-7 w-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400">{step.desc}</p>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-muted-foreground">{step.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzLTItMi00LTItNCAwLTQgMi0yIDQtMiA0IDIgMiA0IDIgNC0yIDQtMiAwLTQgMC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+      <section className="py-24 px-6 bg-gradient-to-r from-primary via-accent to-primary relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10" />
 
-        <div className="container mx-auto max-w-4xl relative z-10 text-center">
+        <motion.div
+          className="container mx-auto max-w-4xl relative z-10 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
           <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
             Ready to ELEVATE?
           </h2>
@@ -413,32 +526,32 @@ export default function HomePage() {
             Join thousands of productive people who&apos;ve transformed their workflow. Start your journey today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-10 h-16 text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300" onClick={() => handleNavigate("/register")}>
+            <Button size="lg" className="gap-2 bg-white text-primary hover:bg-secondary hover:text-white px-10 h-16 text-xl font-bold shadow-2xl hover:shadow-lg transition-all duration-300" onClick={() => handleNavigate("/register")}>
               <Sparkles className="h-6 w-6" />
               Get Started Free
             </Button>
           </div>
           <p className="mt-6 text-white/70 text-sm">No credit card required • Free forever plan available</p>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-gray-900 border-t border-gray-800">
+      <footer className="py-12 px-6 bg-secondary border-t border-border">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent">
                 <ArrowUp className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">ELEVATE</span>
+              <span className="text-xl font-bold text-foreground">ELEVATE</span>
             </div>
-            <div className="flex items-center gap-8 text-sm text-gray-400">
-              <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
-              <Link href="#" className="hover:text-white transition-colors">Terms</Link>
-              <Link href="#" className="hover:text-white transition-colors">Contact</Link>
+            <div className="flex items-center gap-8 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Contact</Link>
             </div>
           </div>
-          <p className="text-center text-sm text-gray-500 mt-8">
+          <p className="text-center text-sm text-muted-foreground mt-8">
             © 2025 ELEVATE. Lift Your Productivity to New Heights.
           </p>
         </div>
