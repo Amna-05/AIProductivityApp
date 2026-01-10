@@ -15,6 +15,8 @@ import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
 import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
+import { ListView } from "@/components/tasks/ListView";
+import { TimelineView } from "@/components/tasks/TimelineView";
 import { cn } from "@/lib/utils/cn";
 
 type ViewType = "kanban" | "list" | "timeline" | "matrix";
@@ -403,24 +405,28 @@ export default function TasksPage() {
           onClick={handleTaskClick}
           onTaskStatusChange={handleStatusChange}
         />
+      ) : viewType === "list" ? (
+        <ListView
+          tasks={data?.tasks || []}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onComplete={(id) => completeMutation.mutate(id)}
+          onClick={handleTaskClick}
+        />
+      ) : viewType === "timeline" ? (
+        <TimelineView
+          tasks={data?.tasks || []}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onComplete={(id) => completeMutation.mutate(id)}
+          onClick={handleTaskClick}
+        />
       ) : (
-        // List view (default)
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground font-medium">
-            Showing {data?.tasks.length} of {data?.total} tasks
+        // Matrix view - placeholder
+        <div className="rounded-xl border border-destructive bg-destructive/10 p-6 text-center">
+          <p className="text-sm text-destructive">
+            Matrix view coming in Phase 7C
           </p>
-          {data?.tasks.map((task, idx) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              variant="detailed"
-              onComplete={(id) => completeMutation.mutate(id)}
-              onClick={handleTaskClick}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              animationDelay={idx * 30}
-            />
-          ))}
         </div>
       )}
 
