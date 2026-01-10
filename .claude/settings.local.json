@@ -18,7 +18,9 @@
       "Bash(git add:*)",
       "Bash(cat:*)",
       "Bash(git commit:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git restore:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

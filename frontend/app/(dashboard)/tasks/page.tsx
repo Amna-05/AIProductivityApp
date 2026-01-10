@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, X, PartyPopper } from "lucide-react";
+import { Plus, X, PartyPopper, Grid3x3, List, Calendar, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { tasksApi, TaskFilters } from "@/lib/api/tasks";
@@ -14,7 +14,10 @@ import { Input } from "@/components/ui/input";
 import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
 import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
 import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
+import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import { cn } from "@/lib/utils/cn";
+
+type ViewType = "kanban" | "list" | "timeline" | "matrix";
 
 // Filter pill configuration
 const statusFilters: { value: TaskStatus | "all"; label: string }[] = [
@@ -41,6 +44,7 @@ export default function TasksPage() {
   const [quadrantFilter, setQuadrantFilter] = useState<TaskQuadrant | "all">("all");
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewType, setViewType] = useState<ViewType>("kanban");
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -109,6 +113,20 @@ export default function TasksPage() {
     },
   });
 
+  // Update task status mutation (for Kanban drag-drop)
+  const statusChangeMutation = useMutation({
+    mutationFn: (params: { taskId: number; status: TaskStatus }) =>
+      tasksApi.update(params.taskId, { status: params.status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError.response?.data?.detail || "Failed to update task");
+    },
+  });
+
   // Click card -> open detail modal
   const handleTaskClick = (task: Task) => {
     setDetailTask(task);
@@ -142,12 +160,16 @@ export default function TasksPage() {
     setEditingTask(null);
   };
 
+  const handleStatusChange = (taskId: number, newStatus: TaskStatus) => {
+    statusChangeMutation.mutate({ taskId, status: newStatus });
+  };
+
   // Active filters for chips display
   const activeFilters = useMemo(() => {
     const filters: { key: string; label: string; onRemove: () => void }[] = [];
 
     if (statusFilter !== "all") {
-      const status = statusFilters.find(s => s.value === statusFilter);
+      const status = statusFilters.find((s) => s.value === statusFilter);
       if (status) {
         filters.push({
           key: "status",
@@ -158,7 +180,7 @@ export default function TasksPage() {
     }
 
     if (quadrantFilter !== "all") {
-      const quadrant = quadrantFilters.find(q => q.value === quadrantFilter);
+      const quadrant = quadrantFilters.find((q) => q.value === quadrantFilter);
       if (quadrant) {
         filters.push({
           key: "quadrant",
@@ -169,7 +191,7 @@ export default function TasksPage() {
     }
 
     if (categoryFilter) {
-      const category = categories.find(c => c.id === categoryFilter);
+      const category = categories.find((c) => c.id === categoryFilter);
       if (category) {
         filters.push({
           key: "category",
@@ -190,23 +212,49 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-full">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 min-h-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">All Tasks</h1>
-          <p className="text-sm text-gray-500 font-medium mt-0.5">
-            {data?.total || 0} total tasks
+          <h1 className="text-3xl font-black text-white tracking-tight">Tasks</h1>
+          <p className="text-sm text-muted-foreground font-medium mt-1">
+            {data?.total || 0} total • {data?.tasks.length || 0} shown
           </p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
           size="sm"
-          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all"
+          className="gap-1.5 bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-primary/30 transition-all"
         >
           <Plus className="h-4 w-4" />
           Add Task
         </Button>
+      </div>
+
+      {/* View Switcher */}
+      <div className="flex gap-2 bg-secondary/50 rounded-lg p-1 w-fit border border-border">
+        {[
+          { view: "kanban", icon: Grid3x3, label: "Kanban" },
+          { view: "list", icon: List, label: "List" },
+          { view: "timeline", icon: Calendar, label: "Timeline" },
+          { view: "matrix", icon: Maximize2, label: "Matrix" },
+        ].map(({ view, icon: Icon, label }) => (
+          <Button
+            key={view}
+            variant={viewType === view ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewType(view as ViewType)}
+            className={cn(
+              "gap-1.5 text-xs font-medium",
+              viewType === view
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
+                : "text-muted-foreground hover:text-white hover:bg-secondary/50"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            <span className="hidden sm:inline">{label}</span>
+          </Button>
+        ))}
       </div>
 
       {/* Search */}
@@ -215,14 +263,14 @@ export default function TasksPage() {
           placeholder="Search tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-11 bg-white border-gray-200 shadow-sm focus:bg-white focus:border-emerald-400 focus:ring-emerald-200 focus:ring-2"
+          className="h-11"
         />
       </div>
 
       {/* Filter Pills */}
       <div className="flex flex-wrap gap-2">
         {/* Status Pills */}
-        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
+        <div className="flex gap-1 p-1 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
           {statusFilters.map((status) => (
             <button
               key={status.value}
@@ -230,8 +278,8 @@ export default function TasksPage() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150",
                 statusFilter === status.value
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-primary to-accent text-white shadow-sm"
+                  : "text-muted-foreground hover:text-white hover:bg-secondary"
               )}
             >
               {status.label}
@@ -240,7 +288,7 @@ export default function TasksPage() {
         </div>
 
         {/* Quadrant Pills */}
-        <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100">
+        <div className="flex gap-1 p-1 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
           {quadrantFilters.map((quadrant) => (
             <button
               key={quadrant.value}
@@ -248,8 +296,8 @@ export default function TasksPage() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 flex items-center gap-1.5",
                 quadrantFilter === quadrant.value
-                  ? "bg-gray-900 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-primary to-accent text-white shadow-sm"
+                  : "text-muted-foreground hover:text-white hover:bg-secondary"
               )}
             >
               {quadrant.value !== "all" && (
@@ -262,14 +310,14 @@ export default function TasksPage() {
 
         {/* Category Pills */}
         {categories.length > 0 && (
-          <div className="flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 overflow-x-auto">
+          <div className="flex gap-1 p-1 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border overflow-x-auto">
             <button
               onClick={() => setCategoryFilter(null)}
               className={cn(
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 whitespace-nowrap",
                 categoryFilter === null
-                  ? "bg-purple-600 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-primary to-accent text-white shadow-sm"
+                  : "text-muted-foreground hover:text-white hover:bg-secondary"
               )}
             >
               All
@@ -281,8 +329,8 @@ export default function TasksPage() {
                 className={cn(
                   "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap",
                   categoryFilter === category.id
-                    ? "bg-purple-600 text-white shadow-sm"
-                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-sm"
+                    : "text-muted-foreground hover:text-white hover:bg-secondary"
                 )}
               >
                 <div
@@ -319,7 +367,7 @@ export default function TasksPage() {
         </div>
       )}
 
-      {/* Tasks List */}
+      {/* Tasks Content */}
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -346,9 +394,19 @@ export default function TasksPage() {
             </Button>
           )}
         </div>
+      ) : viewType === "kanban" ? (
+        <KanbanBoard
+          tasks={data?.tasks || []}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onComplete={(id) => completeMutation.mutate(id)}
+          onClick={handleTaskClick}
+          onTaskStatusChange={handleStatusChange}
+        />
       ) : (
+        // List view (default)
         <div className="space-y-2">
-          <p className="text-xs text-gray-400 font-medium">
+          <p className="text-xs text-muted-foreground font-medium">
             Showing {data?.tasks.length} of {data?.total} tasks
           </p>
           {data?.tasks.map((task, idx) => (
