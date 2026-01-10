@@ -4,7 +4,7 @@ import { Task, TaskStatus } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Trash2, Edit2, ChevronDown } from "lucide-react";
+import { MoreVertical, Trash2, Edit2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import {
@@ -117,10 +117,10 @@ export function ListView({ tasks, onEdit, onDelete, onComplete, onClick }: ListV
 
         {/* Sort Dropdown */}
         <div className="flex gap-2">
-          {["created", "due", "priority"].map((sort) => (
+          {(["created", "due", "priority"] as const).map((sort) => (
             <button
               key={sort}
-              onClick={() => setSortBy(sort as any)}
+              onClick={() => setSortBy(sort)}
               className={cn(
                 "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
                 sortBy === sort

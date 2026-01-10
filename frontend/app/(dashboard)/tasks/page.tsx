@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
 import { TaskDetailModal } from "@/components/tasks/TaskDetailModal";
-import { TaskCard, TaskCardSkeleton } from "@/components/tasks/TaskCard";
+import { TaskCardSkeleton } from "@/components/tasks/TaskCard";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
 import { ListView } from "@/components/tasks/ListView";
 import { TimelineView } from "@/components/tasks/TimelineView";

@@ -3,11 +3,8 @@
 import { Task, TaskStatus } from "@/lib/types";
 import { KanbanCard } from "./KanbanCard";
 import { motion } from "framer-motion";
-import {
-  useDroppable,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils/cn";
 
 const statusConfig: Record<

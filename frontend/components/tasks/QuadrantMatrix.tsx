@@ -8,14 +8,15 @@ import { motion } from "framer-motion";
 import {
   DndContext,
   DragEndEvent,
+  DragStartEvent,
   DragOverlay,
   closestCorners,
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/sortable";
-import {
   useDroppable,
+} from "@dnd-kit/core";
+import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -342,14 +343,10 @@ export function QuadrantMatrix({
 }: QuadrantMatrixProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      distance: 8,
-    })
-  );
+  const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as number);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

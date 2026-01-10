@@ -171,12 +171,12 @@ export default function AnalyticsPage() {
   const { overview, recent_trends, priority_distribution, top_categories } = data;
 
   const quadrantData = Object.entries(priority_distribution.by_quadrant).map(
-    ([name, stats]) => ({
+    ([name, stats]: [string, { count: number; completed: number; completion_rate: number }]) => ({
       name: name.replace("_", " "),
-      count: (stats as any).count,
-      value: (stats as any).count,
-      completed: (stats as any).completed,
-      completion_rate: (stats as any).completion_rate,
+      count: stats.count,
+      value: stats.count,
+      completed: stats.completed,
+      completion_rate: stats.completion_rate,
     })
   );
 
@@ -362,7 +362,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={recent_trends}>
+              <LineChart data={recent_trends.data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis
                   dataKey="date"
@@ -416,7 +416,7 @@ export default function AnalyticsPage() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={(entry) => `${entry.name.split(" ")[0]}: ${entry.value}`}
+                  label={(entry) => `${(entry.name as string)?.split(" ")[0] || ""}: ${entry.value}`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"

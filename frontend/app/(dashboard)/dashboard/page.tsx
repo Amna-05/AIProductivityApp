@@ -11,7 +11,6 @@ import {
   Clock,
   TrendingUp,
   Sparkles,
-  Zap
 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays, startOfDay } from "date-fns";
 import confetti from "canvas-confetti";
@@ -455,7 +454,7 @@ export default function DashboardPage() {
               )}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Right Column - Progress + Upcoming */}
         <motion.div variants={cardItemVariants} className="space-y-6">
