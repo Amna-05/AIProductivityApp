@@ -146,15 +146,20 @@ class Settings(BaseSettings):
 
     def get_cookie_samesite(self) -> str:
         """
-        Get cookie samesite setting.
+        Get cookie samesite setting based on environment.
 
-        With Next.js rewrite proxy, requests are same-origin:
-        - Dev: localhost:3000/api/* → localhost:8000/api/* (proxied)
-        - Prod: vercel.app/api/* → railway.app/api/* (proxied)
+        For DIRECT cross-origin requests (no proxy rewrite):
+        - Vercel.app → Railway.app (different origins)
+        - SameSite=none REQUIRED (allows cross-origin cookies)
+        - Secure=true REQUIRED (HTTPS only)
 
-        'lax' is safest and works for same-origin requests.
+        For same-origin requests (with proxy rewrite):
+        - localhost:3000/api/* → localhost:8000/api/* (proxied)
+        - SameSite=lax works fine
+
+        Production uses direct cross-origin, so return 'none'.
         """
-        return "lax"
+        return "none"
 
     # Logging & Monitoring (Phase 1)
     LOG_LEVEL: str = "INFO"
