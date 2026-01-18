@@ -109,12 +109,19 @@ function QuadrantCard({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isDragging && !e.ctrlKey && !e.metaKey) {
+      onClick(task);
+    }
+  };
+
   return (
     <motion.div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
+      onClick={handleCardClick}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       whileHover={{ y: -2 }}
@@ -133,7 +140,7 @@ function QuadrantCard({
             onClick={(e) => e.stopPropagation()}
             className="mt-0.5"
           />
-          <div className="flex-1 min-w-0" onClick={() => onClick(task)}>
+          <div className="flex-1 min-w-0">
             <p
               className={cn(
                 "text-sm font-medium text-white truncate",

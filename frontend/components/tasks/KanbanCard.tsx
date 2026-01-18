@@ -78,12 +78,20 @@ export function KanbanCard({
   const isDueOverdue = daysUntilDue && daysUntilDue < 0;
   const isDueSoon = daysUntilDue && daysUntilDue > 0 && daysUntilDue <= 7;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only trigger click if not dragging and no modifier keys
+    if (!isDragging && !e.ctrlKey && !e.metaKey) {
+      onClick(task);
+    }
+  };
+
   return (
     <motion.div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
+      onClick={handleCardClick}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       whileHover={{ y: -2 }}
@@ -103,7 +111,7 @@ export function KanbanCard({
           className="mt-0.5"
           onClick={(e) => e.stopPropagation()}
         />
-        <div className="flex-1 min-w-0" onClick={() => onClick(task)}>
+        <div className="flex-1 min-w-0">
           <p
             className={cn(
               "text-sm font-medium text-foreground truncate",
