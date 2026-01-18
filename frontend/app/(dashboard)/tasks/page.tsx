@@ -78,12 +78,16 @@ export default function TasksPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["tasks", filters],
     queryFn: () => tasksApi.getAll(filters),
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: categoriesApi.getAll,
+    staleTime: 30 * 60 * 1000, // Cache for 30 minutes (categories don't change often)
+    gcTime: 60 * 60 * 1000, // Keep in memory for 1 hour
   });
 
   // Delete task mutation
@@ -264,7 +268,6 @@ export default function TasksPage() {
           { view: "kanban", icon: Grid3x3, label: "Kanban" },
           { view: "list", icon: List, label: "List" },
           { view: "timeline", icon: Calendar, label: "Timeline" },
-          { view: "matrix", icon: Maximize2, label: "Matrix" },
         ].map(({ view, icon: Icon, label }) => (
           <Button
             key={view}

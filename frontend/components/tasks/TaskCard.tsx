@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-// Quadrant styling - vibrant colors for light theme
+// Quadrant styling - dark theme
 const quadrantConfig: Record<TaskQuadrant, {
   color: string;
   bg: string;
@@ -31,43 +31,43 @@ const quadrantConfig: Record<TaskQuadrant, {
   label: string;
 }> = {
   DO_FIRST: {
-    color: "text-red-700",
-    bg: "bg-red-50",
-    cardBg: "bg-gradient-to-r from-red-50/80 to-white",
-    hoverBg: "hover:from-red-100/80 hover:to-red-50/50",
-    border: "border-l-red-500",
-    borderColor: "border-red-200",
-    dot: "bg-red-500",
+    color: "text-destructive",
+    bg: "bg-destructive/5",
+    cardBg: "bg-card",
+    hoverBg: "hover:bg-secondary/50",
+    border: "border-l-destructive",
+    borderColor: "border-destructive/20",
+    dot: "bg-destructive",
     label: "Do First"
   },
   SCHEDULE: {
-    color: "text-blue-700",
-    bg: "bg-blue-50",
-    cardBg: "bg-gradient-to-r from-blue-50/80 to-white",
-    hoverBg: "hover:from-blue-100/80 hover:to-blue-50/50",
-    border: "border-l-blue-500",
-    borderColor: "border-blue-200",
-    dot: "bg-blue-500",
+    color: "text-primary",
+    bg: "bg-primary/5",
+    cardBg: "bg-card",
+    hoverBg: "hover:bg-secondary/50",
+    border: "border-l-primary",
+    borderColor: "border-primary/20",
+    dot: "bg-primary",
     label: "Schedule"
   },
   DELEGATE: {
-    color: "text-purple-700",
-    bg: "bg-purple-50",
-    cardBg: "bg-gradient-to-r from-purple-50/80 to-white",
-    hoverBg: "hover:from-purple-100/80 hover:to-purple-50/50",
-    border: "border-l-purple-500",
-    borderColor: "border-purple-200",
-    dot: "bg-purple-500",
+    color: "text-warning",
+    bg: "bg-warning/5",
+    cardBg: "bg-card",
+    hoverBg: "hover:bg-secondary/50",
+    border: "border-l-warning",
+    borderColor: "border-warning/20",
+    dot: "bg-warning",
     label: "Delegate"
   },
   ELIMINATE: {
-    color: "text-gray-600",
-    bg: "bg-gray-50",
-    cardBg: "bg-gradient-to-r from-gray-50/80 to-white",
-    hoverBg: "hover:from-gray-100/80 hover:to-gray-50/50",
-    border: "border-l-gray-400",
-    borderColor: "border-gray-200",
-    dot: "bg-gray-400",
+    color: "text-muted-foreground",
+    bg: "bg-muted/5",
+    cardBg: "bg-card",
+    hoverBg: "hover:bg-secondary/50",
+    border: "border-l-muted-foreground",
+    borderColor: "border-muted/20",
+    dot: "bg-muted-foreground",
     label: "Later"
   },
 };
@@ -152,14 +152,14 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          quadrant.cardBg,
+          "bg-gradient-to-br from-card/95 to-card/70",
           quadrant.hoverBg,
           "border",
           quadrant.borderColor,
           "border-l-4",
           quadrant.border,
-          "shadow-sm hover:shadow-md hover:-translate-y-0.5",
-          "transition-all duration-150 ease-out animate-fade-in",
+          "shadow-sm hover:shadow-lg hover:-translate-y-1",
+          "transition-all duration-200 ease-out animate-fade-in",
           isCompleted && "opacity-50",
           isCompleting && "scale-95 opacity-60",
           className
@@ -172,8 +172,8 @@ export function TaskCard({
             "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center",
             "transition-all duration-150",
             isCompleted
-              ? "bg-emerald-500 border-emerald-500"
-              : "border-gray-300 hover:border-emerald-500 group-hover:border-emerald-400"
+              ? "bg-success border-success"
+              : "border-border hover:border-success group-hover:border-success/80"
           )}
         >
           {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
@@ -182,8 +182,8 @@ export function TaskCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className={cn(
-            "text-sm font-semibold truncate text-gray-900",
-            isCompleted && "line-through text-gray-400"
+            "text-sm font-semibold truncate text-foreground",
+            isCompleted && "line-through text-muted-foreground"
           )}>
             {task.title}
           </p>
@@ -191,13 +191,13 @@ export function TaskCard({
             {dueInfo.text && (
               <span className={cn(
                 "text-xs",
-                dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
+                dueInfo.isOverdue ? "text-destructive font-medium" : "text-muted-foreground"
               )}>
                 {dueInfo.text}
               </span>
             )}
             {task.category && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
                 {task.category.name}
               </span>
@@ -214,7 +214,7 @@ export function TaskCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(task);
@@ -229,7 +229,7 @@ export function TaskCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -273,14 +273,14 @@ export function TaskCard({
         style={{ animationDelay: `${animationDelay}ms` }}
         className={cn(
           "group flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-          quadrant.cardBg,
+          "bg-gradient-to-br from-card/95 to-card/70",
           quadrant.hoverBg,
           "border",
           quadrant.borderColor,
           "border-l-4",
           quadrant.border,
-          "shadow-sm hover:shadow-md hover:-translate-y-0.5",
-          "transition-all duration-150 ease-out animate-fade-in",
+          "shadow-sm hover:shadow-lg hover:-translate-y-1",
+          "transition-all duration-200 ease-out animate-fade-in",
           isCompleted && "opacity-50",
           isCompleting && "scale-95 opacity-60",
           className
@@ -293,8 +293,8 @@ export function TaskCard({
             "shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center",
             "transition-all duration-150",
             isCompleted
-              ? "bg-emerald-500 border-emerald-500"
-              : "border-gray-300 hover:border-emerald-500"
+              ? "bg-success border-success"
+              : "border-border hover:border-success group-hover:border-success/80"
           )}
         >
           {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
@@ -303,8 +303,8 @@ export function TaskCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className={cn(
-            "text-sm font-semibold truncate text-gray-900",
-            isCompleted && "line-through text-gray-400"
+            "text-sm font-semibold truncate text-foreground",
+            isCompleted && "line-through text-muted-foreground"
           )}>
             {task.title}
           </p>
@@ -312,14 +312,14 @@ export function TaskCard({
             {dueInfo.text && (
               <span className={cn(
                 "text-xs flex items-center gap-1",
-                dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
+                dueInfo.isOverdue ? "text-destructive font-medium" : "text-muted-foreground"
               )}>
                 <Clock className="w-3 h-3" />
                 {dueInfo.text}
               </span>
             )}
             {task.category && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
                 {task.category.name}
               </span>
@@ -336,7 +336,7 @@ export function TaskCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(task);
@@ -351,7 +351,7 @@ export function TaskCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -401,14 +401,14 @@ export function TaskCard({
       style={{ animationDelay: `${animationDelay}ms` }}
       className={cn(
         "group flex items-start gap-4 p-4 rounded-xl cursor-pointer",
-        quadrant.cardBg,
+        "bg-gradient-to-br from-card/95 to-card/70",
         quadrant.hoverBg,
         "border",
         quadrant.borderColor,
         "border-l-4",
         quadrant.border,
-        "shadow-sm hover:shadow-lg hover:-translate-y-0.5",
-        "transition-all duration-150 ease-out animate-fade-in",
+        "shadow-sm hover:shadow-lg hover:-translate-y-1",
+        "transition-all duration-200 ease-out animate-fade-in",
         isCompleted && "opacity-60",
         isCompleting && "scale-[0.98] opacity-60",
         className
@@ -421,8 +421,8 @@ export function TaskCard({
           "shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5",
           "transition-all duration-150",
           isCompleted
-            ? "bg-emerald-500 border-emerald-500"
-            : "border-gray-300 hover:border-emerald-500"
+            ? "bg-success border-success"
+            : "border-border hover:border-success group-hover:border-success/80"
         )}
       >
         {isCompleted && <Check className="w-3 h-3 text-white animate-checkmark" />}
@@ -432,8 +432,8 @@ export function TaskCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className={cn(
-            "text-sm font-semibold text-gray-900",
-            isCompleted && "line-through text-gray-400"
+            "text-sm font-semibold text-foreground",
+            isCompleted && "line-through text-muted-foreground"
           )}>
             {task.title}
           </p>
@@ -450,7 +450,7 @@ export function TaskCard({
           {dueInfo.text && (
             <span className={cn(
               "text-xs flex items-center gap-1",
-              dueInfo.isOverdue ? "text-red-600 font-medium" : "text-gray-500"
+              dueInfo.isOverdue ? "text-destructive font-medium" : "text-muted-foreground"
             )}>
               <Clock className="w-3 h-3" />
               {dueInfo.text}
@@ -458,7 +458,7 @@ export function TaskCard({
           )}
 
           {task.category && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {task.category.icon && <span className="mr-0.5">{task.category.icon}</span>}
               {task.category.name}
             </span>
@@ -472,16 +472,16 @@ export function TaskCard({
                   variant="outline"
                   className="text-xs px-1.5 py-0 font-medium"
                   style={{
-                    borderColor: tag.color || "#E5E7EB",
-                    backgroundColor: tag.color ? `${tag.color}15` : undefined,
-                    color: tag.color || "#6B7280"
+                    borderColor: tag.color || "#A0A0A0",
+                    backgroundColor: tag.color ? `${tag.color}15` : "rgba(160, 160, 160, 0.1)",
+                    color: tag.color || "#A0A0A0"
                   }}
                 >
                   {tag.name}
                 </Badge>
               ))}
               {task.tags.length > 2 && (
-                <span className="text-xs text-gray-400">+{task.tags.length - 2}</span>
+                <span className="text-xs text-muted-foreground">+{task.tags.length - 2}</span>
               )}
             </div>
           )}
@@ -497,7 +497,7 @@ export function TaskCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(task);
@@ -513,7 +513,7 @@ export function TaskCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Trash2 className="h-4 w-4" />

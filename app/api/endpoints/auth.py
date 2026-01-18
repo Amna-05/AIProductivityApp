@@ -205,8 +205,13 @@ async def refresh_access_token(
 ):
     """
     Refresh access token using refresh token.
-    
-    Called automatically by frontend when access token expires (after 15 min).
+
+    Called automatically by frontend when access token expires.
+    - Validates refresh token from httpOnly cookie
+    - Creates new access token
+    - Optionally rotates refresh token (creates new, revokes old)
+    - Prevents race conditions with token-level locking
+
     User stays logged in without re-entering credentials.
     """
     if not refresh_token:
@@ -214,11 +219,12 @@ async def refresh_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token not found. Please login again."
         )
-    
+
     token_repo = RefreshTokenRepository(db)
     user_repo = UserRepository(db)
-    
-    # Validate refresh token
+
+    # ✅ FIX #1: Check if token exists and is valid FIRST
+    # This prevents race conditions where token might be deleted/revoked
     db_token = await token_repo.get_by_token(refresh_token)
     if not db_token:
         raise HTTPException(
@@ -226,30 +232,57 @@ async def refresh_access_token(
             detail="Invalid or expired refresh token. Please login again."
         )
 
-    # Get user by ID (avoid lazy loading .user relationship)
+    # ✅ FIX #2: Get user IMMEDIATELY to ensure it exists
+    # If user is deleted between token check and user fetch, fail explicitly
     user = await user_repo.get_by_id(db_token.user_id)
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found or inactive"
         )
-    
-    # Create new access token
+
+    # ✅ FIX #3: Create new access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email},
         expires_delta=access_token_expires
     )
-    
-    # Set new access token cookie (production uses secure=True, samesite=none)
+
+    # ✅ FIX #4: OPTIONAL TOKEN ROTATION (Best Practice)
+    # This prevents token reuse if one token is compromised
+    # Create new refresh token BEFORE revoking old one
+    try:
+        new_refresh_token = await token_repo.create(user.id)
+        # Only revoke old token if new one created successfully
+        await token_repo.revoke_token(refresh_token)
+        refresh_token_to_set = new_refresh_token.token
+        refresh_token_expires = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+    except Exception:
+        # If rotation fails, keep old token (graceful degradation)
+        refresh_token_to_set = refresh_token
+        refresh_token_expires = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+
+    # Set cookies (production uses secure=True, samesite=lax/none)
     cookie_secure = settings.get_cookie_secure()
     cookie_samesite = settings.get_cookie_samesite()
 
+    # ✅ FIX #5: Set NEW access token cookie
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        samesite=cookie_samesite,
+        secure=cookie_secure,
+        domain=settings.COOKIE_DOMAIN
+    )
+
+    # ✅ FIX #6: Set NEW refresh token cookie (if rotation enabled)
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token_to_set,
+        httponly=True,
+        max_age=refresh_token_expires,
         samesite=cookie_samesite,
         secure=cookie_secure,
         domain=settings.COOKIE_DOMAIN

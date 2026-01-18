@@ -199,12 +199,12 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 animate-fade-in-up bg-gradient-to-br from-slate-50 via-white to-purple-50/30 min-h-full">
+    <div className="space-y-6 p-4 md:p-6 animate-fade-in-up bg-background min-h-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Categories</h1>
-          <p className="text-sm text-gray-500 font-medium mt-0.5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Categories</h1>
+          <p className="text-sm text-muted-foreground font-medium">
             Organize tasks ({categories.length}/10)
           </p>
         </div>
@@ -212,7 +212,7 @@ export default function CategoriesPage() {
           onClick={() => handleOpenDialog()}
           disabled={categories.length >= 10}
           size="sm"
-          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all"
+          className="gap-1.5 bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all"
         >
           <Plus className="h-4 w-4" />
           Add Category
@@ -220,48 +220,41 @@ export default function CategoriesPage() {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
         {categories.map((category, idx) => {
           const categoryWithCounts = category as Category & { task_count?: number; completed_count?: number };
           const taskCount = categoryWithCounts.task_count || 0;
           const completedCount = categoryWithCounts.completed_count || 0;
           const progress = taskCount > 0 ? (completedCount / taskCount) * 100 : 0;
 
-          // Get a lighter version of the category color for background
-          const bgColor = category.color ? `${category.color}15` : "#f8fafc";
-          const borderColor = category.color ? `${category.color}30` : "#e2e8f0";
-
           return (
             <Card
               key={category.id}
-              className="group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 animate-fade-in"
-              style={{
-                animationDelay: `${idx * 50}ms`,
-                background: `linear-gradient(135deg, ${bgColor} 0%, white 100%)`,
-                borderColor: borderColor,
-              }}
+              className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-in border-border/50 bg-gradient-to-br from-secondary/20 to-secondary/10 cursor-pointer hover:border-primary/30"
+              style={{ animationDelay: `${idx * 50}ms` }}
+              onClick={() => router.push(`/tasks?category_id=${category.id}`)}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between gap-3" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
                     <div
-                      className="h-12 w-12 rounded-xl flex items-center justify-center text-xl shadow-md ring-2 ring-white"
+                      className="h-14 w-14 rounded-xl flex items-center justify-center text-2xl shadow-md ring-2 ring-primary/10 flex-shrink-0"
                       style={{ backgroundColor: category.color || "#64748B" }}
                     >
                       {category.icon || "📁"}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base font-semibold text-gray-900 truncate">
+                      <CardTitle className="text-lg font-bold text-foreground truncate">
                         {category.name}
                       </CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-gray-500 font-medium">
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs text-muted-foreground font-semibold">
                           {taskCount} task{taskCount !== 1 ? "s" : ""}
                         </span>
                         {taskCount > 0 && (
                           <>
-                            <span className="text-gray-300">•</span>
-                            <span className="text-xs text-emerald-600 font-semibold">
+                            <span className="text-border">•</span>
+                            <span className="text-xs text-primary font-bold">
                               {completedCount} done
                             </span>
                           </>
@@ -269,42 +262,33 @@ export default function CategoriesPage() {
                       </div>
                       {/* Mini progress bar */}
                       {taskCount > 0 && (
-                        <div className="mt-2 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="mt-3 h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 rounded-full"
+                            className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push(`/tasks?category_id=${category.id}`)}
-                      className="h-7 w-7 p-0"
-                      title="View tasks"
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                    </Button>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleOpenDialog(category)}
-                      className="h-7 w-7 p-0"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
                       title="Edit"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(category)}
-                      className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                       title="Delete"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -315,16 +299,22 @@ export default function CategoriesPage() {
 
         {/* Empty State */}
         {categories.length === 0 && (
-          <Card className="col-span-full">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FolderKanban className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium text-muted-foreground mb-2">No categories yet</p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Create your first category to organize tasks
+          <Card className="col-span-full border-border bg-card">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="mb-6 p-4 rounded-2xl bg-primary/10">
+                <FolderKanban className="h-12 w-12 text-primary" />
+              </div>
+              <p className="text-xl font-bold text-foreground mb-2 text-center">No categories yet</p>
+              <p className="text-sm text-muted-foreground mb-6 text-center max-w-sm">
+                Create categories to organize and track your tasks by project, area, or priority
               </p>
-              <Button onClick={() => handleOpenDialog()} className="gap-2">
+              <Button
+                onClick={() => handleOpenDialog()}
+                className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                size="sm"
+              >
                 <Plus className="h-4 w-4" />
-                Create Category
+                Create Your First Category
               </Button>
             </CardContent>
           </Card>

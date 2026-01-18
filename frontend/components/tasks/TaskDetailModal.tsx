@@ -42,30 +42,30 @@ const quadrantConfig: Record<TaskQuadrant, {
 }> = {
   DO_FIRST: {
     label: "Do First",
-    bg: "bg-red-50",
-    text: "text-red-700",
-    border: "border-red-200",
+    bg: "bg-destructive/10",
+    text: "text-destructive",
+    border: "border-destructive/20",
     icon: "🔴"
   },
   SCHEDULE: {
     label: "Schedule",
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    border: "border-blue-200",
+    bg: "bg-primary/10",
+    text: "text-primary",
+    border: "border-primary/20",
     icon: "🔵"
   },
   DELEGATE: {
     label: "Delegate",
-    bg: "bg-purple-50",
-    text: "text-purple-700",
-    border: "border-purple-200",
+    bg: "bg-warning/10",
+    text: "text-warning",
+    border: "border-warning/20",
     icon: "🟣"
   },
   ELIMINATE: {
     label: "Later",
-    bg: "bg-gray-50",
-    text: "text-gray-600",
-    border: "border-gray-200",
+    bg: "bg-muted/10",
+    text: "text-muted-foreground",
+    border: "border-muted/20",
     icon: "⚪"
   },
 };
@@ -73,17 +73,17 @@ const quadrantConfig: Record<TaskQuadrant, {
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   todo: {
     label: "To Do",
-    color: "bg-gray-100 text-gray-700",
+    color: "bg-muted/20 text-muted-foreground",
     icon: <Clock className="h-3 w-3" />
   },
   in_progress: {
     label: "In Progress",
-    color: "bg-amber-100 text-amber-700",
+    color: "bg-warning/20 text-warning",
     icon: <AlertCircle className="h-3 w-3" />
   },
   done: {
     label: "Done",
-    color: "bg-emerald-100 text-emerald-700",
+    color: "bg-success/20 text-success",
     icon: <CheckCircle2 className="h-3 w-3" />
   },
 };
@@ -120,12 +120,12 @@ export function TaskDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 gap-0 overflow-hidden bg-white border border-gray-200 shadow-xl">
+      <DialogContent className="max-w-md p-0 gap-0 overflow-hidden bg-gradient-to-b from-card to-card/80 border border-border shadow-xl">
         {/* Header with quadrant color accent */}
-        <div className={cn("px-6 pt-5 pb-4 border-b", quadrant.bg, quadrant.border)}>
+        <div className={cn("px-6 pt-5 pb-4 border-b border-border bg-gradient-to-r from-transparent to-transparent", quadrant.bg, quadrant.border)}>
           <DialogHeader className="space-y-3">
             <div className="flex items-start justify-between gap-3">
-              <DialogTitle className="text-xl font-bold text-gray-900 leading-tight pr-2">
+              <DialogTitle className="text-xl font-bold text-foreground leading-tight pr-2">
                 {task.title}
               </DialogTitle>
               <Badge
@@ -148,7 +148,7 @@ export function TaskDetailModal({
                 {status.label}
               </Badge>
               {task.is_overdue && (
-                <Badge className="bg-red-100 text-red-700 font-medium text-xs">
+                <Badge className="bg-destructive/20 text-destructive font-medium text-xs">
                   Overdue
                 </Badge>
               )}
@@ -161,10 +161,10 @@ export function TaskDetailModal({
           {/* Description */}
           {task.description && (
             <div className="space-y-1.5">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Description
               </p>
-              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-wrap">
                 {task.description}
               </p>
             </div>
@@ -173,15 +173,15 @@ export function TaskDetailModal({
           {/* Due Date */}
           {task.due_date && (
             <div className="flex items-center gap-3 text-sm">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
-                <Calendar className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                <Calendar className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium">Due Date</p>
-                <p className="text-gray-700 font-medium">
+                <p className="text-xs text-muted-foreground font-medium">Due Date</p>
+                <p className="text-foreground font-medium">
                   {format(parseISO(task.due_date), "EEEE, MMMM d, yyyy")}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground/70">
                   {format(parseISO(task.due_date), "h:mm a")}
                 </p>
               </div>
@@ -191,12 +191,12 @@ export function TaskDetailModal({
           {/* Category */}
           {task.category && (
             <div className="flex items-center gap-3 text-sm">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50">
-                <Folder className="h-4 w-4 text-purple-600" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                <Folder className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium">Category</p>
-                <p className="text-gray-700 font-medium flex items-center gap-1.5">
+                <p className="text-xs text-muted-foreground font-medium">Category</p>
+                <p className="text-foreground font-medium flex items-center gap-1.5">
                   {task.category.icon && <span>{task.category.icon}</span>}
                   {task.category.name}
                 </p>
@@ -208,10 +208,10 @@ export function TaskDetailModal({
           {task.tags.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50">
-                  <Tag className="h-4 w-4 text-emerald-600" />
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-success/10">
+                  <Tag className="h-4 w-4 text-success" />
                 </div>
-                <p className="text-xs text-gray-400 font-medium">Tags</p>
+                <p className="text-xs text-muted-foreground font-medium">Tags</p>
               </div>
               <div className="flex flex-wrap gap-2 ml-10">
                 {task.tags.map((tag) => (
@@ -233,11 +233,11 @@ export function TaskDetailModal({
           )}
 
           {/* Timestamps */}
-          <div className="pt-3 border-t border-gray-100">
-            <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="pt-3 border-t border-border/50">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Created {format(parseISO(task.created_at), "MMM d, yyyy")}</span>
               {task.completed_at && (
-                <span className="text-emerald-600">
+                <span className="text-success font-medium">
                   Completed {format(parseISO(task.completed_at), "MMM d, yyyy")}
                 </span>
               )}
@@ -246,13 +246,13 @@ export function TaskDetailModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+        <div className="px-6 py-4 bg-gradient-to-r from-card/50 to-secondary/30 border-t border-border/50 flex items-center justify-between">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-1.5"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete

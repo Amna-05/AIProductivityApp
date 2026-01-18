@@ -18,17 +18,17 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 const quadrantColors: Record<string, string> = {
-  DO_FIRST: "border-l-4 border-red-500",
-  SCHEDULE: "border-l-4 border-orange-500",
-  DELEGATE: "border-l-4 border-amber-400",
-  ELIMINATE: "border-l-4 border-gray-600",
+  DO_FIRST: "border-l-4 border-destructive",
+  SCHEDULE: "border-l-4 border-primary",
+  DELEGATE: "border-l-4 border-warning",
+  ELIMINATE: "border-l-4 border-muted-foreground",
 };
 
 const quadrantBgColors: Record<string, string> = {
-  DO_FIRST: "bg-red-500/10",
-  SCHEDULE: "bg-orange-500/10",
-  DELEGATE: "bg-amber-400/10",
-  ELIMINATE: "bg-gray-600/10",
+  DO_FIRST: "bg-destructive/10",
+  SCHEDULE: "bg-primary/10",
+  DELEGATE: "bg-warning/10",
+  ELIMINATE: "bg-muted-foreground/10",
 };
 
 interface KanbanCardProps {
@@ -88,8 +88,8 @@ export function KanbanCard({
       onMouseLeave={() => setShowActions(false)}
       whileHover={{ y: -2 }}
       className={cn(
-        "group bg-secondary rounded-lg p-3 space-y-2 cursor-move transition-all",
-        "hover:shadow-md hover:border-primary/40 border border-border",
+        "group bg-gradient-to-br from-card to-card/80 rounded-lg p-3 space-y-2 cursor-move transition-all",
+        "hover:shadow-lg hover:border-primary/40 border border-border",
         quadrantColors[quadrant],
         quadrantBgColors[quadrant],
         task.status === "done" && "opacity-60"
@@ -106,7 +106,7 @@ export function KanbanCard({
         <div className="flex-1 min-w-0" onClick={() => onClick(task)}>
           <p
             className={cn(
-              "text-sm font-medium text-white truncate",
+              "text-sm font-medium text-foreground truncate",
               task.status === "done" && "line-through text-muted-foreground"
             )}
           >

@@ -197,7 +197,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-b from-card to-card/90 border-border">
         <DialogHeader className="pb-4">
           <DialogTitle className="text-2xl font-bold text-foreground">{isEditing ? "Edit Task" : "Create New Task"}</DialogTitle>
           <DialogDescription className="text-muted-foreground">

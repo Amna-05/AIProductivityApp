@@ -75,8 +75,9 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Skip refresh for auth endpoints to prevent loops
-    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+    // Skip refresh for /refresh endpoint to prevent infinite loops
+    // (Other /auth/ endpoints like /auth/me SHOULD trigger refresh)
+    const isRefreshEndpoint = originalRequest?.url?.includes('/auth/refresh');
 
     // If server/DB error, show friendly message - don't redirect, don't try refresh
     if (isServerError(error)) {
@@ -88,10 +89,11 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Only try refresh on true 401 auth errors
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    // Only try refresh on true 401 auth errors (but not for /refresh endpoint itself)
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshEndpoint) {
       if (isRefreshing) {
-        // Queue requests while refresh is in progress
+        // ✅ FIX: Queue requests while refresh is in progress
+        // This prevents multiple simultaneous refresh attempts
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -103,19 +105,29 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Try to refresh the access token using the refresh token cookie
-        await axios.post(
+        // ✅ FIX: Add explicit timeout and error handling for refresh
+        // If refresh takes too long, fail fast instead of hanging
+        const refreshPromise = axios.post(
           `${API_BASE_URL}/auth/refresh`,
           {},
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            timeout: 10000 // 10 second timeout for refresh
+          }
         );
 
+        await refreshPromise;
+
+        // ✅ FIX: Process queue BEFORE retrying original request
+        // This ensures all queued requests use the new token
         processQueue(null);
 
-        // Retry the original request
+        // Retry the original request with new token from cookies
         return apiClient(originalRequest);
       } catch (refreshError) {
         const refreshErr = refreshError as AxiosError;
+
+        // ✅ FIX: Process failed queue with explicit error
         processQueue(refreshErr);
 
         // Only redirect if refresh actually failed with auth error (not server error)
@@ -128,11 +140,16 @@ apiClient.interceptors.response.use(
                                window.location.pathname === '/';
 
           if (!isOnAuthPage) {
-            window.location.href = "/login";
+            // ✅ FIX: Add small delay before redirect to allow toasts to show
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 500);
           }
         }
         return Promise.reject(refreshError);
       } finally {
+        // ✅ FIX: ALWAYS reset isRefreshing flag, even if refresh failed
+        // This allows next 401 to trigger a fresh refresh attempt
         isRefreshing = false;
       }
     }

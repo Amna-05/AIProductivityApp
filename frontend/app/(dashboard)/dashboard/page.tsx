@@ -56,28 +56,28 @@ function StatCard({
 }) {
   const colors = {
     primary: {
-      gradient: "from-primary to-accent",
-      iconBg: "bg-primary/20",
-      shadow: "shadow-primary/20 hover:shadow-primary/40",
-      glow: "bg-primary/10",
+      gradient: "from-primary/90 to-accent/70",
+      iconBg: "bg-primary/15",
+      shadow: "shadow-primary/15 hover:shadow-primary/25",
+      glow: "bg-primary/5",
     },
     success: {
-      gradient: "from-success to-success/80",
-      iconBg: "bg-success/20",
-      shadow: "shadow-success/20 hover:shadow-success/40",
-      glow: "bg-success/10",
+      gradient: "from-success/80 to-success/60",
+      iconBg: "bg-success/15",
+      shadow: "shadow-success/15 hover:shadow-success/25",
+      glow: "bg-success/5",
     },
     warning: {
-      gradient: "from-warning to-warning/80",
-      iconBg: "bg-warning/20",
-      shadow: "shadow-warning/20 hover:shadow-warning/40",
-      glow: "bg-warning/10",
+      gradient: "from-warning/75 to-warning/55",
+      iconBg: "bg-warning/15",
+      shadow: "shadow-warning/15 hover:shadow-warning/25",
+      glow: "bg-warning/5",
     },
     destructive: {
-      gradient: "from-destructive to-destructive/80",
-      iconBg: "bg-destructive/20",
-      shadow: "shadow-destructive/20 hover:shadow-destructive/40",
-      glow: "bg-destructive/10",
+      gradient: "from-destructive/85 to-destructive/65",
+      iconBg: "bg-destructive/15",
+      shadow: "shadow-destructive/15 hover:shadow-destructive/25",
+      glow: "bg-destructive/5",
     },
   };
 
@@ -132,6 +132,8 @@ export default function DashboardPage() {
   const { data: analytics } = useQuery({
     queryKey: ["analytics", "overview"],
     queryFn: analyticsApi.getOverview,
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
 
   // Fetch today's tasks (overdue + due today)
@@ -145,6 +147,8 @@ export default function DashboardPage() {
         sort_by: "due_date",
         sort_order: "asc",
       }),
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
 
   // Fetch upcoming tasks (next 7 days)
@@ -159,6 +163,8 @@ export default function DashboardPage() {
         sort_by: "due_date",
         sort_order: "asc",
       }),
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
 
   // Complete task mutation with confetti celebration
@@ -448,7 +454,7 @@ export default function DashboardPage() {
                 />
               ))}
               {filteredTodayTasks.length > 6 && (
-                <p className="text-xs text-gray-400 text-center py-2 font-medium">
+                <p className="text-xs text-muted-foreground text-center py-2 font-medium">
                   +{filteredTodayTasks.length - 6} more tasks
                 </p>
               )}

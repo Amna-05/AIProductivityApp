@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils/cn";
 
-// Vibrant quadrant configuration - light theme only
+// Dark theme quadrant configuration
 const quadrantConfig: Record<TaskQuadrant, {
   title: string;
   description: string;
@@ -30,46 +30,51 @@ const quadrantConfig: Record<TaskQuadrant, {
   dotColor: string;
   headerBg: string;
   countBg: string;
+  accentColor: string;
 }> = {
   DO_FIRST: {
     title: "Do First",
     description: "Urgent & Important",
-    bgColor: "bg-gradient-to-br from-red-50 to-rose-100/50",
-    borderColor: "border-red-200",
-    textColor: "text-red-700",
-    dotColor: "bg-red-500",
-    headerBg: "bg-red-100",
-    countBg: "bg-red-500 text-white",
+    bgColor: "bg-card border-destructive/20",
+    borderColor: "border-destructive/30",
+    textColor: "text-destructive",
+    dotColor: "bg-destructive",
+    headerBg: "bg-destructive/10 border-destructive/20",
+    countBg: "bg-destructive/20 text-destructive",
+    accentColor: "bg-destructive/5",
   },
   SCHEDULE: {
     title: "Schedule",
     description: "Important, not urgent",
-    bgColor: "bg-gradient-to-br from-blue-50 to-blue-100/50",
-    borderColor: "border-blue-200",
-    textColor: "text-blue-700",
-    dotColor: "bg-blue-500",
-    headerBg: "bg-blue-100",
-    countBg: "bg-blue-500 text-white",
+    bgColor: "bg-card border-primary/20",
+    borderColor: "border-primary/30",
+    textColor: "text-primary",
+    dotColor: "bg-primary",
+    headerBg: "bg-primary/10 border-primary/20",
+    countBg: "bg-primary/20 text-primary",
+    accentColor: "bg-primary/5",
   },
   DELEGATE: {
     title: "Delegate",
     description: "Urgent, not important",
-    bgColor: "bg-gradient-to-br from-purple-50 to-purple-100/50",
-    borderColor: "border-purple-200",
-    textColor: "text-purple-700",
-    dotColor: "bg-purple-500",
-    headerBg: "bg-purple-100",
-    countBg: "bg-purple-500 text-white",
+    bgColor: "bg-card border-warning/20",
+    borderColor: "border-warning/30",
+    textColor: "text-warning",
+    dotColor: "bg-warning",
+    headerBg: "bg-warning/10 border-warning/20",
+    countBg: "bg-warning/20 text-warning",
+    accentColor: "bg-warning/5",
   },
   ELIMINATE: {
     title: "Later",
     description: "Neither urgent nor important",
-    bgColor: "bg-gradient-to-br from-gray-50 to-gray-100/50",
-    borderColor: "border-gray-200",
-    textColor: "text-gray-600",
-    dotColor: "bg-gray-400",
-    headerBg: "bg-gray-100",
-    countBg: "bg-gray-400 text-white",
+    bgColor: "bg-card border-muted/20",
+    borderColor: "border-muted/30",
+    textColor: "text-muted-foreground",
+    dotColor: "bg-muted-foreground",
+    headerBg: "bg-muted/10 border-muted/20",
+    countBg: "bg-muted/20 text-muted-foreground",
+    accentColor: "bg-muted/5",
   },
 };
 
@@ -90,6 +95,8 @@ export default function PriorityMatrixPage() {
         tasks: result.tasks.filter(task => task.status !== "done"),
       };
     },
+    staleTime: 60 * 1000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
 
   // Complete task mutation
@@ -188,39 +195,43 @@ export default function PriorityMatrixPage() {
     return (
       <Card
         className={cn(
-          "border-2 max-h-[450px] flex flex-col animate-fade-in-up overflow-hidden",
+          "border flex flex-col overflow-hidden animate-fade-in-up",
+          "bg-gradient-to-br from-card to-card/80",
+          "hover:shadow-xl hover:border-primary/40 transition-all duration-300",
           config.bgColor,
-          config.borderColor
+          config.borderColor,
+          "min-h-[400px]"
         )}
         style={{ animationDelay: `${index * 50}ms` }}
       >
-        <CardHeader className={cn("p-4 pb-3 border-b", config.headerBg, config.borderColor)}>
+        <CardHeader className={cn("p-5 pb-4 border-b", config.headerBg)}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className={cn("w-3.5 h-3.5 rounded-full shadow-sm", config.dotColor)} />
-              <CardTitle className={cn("text-lg font-bold", config.textColor)}>
+            <div className="flex items-center gap-3 flex-1">
+              <div className={cn("w-4 h-4 rounded-full shadow-lg flex-shrink-0", config.dotColor)} />
+              <CardTitle className={cn("text-xl font-black tracking-tight", config.textColor)}>
                 {config.title}
               </CardTitle>
             </div>
-            <span className={cn("text-sm font-bold px-2.5 py-1 rounded-full shadow-sm", config.countBg)}>
+            <span className={cn("text-sm font-bold px-3 py-1.5 rounded-full shadow-md flex-shrink-0", config.countBg)}>
               {tasks.length}
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5 font-medium">{config.description}</p>
+          <p className="text-xs text-muted-foreground mt-2.5 font-semibold uppercase tracking-wide">{config.description}</p>
         </CardHeader>
 
-        <CardContent className="p-3 flex-1 overflow-y-auto">
+        <CardContent className="p-4 flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <TaskCardSkeleton variant="compact" />
               <TaskCardSkeleton variant="compact" />
             </div>
           ) : tasks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-200 rounded-lg">
-              <p className="text-sm text-gray-400 font-medium">No tasks here</p>
+            <div className={cn("flex flex-col items-center justify-center h-full py-12 border-2 border-dashed rounded-lg", config.accentColor)}>
+              <p className={cn("text-base font-semibold", config.textColor)}>No tasks here</p>
+              <p className="text-xs text-muted-foreground mt-1">Create or move tasks to this quadrant</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {tasks.map((task, idx) => (
                 <div key={task.id} className="group relative">
                   <TaskCard
@@ -237,25 +248,26 @@ export default function PriorityMatrixPage() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         size="sm"
-                        variant="secondary"
+                        variant="ghost"
                         className={cn(
                           "absolute top-2 right-2 h-7 px-2 opacity-0 group-hover:opacity-100",
-                          "transition-opacity text-xs bg-white shadow-sm hover:bg-gray-50"
+                          "transition-opacity text-xs shadow-sm",
+                          config.textColor
                         )}
                       >
                         <ArrowRight className="h-3 w-3 mr-1" />
                         Move
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-white">
+                    <DropdownMenuContent align="end">
                       {otherQuadrants.map((targetQuadrant) => (
                         <DropdownMenuItem
                           key={targetQuadrant}
                           onClick={() => moveTaskMutation.mutate({ id: task.id, quadrant: targetQuadrant })}
                           className="gap-2 cursor-pointer"
                         >
-                          <div className={cn("w-2.5 h-2.5 rounded-full", quadrantConfig[targetQuadrant].dotColor)} />
-                          <span className="font-medium">{quadrantConfig[targetQuadrant].title}</span>
+                          <div className={cn("w-2 h-2 rounded-full", quadrantConfig[targetQuadrant].dotColor)} />
+                          <span className="font-medium text-sm">{quadrantConfig[targetQuadrant].title}</span>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -270,19 +282,19 @@ export default function PriorityMatrixPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6 min-h-full bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Priority Matrix</h1>
-          <p className="text-sm text-gray-500 font-medium mt-0.5">
-            Organize by urgency and importance
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black text-foreground tracking-tighter">Priority Matrix</h1>
+          <p className="text-base text-muted-foreground font-medium">
+            Organize and prioritize tasks by urgency and importance
           </p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
           size="sm"
-          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+          className="gap-1.5 bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all"
         >
           <Plus className="h-4 w-4" />
           Add Task
@@ -291,16 +303,16 @@ export default function PriorityMatrixPage() {
 
       {/* Error State */}
       {error ? (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/30 bg-destructive/10">
           <CardContent className="py-12">
-            <p className="text-center text-red-600 font-medium">
+            <p className="text-center text-destructive font-medium">
               Failed to load tasks. Please try again.
             </p>
           </CardContent>
         </Card>
       ) : (
         /* 2x2 Matrix Grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
           {renderQuadrant("DO_FIRST", 0)}
           {renderQuadrant("DELEGATE", 1)}
           {renderQuadrant("SCHEDULE", 2)}

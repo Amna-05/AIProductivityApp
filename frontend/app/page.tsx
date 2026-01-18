@@ -25,7 +25,6 @@ export default function HomePage() {
         router.replace("/dashboard");
       })
       .catch(() => {
-        // Not logged in - stay on landing page
         setCheckingAuth(false);
       });
   }, [router, setUser]);
@@ -508,52 +507,69 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-6 bg-gradient-to-r from-primary via-accent to-primary relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" />
-
-        <motion.div
-          className="container mx-auto max-w-4xl relative z-10 text-center"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-            Ready to ELEVATE?
-          </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            Join thousands of productive people who&apos;ve transformed their workflow. Start your journey today.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="gap-2 bg-white text-primary hover:bg-secondary hover:text-white px-10 h-16 text-xl font-bold shadow-2xl hover:shadow-lg transition-all duration-300" onClick={() => handleNavigate("/register")}>
-              <Sparkles className="h-6 w-6" />
-              Get Started Free
-            </Button>
-          </div>
-          <p className="mt-6 text-white/70 text-sm">No credit card required • Free forever plan available</p>
-        </motion.div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 px-6 bg-secondary border-t border-border">
+      {/* Professional Footer */}
+      <footer className="py-16 px-6 bg-background border-t border-border/50">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent">
-                <ArrowUp className="h-5 w-5 text-white" />
+          {/* Footer Top */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            {/* Brand */}
+            <div className="col-span-1 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg">
+                  <ArrowUp className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-bold text-foreground">ELEVATE</span>
               </div>
-              <span className="text-xl font-bold text-foreground">ELEVATE</span>
+              <p className="text-sm text-muted-foreground">
+                AI-powered task management for maximum productivity.
+              </p>
             </div>
-            <div className="flex items-center gap-8 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Contact</Link>
+
+            {/* Product */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4 text-sm">Product</h4>
+              <ul className="space-y-2">
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Features</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Security</Link></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4 text-sm">Resources</h4>
+              <ul className="space-y-2">
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Documentation</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Blog</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Support</Link></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4 text-sm">Legal</h4>
+              <ul className="space-y-2">
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
+              </ul>
             </div>
           </div>
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            © 2025 ELEVATE. Lift Your Productivity to New Heights.
-          </p>
+
+          {/* Divider */}
+          <div className="border-t border-border/30 my-8" />
+
+          {/* Footer Bottom */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              © 2025 ELEVATE. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Twitter</Link>
+              <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">GitHub</Link>
+              <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">LinkedIn</Link>
+            </div>
+          </div>
         </div>
       </footer>
 

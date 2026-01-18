@@ -16,16 +16,16 @@ import {
 import { cn } from "@/lib/utils/cn";
 
 const statusConfig: Record<TaskStatus, { label: string; color: string; bg: string }> = {
-  todo: { label: "To Do", color: "text-gray-500", bg: "bg-gray-500/10" },
+  todo: { label: "To Do", color: "text-muted-foreground", bg: "bg-muted-foreground/10" },
   in_progress: { label: "In Progress", color: "text-warning", bg: "bg-warning/10" },
   done: { label: "Done", color: "text-success", bg: "bg-success/10" },
 };
 
 const quadrantConfig: Record<string, string> = {
-  DO_FIRST: "bg-red-500/10 border-l-4 border-red-500",
-  SCHEDULE: "bg-orange-500/10 border-l-4 border-orange-500",
-  DELEGATE: "bg-amber-400/10 border-l-4 border-amber-400",
-  ELIMINATE: "bg-gray-600/10 border-l-4 border-gray-600",
+  DO_FIRST: "bg-destructive/10 border-l-4 border-destructive",
+  SCHEDULE: "bg-primary/10 border-l-4 border-primary",
+  DELEGATE: "bg-warning/10 border-l-4 border-warning",
+  ELIMINATE: "bg-muted-foreground/10 border-l-4 border-muted-foreground",
 };
 
 interface ListViewProps {

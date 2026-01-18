@@ -1,0 +1,176 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use by process 9720, using available port 3001 instead.
+   ▲ Next.js 15.5.9
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.100.22:3001
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 9.5s
+ ○ Compiling / ...
+ ✓ Compiled / in 26s (1798 modules)
+ GET / 200 in 28819ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 2.7s (1026 modules)
+ GET /favicon.ico 200 in 3303ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 7.4s (1978 modules)
+ GET /login 200 in 8332ms
+ GET /login 200 in 170ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 11.1s (2367 modules)
+ GET /dashboard 200 in 11933ms
+ ○ Compiling /priority-matrix ...
+ ✓ Compiled /priority-matrix in 3.5s (2390 modules)
+ GET /priority-matrix 200 in 3954ms
+ GET /priority-matrix 200 in 154ms
+ GET /priority-matrix 200 in 133ms
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 4.3s (2405 modules)
+ GET /settings 200 in 5180ms
+ GET /settings 200 in 125ms
+ GET / 200 in 1431ms
+ GET /dashboard 200 in 257ms
+ ○ Compiling /tasks ...
+ ✓ Compiled /categories in 12s (2467 modules)
+ GET /tasks 200 in 13092ms
+ GET /categories 200 in 7806ms
+ GET /priority-matrix 200 in 6115ms
+ GET / 200 in 1041ms
+ GET /tasks 200 in 266ms
+ ✓ Compiled in 13.2s (2447 modules)
+ GET /priority-matrix 200 in 7878ms
+ GET /priority-matrix 200 in 110ms
+ GET /priority-matrix 200 in 117ms
+ GET /priority-matrix 200 in 120ms
+ ✓ Compiled in 2.5s (2447 modules)
+ GET /priority-matrix 200 in 706ms
+ ○ Compiling /categories ...
+ ✓ Compiled /categories in 2.7s (1339 modules)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_exec__ (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\categories\page.js:909:39)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\categories\page.js:910:1499)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\categories\page.js:910:47)
+    at Object.<anonymous> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\categories\page.js:913:3) {
+  page: '/categories'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 34.4s (2827 modules)
+ GET /categories 500 in 41374ms
+ GET /dashboard 200 in 35641ms
+ GET /tasks 200 in 12818ms
+ GET /tasks 200 in 38568ms
+ GET /tasks 200 in 12819ms
+ GET /tasks 200 in 12018ms
+ GET / 200 in 12816ms
+ GET / 200 in 776ms
+ ✓ Compiled in 6s (2827 modules)
+ ✓ Compiled in 2ms (1555 modules)
+ ✓ Compiled in 1928ms (2827 modules)
+ GET / 200 in 8944ms
+ ✓ Compiled in 3ms (1555 modules)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_exec__ (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:964:39)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:965:1642)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:965:47)
+    at Object.<anonymous> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:968:3) {
+  page: '/dashboard'
+}
+ GET /dashboard 500 in 14785ms
+ GET /tasks 200 in 7618ms
+ GET / 200 in 6759ms
+ GET /tasks 200 in 326ms
+ GET / 200 in 290ms
+ GET /tasks 200 in 318ms
+ GET / 200 in 291ms
+ GET /tasks 200 in 380ms
+ GET / 200 in 324ms
+ ✓ Compiled in 7.4s (2810 modules)
+ GET /tasks 200 in 1600ms
+ GET / 200 in 1544ms
+ ✓ Compiled in 3.9s (2810 modules)
+ GET / 200 in 1085ms
+ GET /tasks 200 in 481ms
+ ✓ Compiled in 7.5s (2810 modules)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_exec__ (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\tasks\page.js:1030:39)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\tasks\page.js:1031:1635)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\tasks\page.js:1031:47)
+    at Object.<anonymous> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\tasks\page.js:1034:3) {
+  page: '/tasks'
+}
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 12.6s (2797 modules)
+ ✓ Compiled in 4.4s (2811 modules)
+ GET /tasks 500 in 20180ms
+ ✓ Compiled in 2ms (1539 modules)
+ GET /dashboard 200 in 12001ms
+ GET / 404 in 22925ms
+ GET /dashboard 200 in 230ms
+ GET / 200 in 231ms
+ GET / 200 in 119ms
+ GET / 200 in 1441ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 2.9s (2811 modules)
+ ✓ Compiled in 2s (2811 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 3.8s (2811 modules)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_exec__ (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:964:39)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:965:1642)
+    at <unknown> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:965:47)
+    at Object.<anonymous> (D:\Desktop\deployed-project\task-manager-app\frontend\.next\server\app\(dashboard)\dashboard\page.js:968:3) {
+  page: '/dashboard'
+}
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 22.7s (2811 modules)
+ GET /dashboard 500 in 32020ms
+ GET / 404 in 32292ms
+ GET /priority-matrix 200 in 16756ms
+ GET / 404 in 34021ms
+ GET /priority-matrix 200 in 764ms
+ GET /priority-matrix 200 in 2024ms
+ ✓ Compiled in 7.1s (2811 modules)
+ GET /priority-matrix 200 in 6561ms
+ ○ Compiling /favicon.ico ...
+ GET /priority-matrix 200 in 1161ms
+ ✓ Compiled /favicon.ico in 4.2s (1556 modules)
+ GET /favicon.ico 200 in 6432ms
+ GET /priority-matrix 200 in 4608ms
+ GET /priority-matrix 200 in 6443ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 3.9s (2828 modules)
+ ✓ Compiled in 2ms (1556 modules)
+ ✓ Compiled in 1ms (1556 modules)
+ ✓ Compiled in 1ms (1556 modules)
+ GET / 200 in 4936ms
+ GET / 200 in 5805ms
+ ✓ Compiled in 3.6s (1272 modules)
+ GET /priority-matrix 200 in 9113ms
+ GET /priority-matrix 200 in 127ms
+ GET /favicon.ico 404 in 47ms
+ ✓ Compiled in 1070ms (1271 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1815ms (2814 modules)
+ GET / 404 in 2488ms
+ GET /priority-matrix 404 in 2491ms
+ GET / 200 in 972ms
+ GET /priority-matrix 200 in 824ms
+ GET /tasks 200 in 211ms
+ GET /priority-matrix 200 in 194ms
+ GET /dashboard 200 in 266ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'D:\Desktop\deployed-project\task-manager-app\frontend\.next\cache\webpack\client-development\0.pack.gz_' -> 'D:\Desktop\deployed-project\task-manager-app\frontend\.next\cache\webpack\client-development\0.pack.gz'
+ GET /dashboard 404 in 326ms
+ GET /favicon.ico 404 in 46ms
+ GET /dashboard 404 in 324ms
+ GET /dashboard 404 in 297ms
+ GET /dashboard 404 in 283ms
+ GET /dashboard 404 in 313ms
+ GET /priority-matrix 404 in 280ms
+ GET /priority-matrix 404 in 280ms
+ GET /priority-matrix 404 in 303ms
