@@ -84,26 +84,26 @@ export default function HomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="container mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30">
-              <ArrowUp className="h-5 w-5 text-white" />
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 flex-shrink-0">
+              <ArrowUp className="h-4 sm:h-5 w-4 sm:w-5 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">ELEVATE</span>
+            <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent truncate">ELEVATE</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" className="font-medium hover:bg-secondary hover:text-primary" onClick={() => handleNavigate("/login")}>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="ghost" className="text-sm sm:text-base font-medium hover:bg-secondary hover:text-primary px-2 sm:px-4" onClick={() => handleNavigate("/login")}>
               Sign In
             </Button>
-            <Button className="bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 font-semibold" onClick={() => handleNavigate("/register")}>
-              Get Started Free
+            <Button className="text-sm sm:text-base bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 font-semibold px-3 sm:px-4" onClick={() => handleNavigate("/register")}>
+              Get Started
             </Button>
           </div>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 overflow-x-clip bg-background">
+      <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 overflow-x-clip bg-background">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-background" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -202,17 +202,17 @@ export default function HomePage() {
 
           {/* Main Headline */}
           <motion.div
-            className="text-center mb-8 space-y-6"
+            className="text-center mb-6 sm:mb-8 space-y-4 sm:space-y-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h1 className="text-6xl md:text-7xl font-black text-foreground leading-tight tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-tight tracking-tight">
               <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">ELEVATE</span>
               <br />
               Your Productivity
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               The all-in-one task management platform that helps you
               <span className="font-semibold text-primary"> organize, prioritize, </span>
               and <span className="font-semibold text-accent">achieve</span> — effortlessly.
@@ -221,17 +221,16 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 w-full px-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 px-8 h-14 text-lg font-bold shadow-xl transition-all duration-300" onClick={() => handleNavigate("/register")}>
-              <Sparkles className="h-5 w-5" />
-              Start Free Trial
-              <ArrowRight className="h-5 w-5" />
+            <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/30 px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg font-bold shadow-xl transition-all duration-300 w-full sm:w-auto" onClick={() => handleNavigate("/register")}>
+              <Sparkles className="h-4 sm:h-5 w-4 sm:w-5 hidden sm:block" />
+              <span>Start Free Trial</span>
             </Button>
-            <Button size="lg" variant="outline" className="px-8 h-14 text-lg font-semibold border-2 border-border hover:border-primary hover:bg-secondary hover:text-primary transition-all duration-300" onClick={() => handleNavigate("/login")}>
+            <Button size="lg" variant="outline" className="px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 border-border hover:border-primary hover:bg-secondary hover:text-primary transition-all duration-300 w-full sm:w-auto" onClick={() => handleNavigate("/login")}>
               Sign In
             </Button>
           </motion.div>
@@ -259,9 +258,9 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* App Preview */}
+          {/* App Preview - Hidden on mobile */}
           <motion.div
-            className="relative max-w-5xl mx-auto"
+            className="relative max-w-5xl mx-auto hidden lg:block"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}

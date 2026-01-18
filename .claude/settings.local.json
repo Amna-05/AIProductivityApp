@@ -21,7 +21,8 @@
       "Bash(grep:*)",
       "Bash(git restore:*)",
       "Bash(npm install:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git push:*)"
     ]
   }
 }

@@ -205,9 +205,9 @@ export function TaskCard({
           </div>
         </div>
 
-        {/* Hover actions */}
+        {/* Hover actions - always visible on mobile, hover-only on desktop */}
         <div className={cn(
-          "flex items-center gap-1 opacity-0 group-hover:opacity-100",
+          "flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
           "transition-opacity duration-150"
         )}>
           {onEdit && (
@@ -256,9 +256,9 @@ export function TaskCard({
           )}
         </div>
 
-        {/* Priority dot - only show when no hover actions */}
+        {/* Priority dot - only show when no hover actions on desktop */}
         <div className={cn(
-          "w-2 h-2 rounded-full shrink-0 group-hover:hidden",
+          "w-2 h-2 rounded-full shrink-0 md:group-hover:hidden",
           quadrant.dot
         )} />
       </div>
@@ -327,9 +327,9 @@ export function TaskCard({
           </div>
         </div>
 
-        {/* Hover actions */}
+        {/* Hover actions - always visible on mobile, hover-only on desktop */}
         <div className={cn(
-          "flex items-center gap-1 opacity-0 group-hover:opacity-100",
+          "flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
           "transition-opacity duration-150"
         )}>
           {onEdit && (
@@ -378,11 +378,11 @@ export function TaskCard({
           )}
         </div>
 
-        {/* Quadrant badge - only show when no hover */}
+        {/* Quadrant badge - only show when no hover on desktop */}
         <Badge
           variant="outline"
           className={cn(
-            "text-xs font-medium shrink-0 group-hover:hidden",
+            "text-xs font-medium shrink-0 md:group-hover:hidden",
             quadrant.color,
             quadrant.bg,
             "border-0"
@@ -488,9 +488,9 @@ export function TaskCard({
         </div>
       </div>
 
-      {/* Actions - visible on hover */}
+      {/* Actions - always visible on mobile, hover-only on desktop */}
       <div className={cn(
-        "flex items-center gap-1 opacity-0 group-hover:opacity-100",
+        "flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
         "transition-opacity duration-150"
       )}>
         {onEdit && (
