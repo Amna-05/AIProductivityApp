@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoriesApi, CreateCategoryData, UpdateCategoryData } from "@/lib/api/categories";
 import { Category } from "@/lib/types";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, FolderKanban, Loader2, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderKanban, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card";

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, X, PartyPopper, Grid3x3, List, Calendar, Maximize2 } from "lucide-react";
+import { Plus, X, PartyPopper, Grid3x3, List, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
 import { tasksApi, TaskFilters } from "@/lib/api/tasks";
