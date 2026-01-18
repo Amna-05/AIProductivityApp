@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, CheckCircle2, ArrowRight, Star, Users, Target, Loader2, Zap } from "lucide-react";
+import { ArrowUp, Sparkles, Grid2x2, BarChart3, TrendingUp, CheckCircle2, Star, Users, Target, Loader2, Zap } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
