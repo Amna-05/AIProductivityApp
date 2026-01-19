@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoriesApi, CreateCategoryData, UpdateCategoryData } from "@/lib/api/categories";
 import { Category } from "@/lib/types";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, FolderKanban, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderKanban, Loader2, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-//import { cn } from "@/lib/utils/cn";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Emerald palette colors
 const CATEGORY_COLORS = [
@@ -235,7 +240,7 @@ export default function CategoriesPage() {
               onClick={() => router.push(`/tasks?category_id=${category.id}`)}
             >
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between gap-3" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-4 flex-1 min-w-0">
                     <div
                       className="h-14 w-14 rounded-xl flex items-center justify-center text-2xl shadow-md ring-2 ring-primary/10 flex-shrink-0"
@@ -271,26 +276,27 @@ export default function CategoriesPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenDialog(category)}
-                      className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
-                      title="Edit"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(category)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleOpenDialog(category)}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(category)} className="text-destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardHeader>
             </Card>

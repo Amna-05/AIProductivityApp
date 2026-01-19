@@ -3,7 +3,7 @@
 import { Task } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Trash2, Edit2, Eye } from "lucide-react";
+import { MoreVertical, Trash2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -122,24 +122,13 @@ export function KanbanCard({
           </p>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Dropdown Only */}
         {showActions && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="flex gap-1"
           >
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 p-0 hover:bg-primary/20"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClick(task);
-              }}
-            >
-              <Eye className="h-3.5 w-3.5 text-primary" />
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

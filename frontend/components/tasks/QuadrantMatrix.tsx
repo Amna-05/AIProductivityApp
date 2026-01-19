@@ -21,7 +21,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useState } from "react";
-import { Edit2, Trash2, Eye, MoreVertical } from "lucide-react";
+import { Edit2, Trash2, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -151,24 +151,13 @@ function QuadrantCard({
             </p>
           </div>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - Dropdown Only */}
           {showActions && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex gap-1"
             >
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0 hover:bg-primary/20"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClick(task);
-                }}
-              >
-                <Eye className="h-3.5 w-3.5 text-primary" />
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
